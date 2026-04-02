@@ -1,12 +1,60 @@
+"use client";
+
+import { useState } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Section } from "@/components/layout/Section";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Package, Cog, Zap } from "lucide-react";
+import { Package, Cog, Zap, CheckCircle2 } from "lucide-react";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 
 export default function MacroServicePage() {
+  return (
+    <ProtectedRoute>
+      <MacroServicePageContent />
+    </ProtectedRoute>
+  );
+}
+
+function MacroServicePageContent() {
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    const formData = new FormData(e.currentTarget);
+    const fullName = formData.get("fullName");
+    const companyName = formData.get("companyName");
+    const summary = formData.get("summary");
+    const details = formData.get("details");
+
+    try {
+      const resp = await fetch("/api/send-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          source: "macro-service",
+          payload: { fullName, companyName, summary, details }
+        })
+      });
+
+      if (!resp.ok) {
+        throw new Error("Mail servisi hatası");
+      }
+
+      setIsSuccess(true);
+    } catch (error) {
+      console.error(error);
+      alert("Bir hata oluştu, lütfen daha sonra tekrar deneyin.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -62,28 +110,45 @@ export default function MacroServicePage() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="p-6 pt-8 space-y-5">
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Ad Soyad</label>
-                      <Input placeholder="Mehmet Yılmaz" />
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Firma Adı</label>
-                      <Input placeholder="ABC Otomasyon Sanayi" />
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Cihaz / İhtiyaç Özeti</label>
-                      <Input placeholder="Örn: Siemens S7-1500 serisi 2D Makrolar" />
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Detaylar</label>
-                      <textarea 
-                        className="flex min-h-[100px] w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-500 dark:border-slate-800 dark:bg-slate-950" 
-                        placeholder="Talep ettiğiniz marka, model veya teknik özellikleri buraya yazın..."
-                      ></textarea>
-                    </div>
-                    <Button size="lg" className="w-full mt-2 text-base h-14">
-                      Talebi Gönder
-                    </Button>
+                    {isSuccess ? (
+                      <div className="text-center py-8">
+                         <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 dark:bg-emerald-900/30">
+                           <CheckCircle2 className="w-8 h-8" />
+                         </div>
+                         <h3 className="text-xl font-bold mb-2">Talebiniz İletildi!</h3>
+                         <p className="text-slate-500 dark:text-slate-400 mb-6 font-medium">
+                           Size en kısa sürede dönüş yapacağız.
+                         </p>
+                         <Button variant="outline" onClick={() => setIsSuccess(false)}>Yeni Talep Oluştur</Button>
+                      </div>
+                    ) : (
+                      <form onSubmit={handleSubmit} className="space-y-5">
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium">Ad Soyad</label>
+                          <Input name="fullName" placeholder="Mehmet Yılmaz" required />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium">Firma Adı</label>
+                          <Input name="companyName" placeholder="ABC Otomasyon Sanayi" required />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium">Cihaz / İhtiyaç Özeti</label>
+                          <Input name="summary" placeholder="Örn: Siemens S7-1500 serisi 2D Makrolar" required />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium">Detaylar</label>
+                          <textarea 
+                            name="details"
+                            className="flex min-h-[100px] w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-500 dark:border-slate-800 dark:bg-slate-950" 
+                            placeholder="Talep ettiğiniz marka, model veya teknik özellikleri buraya yazın..."
+                            required
+                          ></textarea>
+                        </div>
+                        <Button type="submit" size="lg" className="w-full mt-2 text-base h-14" isLoading={isLoading}>
+                          Talebi Gönder
+                        </Button>
+                      </form>
+                    )}
                   </CardContent>
                 </Card>
              </div>

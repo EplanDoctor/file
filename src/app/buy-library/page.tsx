@@ -10,7 +10,17 @@ import { useState } from "react";
 import { PaymentModal } from "@/components/payment/PaymentModal";
 import Link from "next/link";
 
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+
 export default function BuyLibraryPage() {
+  return (
+    <ProtectedRoute>
+      <BuyLibraryPageContent />
+    </ProtectedRoute>
+  );
+}
+
+function BuyLibraryPageContent() {
   const [isPaymentOpen, setIsPaymentOpen] = useState(false);
 
   const handlePaymentSuccess = () => {

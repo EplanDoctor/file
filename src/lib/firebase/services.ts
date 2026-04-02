@@ -1,5 +1,16 @@
-// Mock services for EplanDoctor
+import { db } from "../firebase";
+import { 
+  collection, 
+  addDoc, 
+  getDocs, 
+  query, 
+  where, 
+  orderBy, 
+  Timestamp, 
+  limit 
+} from "firebase/firestore";
 
+// Mock services for EplanDoctor
 export type Problem = {
   id: string;
   title: string;
@@ -8,6 +19,23 @@ export type Problem = {
   resolved: boolean;
   createdAt: Date;
   solution?: string;
+};
+
+export type SupportTicket = {
+  id?: string;
+  userId: string;
+  title: string;
+  status: 'open' | 'closed';
+  createdAt: any;
+  type: string;
+};
+
+export type UserActivity = {
+  id?: string;
+  userId: string;
+  description: string;
+  createdAt: any;
+  icon: string;
 };
 
 export const MOCK_PROBLEMS: Problem[] = [
@@ -50,7 +78,76 @@ export async function getProblemById(id: string): Promise<Problem | undefined> {
   return MOCK_PROBLEMS.find(p => p.id === id);
 }
 
+// REAL FIRESTORE SERVICES
+
+export async function createSupportTicket(userId: string, title: string, type: string = 'whatsapp') {
+  try {
+    const ticketData: Omit<SupportTicket, 'id'> = {
+      userId,
+      title,
+      status: 'open',
+      createdAt: Timestamp.now(),
+      type
+    };
+    
+    // Create the ticket
+    await addDoc(collection(db, "tickets"), ticketData);
+    
+    // Also record an activity
+    await addDoc(collection(db, "activities"), {
+      userId,
+      description: `${title} başlatıldı.`,
+      createdAt: Timestamp.now(),
+      icon: 'message-circle'
+    });
+    
+    return true;
+  } catch (error) {
+    console.error("Error creating support ticket:", error);
+    return false;
+  }
+}
+
+export async function getUserTickets(userId: string): Promise<SupportTicket[]> {
+  try {
+    const q = query(
+      collection(db, "tickets"), 
+      where("userId", "==", userId),
+      orderBy("createdAt", "desc")
+    );
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    })) as SupportTicket[];
+  } catch (error) {
+    console.error("Error getting user tickets:", error);
+    return [];
+  }
+}
+
+export async function getUserActivities(userId: string): Promise<UserActivity[]> {
+  try {
+    const q = query(
+      collection(db, "activities"), 
+      where("userId", "==", userId),
+      orderBy("createdAt", "desc"),
+      limit(10)
+    );
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    })) as UserActivity[];
+  } catch (error) {
+    console.error("Error getting user activities:", error);
+    return [];
+  }
+}
+
 export async function createProblem(problem: Omit<Problem, "id" | "createdAt">): Promise<Problem> {
+  // For now, continue using mock for problems to avoid breaking existing logic
+  // but keep it available for the submit-problem page
   await new Promise(resolve => setTimeout(resolve, 800));
   const newProblem = {
     ...problem,

@@ -19,10 +19,10 @@ export function Section({
       className={cn(
         "py-20 md:py-32",
         {
-          "bg-white dark:bg-slate-950": background === "default",
-          "bg-slate-50 dark:bg-slate-900/50": background === "muted",
-          "bg-electric-500 text-white": background === "electric",
-          "bg-slate-950 text-white dark:bg-black": background === "dark",
+          "bg-slate-950 text-slate-50": background === "default",
+          "bg-slate-900 text-slate-50": background === "muted",
+          "bg-electric-600 text-white": background === "electric",
+          "bg-black text-white": background === "dark",
         },
         className
       )}

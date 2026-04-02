@@ -6,85 +6,104 @@ import { Section } from "@/components/layout/Section";
 import { Card, CardContent } from "@/components/ui/card";
 import { MessageCircle, Clock, CheckCircle2, ShieldCheck, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
-import { PaymentModal } from "@/components/payment/PaymentModal";
+import { useLanguage } from "@/context/LanguageContext";
+import { useAuth } from "@/context/AuthContext";
+import { createSupportTicket } from "@/lib/firebase/services";
+
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 
 export default function InstantSolvePage() {
-  const [isPaymentOpen, setIsPaymentOpen] = useState(false);
+  return (
+    <ProtectedRoute>
+      <InstantSolvePageContent />
+    </ProtectedRoute>
+  );
+}
 
-  const handlePaymentSuccess = () => {
-    // Redirect to WhatsApp seamlessly after payment successfully processed
-    window.location.href = "https://wa.me/905550000000?text=Merhaba,%20EplanDoctor%20üzerinden%20Premium%20Destek%20ödememi%20tamamladım.%20Sorunum%20hakkında%20yardımcı%20olabilir%20misiniz?";
+function InstantSolvePageContent() {
+  const { t } = useLanguage();
+  const { user } = useAuth();
+
+  const handleWhatsAppConnect = async () => {
+    const message = encodeURIComponent(t.instant_solve_page.btn);
+    
+    // If user is logged in, record the ticket
+    if (user) {
+      await createSupportTicket(user.uid, t.instant_solve_page.card_title);
+    }
+    
+    window.open(`https://wa.me/905318691454?text=${message}`, "_blank");
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 uppercase">
       <Navbar />
       
-      <main className="flex-grow bg-slate-50 dark:bg-slate-900/40">
-        <Section className="py-12 md:py-20 relative overflow-hidden">
+      <main className="flex-grow">
+        <Section className="py-16 md:py-28 relative overflow-hidden">
           {/* Decorative Background Point */}
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-lg h-[400px] bg-green-500/10 blur-[100px] rounded-full point-events-none"></div>
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-2xl h-[500px] bg-emerald-500/10 blur-[120px] rounded-full pointer-events-none"></div>
 
-          <div className="relative z-10 max-w-4xl mx-auto text-center mb-12">
-            <div className="inline-flex items-center justify-center rounded-full bg-green-100 px-4 py-1.5 text-sm font-bold text-green-700 mb-6 dark:bg-green-900/30 dark:text-green-400 ring-1 ring-green-500/30">
-              <Zap className="w-4 h-4 mr-2 fill-green-600 text-green-600" />
-              Saniyeler İçinde Bağlanın
+          <div className="relative z-10 max-w-4xl mx-auto text-center mb-20 animate-in fade-in slide-in-from-bottom-5 duration-700">
+            <div className="inline-flex items-center justify-center rounded-full bg-emerald-100 px-6 py-2 text-[10px] font-black text-emerald-700 mb-8 dark:bg-emerald-900/30 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 tracking-widest shadow-sm">
+              <Zap className="w-4 h-4 mr-2 fill-emerald-600 text-emerald-600" />
+              {t.instant_solve_page.badge}
             </div>
-            <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-6 text-slate-900 dark:text-white">
-              Sorununuzu <span className="text-green-600">WhatsApp'tan</span> Çok Hızlı Çözelim
+            <h1 className="text-5xl md:text-7xl font-black tracking-tighter mb-8 text-slate-900 dark:text-white leading-[1.05]">
+              {t.instant_solve_page.title.split("WhatsApp'tan")[0]}
+              <span className="text-emerald-600">WhatsApp'tan</span>
+              {t.instant_solve_page.title.split("WhatsApp'tan")[1]}
             </h1>
-            <p className="text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-              Zamanınız çok değerli. Beklemeden hemen uzmanlarımıza direkt bağlanın, ekran paylaşımı ile anında sorununuzu çözelim ve işinize hemen dönün.
+            <p className="text-sm font-bold text-slate-600 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed opacity-70">
+              {t.instant_solve_page.desc}
             </p>
           </div>
 
-          <div className="max-w-2xl mx-auto relative z-10">
-            <Card className="border-2 border-green-500/20 shadow-2xl relative overflow-hidden bg-white/50 backdrop-blur-xl dark:bg-slate-950/80">
-               <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-green-400 to-green-600"></div>
-               <CardContent className="p-8 md:p-12">
-                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-10 gap-6">
-                     <div className="flex gap-5">
-                       <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-green-100 to-green-200 dark:from-green-900/50 dark:to-green-800/50 flex justify-center items-center shrink-0 shadow-inner">
-                         <MessageCircle className="w-8 h-8 text-green-600 dark:text-green-400" />
+          <div className="max-w-3xl mx-auto relative z-10 animate-in fade-in zoom-in-95 duration-1000 delay-200">
+            <Card className="border-none shadow-[0_32px_64px_-12px_rgba(0,0,0,0.14)] relative overflow-hidden bg-white dark:bg-slate-900 rounded-[50px]">
+               <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-emerald-400 via-emerald-600 to-emerald-400 animate-gradient-x"></div>
+               <CardContent className="p-10 md:p-20">
+                  <div className="flex flex-col md:flex-row justify-between items-center mb-14 gap-8">
+                     <div className="flex flex-col md:flex-row items-center gap-6 text-center md:text-left">
+                       <div className="w-20 h-20 rounded-[30px] bg-gradient-to-br from-emerald-100 to-emerald-200 dark:from-emerald-900/50 dark:to-emerald-800/50 flex justify-center items-center shrink-0 shadow-inner group transition-transform hover:scale-110 duration-500">
+                         <MessageCircle className="w-10 h-10 text-emerald-600 dark:text-emerald-400" />
                        </div>
                        <div>
-                         <h3 className="text-2xl font-bold mb-1">Tek Seferlik Hızlı Destek</h3>
-                         <div className="flex items-center text-sm text-slate-500 font-medium font-mono">
-                           <Clock className="w-4 h-4 mr-1.5 text-slate-400" /> Ortalama Yanıt: 2 Dk
+                         <h3 className="text-2xl font-black mb-2 tracking-tight">{t.instant_solve_page.card_title}</h3>
+                         <div className="flex items-center justify-center md:justify-start text-[10px] text-slate-400 font-black tracking-widest uppercase italic">
+                           <Clock className="w-4 h-4 mr-2 text-emerald-500" /> {t.instant_solve_page.response_time}
                          </div>
                        </div>
                      </div>
-                     <div className="text-left sm:text-right">
-                       <div className="text-4xl font-black text-slate-900 dark:text-white">₺499</div>
-                       <div className="text-xs text-slate-400 uppercase font-bold mt-1">Tek Seferlik Ücret</div>
+                     <div className="text-center md:text-right">
+                       <div className="text-2xl font-black text-slate-900 dark:text-white tracking-widest uppercase italic">{t.instant_solve_page.badge}</div>
                      </div>
                   </div>
 
-                  <div className="space-y-4 mb-10 bg-slate-50 dark:bg-slate-900/50 p-6 rounded-xl border border-slate-100 dark:border-slate-800">
+                  <div className="grid sm:grid-cols-2 gap-4 mb-14">
                      {[
-                       "Uzman eğitmen ile WhatsApp metin veya arama ile birebir görüşme",
-                       "Gerekirse Anydesk / Teamviewer ile direkt bilgisayar bağlantısı",
-                       "Sorun çözülmezse %100 Kesintisiz Ücret İadesi Garantisi",
-                       "Sunucu logları ve şablonlarınıza öncelikli destek protokolü"
+                       t.instant_solve_page.feature1,
+                       t.instant_solve_page.feature2,
+                       t.instant_solve_page.feature3,
+                       t.instant_solve_page.feature4
                      ].map((item, i) => (
-                       <div key={i} className="flex items-start gap-3">
-                         <CheckCircle2 className="w-5 h-5 text-green-500 mt-0.5 shrink-0" />
-                         <span className="text-slate-700 dark:text-slate-300 font-medium leading-relaxed">{item}</span>
+                       <div key={i} className="flex items-center gap-4 bg-slate-50 dark:bg-slate-800/50 p-5 rounded-3xl border border-slate-100 dark:border-slate-800 transition-all hover:bg-emerald-50 dark:hover:bg-emerald-900/10 hover:border-emerald-200">
+                         <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />
+                         <span className="text-[11px] text-slate-700 dark:text-slate-300 font-black tracking-tight leading-tight">{item}</span>
                        </div>
                      ))}
                   </div>
 
                   <Button 
                     size="lg" 
-                    className="w-full h-14 text-lg font-bold bg-green-600 hover:bg-green-700 text-white shadow-xl shadow-green-600/20"
-                    onClick={() => setIsPaymentOpen(true)}
+                    className="w-full h-20 text-[11px] font-black tracking-widest bg-emerald-600 hover:bg-emerald-500 text-white shadow-2xl shadow-emerald-600/30 rounded-[30px] transition-all hover:scale-[1.02] active:scale-[0.98] uppercase"
+                    onClick={handleWhatsAppConnect}
                   >
-                    <MessageCircle className="w-6 h-6 mr-2" /> ₺499 - Öde ve WhatsApp'a Bağlan
+                    <MessageCircle className="w-6 h-6 mr-3" /> {t.instant_solve_page.btn}
                   </Button>
                   
-                  <div className="mt-5 flex justify-center items-center text-xs text-slate-400 font-medium">
-                    <ShieldCheck className="w-4 h-4 mr-1 text-green-500" /> 256-Bit SSL ile %100 Güvenli Ödeme Çözümü
+                  <div className="mt-8 flex justify-center items-center text-[10px] text-slate-400 font-black tracking-widest opacity-50 uppercase italic">
+                    <ShieldCheck className="w-4 h-4 mr-2 text-emerald-500" /> {t.instant_solve_page.secure_payment}
                   </div>
                </CardContent>
             </Card>
@@ -93,14 +112,6 @@ export default function InstantSolvePage() {
       </main>
 
       <Footer />
-
-      <PaymentModal 
-        isOpen={isPaymentOpen} 
-        onClose={() => setIsPaymentOpen(false)} 
-        onSuccess={handlePaymentSuccess}
-        price="₺499"
-        planName="Anında VIP WhatsApp Destek"
-      />
     </div>
   );
 }

@@ -9,16 +9,52 @@ import { Input } from "@/components/ui/input";
 import { Zap, Send, FileCheck2, Clock, CheckCircle2, Factory } from "lucide-react";
 import { useState } from "react";
 
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+
 export default function ProjeTeklifiPage() {
+  return (
+    <ProtectedRoute>
+      <ProjeTeklifiPageContent />
+    </ProtectedRoute>
+  );
+}
+
+function ProjeTeklifiPageContent() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
-    await new Promise(r => setTimeout(r, 1500));
-    setIsLoading(false);
-    setIsSubmitted(true);
+    
+    const formData = new FormData(e.currentTarget);
+    const fullName = formData.get("fullName");
+    const phone = formData.get("phone");
+    const email = formData.get("email");
+    const projectType = formData.get("projectType");
+    const details = formData.get("details");
+
+    try {
+      const resp = await fetch("/api/send-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          source: "proje-teklifi",
+          payload: { fullName, phone, email, projectType, details }
+        })
+      });
+
+      if (!resp.ok) {
+        throw new Error("Mail servisi hatası");
+      }
+
+      setIsSubmitted(true);
+    } catch (error) {
+      console.error(error);
+      alert("Bir hata oluştu, lütfen daha sonra tekrar deneyin.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -98,22 +134,22 @@ export default function ProjeTeklifiPage() {
                         <div className="grid grid-cols-2 gap-4">
                           <div className="space-y-1.5">
                             <label className="text-xs font-semibold text-slate-600 dark:text-slate-300">İsim Soyisim</label>
-                            <Input required placeholder="Adınız" className="bg-white dark:bg-slate-900" />
+                            <Input name="fullName" required placeholder="Adınız" className="bg-white dark:bg-slate-900" />
                           </div>
                           <div className="space-y-1.5">
                             <label className="text-xs font-semibold text-slate-600 dark:text-slate-300">Telefon</label>
-                            <Input required placeholder="05XX XXX XX XX" type="tel" className="bg-white dark:bg-slate-900" />
+                            <Input name="phone" required placeholder="05XX XXX XX XX" type="tel" className="bg-white dark:bg-slate-900" />
                           </div>
                         </div>
 
                         <div className="space-y-1.5">
                           <label className="text-xs font-semibold text-slate-600 dark:text-slate-300">E-Posta / Şirket Bilgisi</label>
-                          <Input required placeholder="sirketiniz@email.com" type="email" className="bg-white dark:bg-slate-900" />
+                          <Input name="email" required placeholder="sirketiniz@email.com" type="email" className="bg-white dark:bg-slate-900" />
                         </div>
 
                         <div className="space-y-1.5">
                           <label className="text-xs font-semibold text-slate-600 dark:text-slate-300">Proje Tipi</label>
-                          <select className="w-full h-10 px-3 rounded-md border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent dark:bg-slate-900 dark:border-slate-800">
+                          <select name="projectType" className="w-full h-10 px-3 rounded-md border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent dark:bg-slate-900 dark:border-slate-800">
                             <option>Otomasyon/PLC Panosu</option>
                             <option>MCC (Motor Kontrol) Panosu</option>
                             <option>Dağıtım Panosu</option>
@@ -125,6 +161,7 @@ export default function ProjeTeklifiPage() {
                         <div className="space-y-1.5">
                           <label className="text-xs font-semibold text-slate-600 dark:text-slate-300">Proje Detayları & İhtiyaçlar</label>
                           <textarea 
+                            name="details"
                             className="w-full rounded-md border border-slate-200 bg-white p-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent min-h-[100px] dark:bg-slate-900 dark:border-slate-800"
                             placeholder="Motor gücü, tahmini sayfa sayısı, kullanılacak şalt marka tercihiniz (Örn: Siemens, Schneider) gibi detayları ekleyebilirsiniz..."
                             required

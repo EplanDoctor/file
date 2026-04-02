@@ -1,4 +1,8 @@
-// Mock Auth Service for EplanDoctor
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
+import { app } from "../firebase";
+
+export const auth = getAuth(app);
+const googleProvider = new GoogleAuthProvider();
 
 export type User = {
   id: string;
@@ -7,24 +11,33 @@ export type User = {
   isPremium: boolean;
 };
 
-let currentUser: User | null = null;
-
 export async function loginWithGoogle(): Promise<User> {
-  await new Promise(resolve => setTimeout(resolve, 500));
-  currentUser = {
-    id: "user-1",
-    name: "Örnek Mühendis",
-    email: "muhendis@example.com",
-    isPremium: false,
-  };
-  return currentUser;
+  try {
+    const result = await signInWithPopup(auth, googleProvider);
+    const user = result.user;
+    return {
+      id: user.uid,
+      name: user.displayName || "EPLAN Uzmanı",
+      email: user.email || "",
+      isPremium: false,
+    };
+  } catch (error) {
+    console.error("Google login failed:", error);
+    throw error;
+  }
 }
 
 export async function logout(): Promise<void> {
-  await new Promise(resolve => setTimeout(resolve, 300));
-  currentUser = null;
+  await signOut(auth);
 }
 
 export function getCurrentUser(): User | null {
-  return currentUser;
+  const user = auth.currentUser;
+  if (!user) return null;
+  return {
+    id: user.uid,
+    name: user.displayName || "EPLAN Uzmanı",
+    email: user.email || "",
+    isPremium: false,
+  };
 }

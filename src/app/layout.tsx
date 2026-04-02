@@ -12,15 +12,22 @@ export const metadata: Metadata = {
   description: "EPLAN elektrik proje çizim programı kullanan mühendislerin yaşadığı teknik sorunlara hızlı çözüm sunan sistem.",
 };
 
+import { LanguageProvider } from "@/context/LanguageContext";
+import { AuthProvider } from "@/context/AuthContext";
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="tr">
+    <html lang="tr" className="dark" style={{ colorScheme: 'dark' }}>
       <body className={`${inter.variable} antialiased bg-background text-foreground`}>
-        {children}
+        <LanguageProvider>
+          <AuthProvider>
+            {children}
+          </AuthProvider>
+        </LanguageProvider>
       </body>
     </html>
   );

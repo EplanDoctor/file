@@ -11,9 +11,21 @@ import { getProblems, Problem } from "@/lib/firebase/services";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
+import { useLanguage } from "@/context/LanguageContext";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+
 export default function ProblemsPage() {
+  return (
+    <ProtectedRoute>
+      <ProblemsPageContent />
+    </ProtectedRoute>
+  );
+}
+
+function ProblemsPageContent() {
+  const { t } = useLanguage();
   const [searchTerm, setSearchTerm] = useState("");
-  const [activeCategory, setActiveCategory] = useState("Tümü");
+  const [activeCategory, setActiveCategory] = useState(t.search.all_categories);
   const [problems, setProblems] = useState<Problem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -26,34 +38,35 @@ export default function ProblemsPage() {
     fetchProblems();
   }, []);
 
-  const categories = ["Tümü", ...Array.from(new Set(problems.map(p => p.category)))];
+  const categories = [t.search.all_categories, ...Array.from(new Set(problems.map(p => p.category)))];
 
   const filteredProblems = problems.filter(problem => {
     const matchesSearch = problem.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
                           problem.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = activeCategory === "Tümü" || problem.category === activeCategory;
+    const matchesCategory = activeCategory === t.search.all_categories || problem.category === activeCategory;
     return matchesSearch && matchesCategory;
   });
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950">
+    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 uppercase">
       <Navbar />
       
       <main className="flex-grow">
         <Section className="py-12 md:py-20">
           <div className="max-w-3xl mb-12">
-            <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6 text-slate-900 dark:text-white">Güncel EPLAN Sorunları</h1>
-            <p className="text-lg text-slate-600 dark:text-slate-400 mb-8">
-              Kullanıcılarımızın karşılaştığı en yaygın EPLAN P8 hata kodları ve sorunlarını burada bulabilir, 
-              çözüm adımlarını ilgili sayfalarda detaylıca inceleyebilirsiniz.
+            <h1 className="text-4xl md:text-5xl font-black tracking-tighter mb-6 text-slate-900 dark:text-white">
+              {t.search.title}
+            </h1>
+            <p className="text-sm font-bold text-slate-600 dark:text-slate-400 mb-8 leading-relaxed max-w-2xl">
+              {t.search.desc}
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4">
               <div className="relative flex-grow">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                 <Input 
-                  className="pl-10 h-12 bg-white dark:bg-slate-900 shadow-sm" 
-                  placeholder="Hata kodu veya sorununuzu arayın..." 
+                  className="pl-10 h-14 bg-white dark:bg-slate-900 shadow-xl border-slate-200 dark:border-slate-800 text-sm font-bold" 
+                  placeholder={t.search.placeholder} 
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -61,15 +74,15 @@ export default function ProblemsPage() {
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-2 mb-8">
+          <div className="flex flex-wrap gap-2 mb-10">
              {categories.map(category => (
                <button
                  key={category}
                  onClick={() => setActiveCategory(category)}
                  className={cn(
-                   "px-5 py-2 rounded-full text-sm font-semibold transition-all border",
+                   "px-6 py-2.5 rounded-full text-[10px] font-black tracking-widest transition-all border",
                    activeCategory === category 
-                     ? "bg-electric-600 text-white border-electric-600 shadow-md shadow-electric-600/20 dark:bg-electric-500 dark:border-electric-500" 
+                     ? "bg-electric-600 text-white border-electric-600 shadow-lg shadow-electric-600/20 dark:bg-electric-500 dark:border-electric-500" 
                      : "bg-white text-slate-600 border-slate-200 shadow-sm hover:bg-slate-50 dark:bg-slate-900 dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-800"
                  )}
                >
@@ -79,23 +92,23 @@ export default function ProblemsPage() {
           </div>
 
           {isLoading ? (
-            <div className="flex justify-center p-12">
-              <div className="w-10 h-10 border-4 border-electric-200 border-t-electric-600 rounded-full animate-spin"></div>
+            <div className="flex justify-center p-20">
+              <div className="w-12 h-12 border-[4px] border-electric-200 border-t-electric-600 rounded-full animate-spin"></div>
             </div>
           ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredProblems.length > 0 ? (
                 filteredProblems.map((problem) => (
-                  <Link href={`/problems/${problem.id}`} key={problem.id} className="block group">
-                    <div className="h-full transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-electric-900/5 group-hover:border-electric-400/50 rounded-2xl rounded-tr-none">
+                  <Link href={`/problems/detay?id=${problem.id}`} key={problem.id} className="block group">
+                    <div className="h-full transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-electric-900/10 rounded-3xl">
                       <ProblemCard problem={problem} />
                     </div>
                   </Link>
                 ))
               ) : (
-                <div className="col-span-full py-16 text-center text-slate-500 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 border-dashed">
-                  <p className="font-medium text-lg mb-2">Kayıt Bulunamadı</p>
-                  <p>Aradığınız filtreye uygun sonuç çıkmadı.</p>
+                <div className="col-span-full py-24 text-center text-slate-500 bg-white dark:bg-slate-900/50 rounded-[40px] border border-slate-200 dark:border-slate-800 border-dashed backdrop-blur-sm">
+                  <p className="font-black text-2xl mb-2 text-slate-900 dark:text-white tracking-widest">{t.search.no_results_title}</p>
+                  <p className="font-bold text-xs uppercase opacity-60">{t.search.no_results_desc}</p>
                 </div>
               )}
             </div>

@@ -11,22 +11,56 @@ import { createProblem } from "@/lib/firebase/services";
 import { CheckCircle2, UploadCloud } from "lucide-react";
 import Link from "next/link";
 
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+
 export default function SubmitProblemPage() {
+  return (
+    <ProtectedRoute>
+      <SubmitProblemPageContent />
+    </ProtectedRoute>
+  );
+}
+
+function SubmitProblemPageContent() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
-    // Simulate API call using mock service
-    await createProblem({
-      title: "Yeni Kullanıcı Sorunu",
-      description: "Test açıklaması",
-      category: "Kullanıcı Bildirimi",
-      resolved: false
-    });
-    setIsSuccess(true);
-    setIsLoading(false);
+    
+    const formData = new FormData(e.currentTarget);
+    const title = formData.get("title") as string;
+    const category = formData.get("category") as string;
+    const description = formData.get("description") as string;
+
+    try {
+      const resp = await fetch("/api/send-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          source: "submit-problem",
+          payload: { title, category, description }
+        })
+      });
+
+      if (!resp.ok) {
+        console.error("Email send API failed");
+      }
+
+      await createProblem({
+        title: title || "Yeni Kullanıcı Sorunu",
+        description: description || "Açıklama belirtilmedi",
+        category: category || "Kullanıcı Bildirimi",
+        resolved: false
+      });
+      setIsSuccess(true);
+    } catch (error) {
+      console.error(error);
+      alert("Bir hata oluştu, lütfen daha sonra tekrar deneyin.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -69,12 +103,12 @@ export default function SubmitProblemPage() {
                   <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="space-y-2">
                       <label className="text-sm font-medium">Sorun Başlığı / Hata Kodu</label>
-                      <Input placeholder="Örn: PDF export sırasında Türkçe karakter bozulması" required />
+                      <Input name="title" placeholder="Örn: PDF export sırasında Türkçe karakter bozulması" required />
                     </div>
                     
                     <div className="space-y-2">
                       <label className="text-sm font-medium">Kategori</label>
-                      <select className="flex h-12 w-full rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-500 dark:border-slate-800 dark:bg-slate-950">
+                      <select name="category" className="flex h-12 w-full rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-500 dark:border-slate-800 dark:bg-slate-950">
                         <option>Lisans / Dongle</option>
                         <option>Export / Çıktı</option>
                         <option>Veritabanı (Project Data)</option>
@@ -86,6 +120,7 @@ export default function SubmitProblemPage() {
                     <div className="space-y-2">
                       <label className="text-sm font-medium">Detaylı Açıklama</label>
                       <textarea 
+                        name="description"
                         className="flex min-h-[120px] w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-500 dark:border-slate-800 dark:bg-slate-950" 
                         placeholder="Sorun ne zaman başladı? Hangi işlemleri yaptıktan sonra bu hatayı aldınız?"
                         required

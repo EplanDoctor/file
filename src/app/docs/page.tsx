@@ -1,3 +1,5 @@
+"use client";
+
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Section } from "@/components/layout/Section";
@@ -5,6 +7,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { FileText, Download, BookOpen, Search, ArrowRight, PenTool } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/context/LanguageContext";
 
 const MOCK_DOCS = [
   { id: 1, title: "EPLAN P8 Klavye Kısayolları (PDF)", desc: "En çok kullanılan kısayollarla tasarım hızınızı 2 katına çıkarın.", type: "PDF" },
@@ -29,131 +32,139 @@ const MOCK_AUTOCAD = [
   { id: 4, title: "Örnek Klemens Dizilimi ve Ray Ölçekleri", desc: "1:1 ölçekli klemens, şalter ve kablo kanalı taslakları.", type: "DWG" },
 ];
 
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+
 export default function DocsPage() {
   return (
-    <div className="min-h-screen flex flex-col">
+    <ProtectedRoute>
+      <DocsPageContent />
+    </ProtectedRoute>
+  );
+}
+
+function DocsPageContent() {
+  const { t } = useLanguage();
+
+  return (
+    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 uppercase">
       <Navbar />
       
-      <main className="flex-grow bg-slate-50 dark:bg-slate-900/40">
-        <Section className="py-12 md:py-20">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
-            <div className="max-w-2xl">
-              <h1 className="text-3xl md:text-5xl font-bold tracking-tight mb-4">Dokümantasyon & Rehberler</h1>
-              <p className="text-lg text-slate-600 dark:text-slate-400">
-                Projelerinizde başvurabileceğiniz hazır dokümanlar, kısayol listeleri ve standart yönergeleri indirin.
-              </p>
+      <main className="flex-grow">
+        <Section className="py-16 md:py-28">
+          <div className="max-w-4xl mx-auto text-center mb-20 animate-in fade-in slide-in-from-bottom-5 duration-700">
+             <div className="inline-flex items-center justify-center rounded-full bg-electric-100 px-6 py-2 text-[10px] font-black text-electric-600 mb-8 dark:bg-electric-900/30 dark:text-electric-400 border border-electric-200 dark:border-electric-800 tracking-widest shadow-sm">
+              <Download className="w-4 h-4 mr-2" />
+              {t.docs_page.badge}
             </div>
+            <h1 className="text-5xl md:text-7xl font-black tracking-tighter mb-8 text-slate-900 dark:text-white leading-[1.05]">
+              {t.docs_page.title}
+            </h1>
+            <p className="text-sm font-bold text-slate-600 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed opacity-70 italic">
+              {t.docs_page.desc}
+            </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-2 gap-6 mb-20">
-            {MOCK_DOCS.map((doc, idx) => {
-              const content = (
-                <Card key={doc.id} className="group hover:-translate-y-1 transition-transform duration-300">
-                  <CardHeader className="flex flex-row items-start justify-between">
-                    <div className="flex gap-4 items-start">
-                      <div className="w-12 h-12 rounded-xl bg-electric-50 text-electric-600 dark:bg-electric-900/30 dark:text-electric-400 flex items-center justify-center shrink-0">
-                        <FileText className="w-6 h-6" />
-                      </div>
-                      <div>
-                        <div className="text-xs font-semibold text-slate-500 mb-1">{doc.type}</div>
-                        <CardTitle className="text-lg mb-2 group-hover:text-electric-600 transition-colors">{doc.title}</CardTitle>
-                        <CardDescription>{doc.desc}</CardDescription>
-                      </div>
+          <div className="grid md:grid-cols-2 gap-8 mb-32 max-w-6xl mx-auto">
+            {MOCK_DOCS.map((doc) => (
+              <Card key={doc.id} className="group hover:-translate-y-2 transition-all duration-500 border-none shadow-xl bg-white dark:bg-slate-900 rounded-[35px] overflow-hidden">
+                <CardHeader className="p-8 flex flex-row items-start justify-between">
+                  <div className="flex gap-6 items-start">
+                    <div className="w-16 h-16 rounded-[22px] bg-electric-50 text-electric-600 dark:bg-electric-900/50 dark:text-electric-400 flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 transition-transform duration-500">
+                      <FileText className="w-7 h-7" />
                     </div>
-                    <Link href="/dashboard" className="p-2 border border-slate-200 rounded-lg hover:bg-electric-50 hover:text-electric-600 hover:border-electric-200 transition-colors shrink-0 dark:border-slate-800 dark:hover:bg-slate-800 dark:hover:border-slate-700">
-                      <Download className="w-5 h-5" />
-                    </Link>
-                  </CardHeader>
-                </Card>
-              );
-              return content;
-            })}
+                    <div>
+                      <div className="text-[10px] font-black text-slate-400 mb-2 tracking-widest">{doc.type}</div>
+                      <CardTitle className="text-xl font-black mb-3 group-hover:text-electric-600 transition-colors tracking-tight">{doc.title}</CardTitle>
+                      <CardDescription className="text-[11px] font-bold opacity-70 leading-relaxed uppercase">{doc.desc}</CardDescription>
+                    </div>
+                  </div>
+                  <Link href="/dashboard" className="p-4 bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-2xl hover:bg-electric-600 hover:text-white transition-all shadow-sm hover:shadow-electric-600/20 shrink-0">
+                    <Download className="w-5 h-5" />
+                  </Link>
+                </CardHeader>
+              </Card>
+            ))}
           </div>
 
-          {/* YENİ ALT BÖLÜM: Sık Karşılaşılan Tipik Devre Çizimleri */}
-          <div className="pt-16 border-t border-slate-200 dark:border-slate-800">
-            <div className="mb-10 flex flex-col justify-center items-center text-center">
-              <div className="inline-flex items-center rounded-full bg-electric-100 px-3 py-1 text-sm font-medium text-electric-600 mb-4 dark:bg-electric-900/40 dark:text-electric-400">
+          {/* Section: Typical Circuits */}
+          <div className="pt-24 border-t border-slate-200 dark:border-slate-800">
+            <div className="mb-16 text-center animate-in fade-in duration-1000">
+              <div className="inline-flex items-center rounded-full bg-emerald-100 px-4 py-1.5 text-[10px] font-black text-emerald-700 mb-6 dark:bg-emerald-900/40 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 tracking-widest">
                 <BookOpen className="w-4 h-4 mr-2" />
-                Referans Şablonlar
+                {t.docs_page.badge}
               </div>
-              <h2 className="text-3xl font-bold tracking-tight mb-4">Sık Karşılaşılan Tipik Devre Çizimleri</h2>
-              <p className="text-slate-600 dark:text-slate-400 max-w-2xl">
-                Daha önce sahada aktif çalışan projelere ait tipik devre veya makro sayfası şablonları. Benzer pano tasarımlarında kılavuz olarak kullanabilirsiniz.
+              <h2 className="text-4xl md:text-5xl font-black tracking-tight mb-6 text-slate-900 dark:text-white">{t.docs_page.section_typical}</h2>
+              <p className="text-sm font-bold text-slate-500 dark:text-slate-400 max-w-2xl mx-auto opacity-70 uppercase italic">
+                {t.docs_page.section_typical_desc}
               </p>
             </div>
 
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {MOCK_CIRCUITS.map((circuit, idx) => {
-                const content = (
-                <Card key={circuit.id} className="group overflow-hidden flex flex-col">
-                  {/* Thumbnail / Mockup Area for Circuit Diagram */}
-                  <div className="relative aspect-[4/3] bg-slate-100 dark:bg-slate-800 border-b border-slate-100 dark:border-slate-800 flex items-center justify-center overflow-hidden">
-                    <div className="absolute inset-0 bg-white/40 dark:bg-slate-950/20 mix-blend-overlay"></div>
-                    <Search className="w-10 h-10 text-slate-400 opacity-0 group-hover:opacity-100 transition-all scale-75 group-hover:scale-100 duration-300 z-10" />
-                    {/* Placeholder hint text for Nano Banana */}
-                    <span className="absolute bottom-2 left-2 text-[10px] text-slate-400 font-medium px-2 py-1 bg-white/80 dark:bg-slate-900/80 rounded z-10 pointer-events-none">
-                      [Görsel Temsili: Tipik EPLAN Devre Makrosu]
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+              {MOCK_CIRCUITS.map((circuit) => (
+                <Card key={circuit.id} className="group overflow-hidden border-none shadow-2xl bg-white dark:bg-slate-900 rounded-[40px] transition-all hover:scale-[1.02] duration-500">
+                  <div className="relative aspect-[16/10] bg-slate-100 dark:bg-slate-800 flex items-center justify-center overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent dark:from-slate-950/20"></div>
+                    <Search className="w-12 h-12 text-slate-400 opacity-0 group-hover:opacity-100 transition-all scale-75 group-hover:scale-100 duration-500 z-10" />
+                    <span className="absolute bottom-4 left-4 text-[9px] text-slate-400 font-black tracking-widest px-3 py-1.5 bg-white/90 dark:bg-slate-900/90 rounded-full z-10 shadow-sm">
+                      #{circuit.category.toUpperCase()}
                     </span>
-                    <div className="absolute inset-4 border-2 border-slate-200 dark:border-slate-700 border-dashed rounded opacity-50"></div>
+                    <div className="absolute inset-6 border-2 border-slate-200 dark:border-slate-700 border-dashed rounded-[30px] opacity-40"></div>
                   </div>
-                  <CardHeader className="p-5 flex-grow">
-                    <div className="text-xs font-semibold text-electric-600 dark:text-electric-400 mb-2">{circuit.category}</div>
-                    <CardTitle className="text-[15px] leading-snug group-hover:text-electric-600 transition-colors">
+                  <CardHeader className="p-8">
+                    <div className="text-[10px] font-black text-emerald-600 dark:text-emerald-400 mb-3 tracking-widest">TYPE: {circuit.category}</div>
+                    <CardTitle className="text-lg font-black leading-tight group-hover:text-emerald-600 transition-colors tracking-tight h-14 overflow-hidden">
                       {circuit.title}
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="p-5 pt-0 mt-auto">
+                  <CardContent className="p-8 pt-0">
                     <Link href="/dashboard" className="w-full">
-                      <Button variant="outline" className="w-full text-sm h-9">
-                        Çizimi İncele
+                      <Button variant="outline" className="w-full text-[10px] font-black uppercase tracking-widest h-12 rounded-2xl border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all">
+                        {t.docs_page.btn_view}
                       </Button>
                     </Link>
                   </CardContent>
                 </Card>
-                );
-                return <div key={circuit.id}>{content}</div>;
-              })}
+              ))}
             </div>
-            <div className="mt-8 text-center flex items-center justify-center mb-20 border-b border-slate-100 dark:border-slate-800 pb-20">
-               <Button variant="link" className="text-electric-600 dark:text-electric-400">Daha Fazla Örnek Çizim Yükle <ArrowRight className="ml-1 w-4 h-4"/></Button>
+            <div className="mt-16 text-center border-b border-slate-200 dark:border-slate-800 pb-20">
+               <Button variant="link" className="text-electric-600 dark:text-electric-400 font-black text-[11px] tracking-widest uppercase hover:no-underline group">
+                 {t.docs_page.btn_more} <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
+               </Button>
             </div>
           </div>
 
-          {/* YENİ ALT BÖLÜM: AutoCAD Panel Çizimleri (2D) */}
-          <div className="pt-10">
-            <div className="mb-10 flex flex-col justify-center items-center text-center">
-              <div className="inline-flex items-center rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-700 mb-4 dark:bg-blue-900/40 dark:text-blue-400">
+          {/* Section: AutoCAD */}
+          <div className="pt-24 max-w-6xl mx-auto">
+            <div className="mb-16 text-center">
+              <div className="inline-flex items-center rounded-full bg-blue-100 px-4 py-1.5 text-[10px] font-black text-blue-700 mb-6 dark:bg-blue-900/40 dark:text-blue-400 border border-blue-200 dark:border-blue-800 tracking-widest">
                 <PenTool className="w-4 h-4 mr-2" />
-                2D Tasarım Arşivi
+                2D CAD ARCHIVE
               </div>
-              <h2 className="text-3xl font-bold tracking-tight mb-4">AutoCAD Panel Tasarımları (2D)</h2>
-              <p className="text-slate-600 dark:text-slate-400 max-w-2xl">
-                Otomasyon ve elektrik genel pano tasarımcıları için hazır, ölçekli 2D AutoCAD dosya (.dwg, .dxf) arşivini bilgisayarınıza indirip panolarınızı detaylandırın.
+              <h2 className="text-4xl md:text-5xl font-black tracking-tight mb-6 text-slate-900 dark:text-white">{t.docs_page.section_autocad}</h2>
+              <p className="text-sm font-bold text-slate-500 dark:text-slate-400 max-w-2xl mx-auto opacity-70 uppercase italic">
+                {t.docs_page.section_autocad_desc}
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-2 gap-6">
+            <div className="grid md:grid-cols-2 gap-8">
               {MOCK_AUTOCAD.map((doc) => (
-                <div key={doc.id}>
-                  <Card className="group hover:-translate-y-1 transition-transform duration-300 border-l-4 border-l-blue-500">
-                    <CardHeader className="flex flex-row items-start justify-between">
-                      <div className="flex gap-4 items-start">
-                        <div className="w-12 h-12 rounded-xl bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 flex items-center justify-center shrink-0">
-                          <PenTool className="w-6 h-6" />
-                        </div>
-                        <div>
-                          <div className="text-xs font-bold text-blue-600 dark:text-blue-400 mb-1">{doc.type}</div>
-                          <CardTitle className="text-lg mb-2 group-hover:text-blue-600 transition-colors">{doc.title}</CardTitle>
-                          <CardDescription>{doc.desc}</CardDescription>
-                        </div>
+                <Card key={doc.id} className="group hover:-translate-y-2 transition-all duration-500 border-none shadow-xl bg-white dark:bg-slate-900 rounded-[35px] overflow-hidden border-l-[6px] border-l-blue-600">
+                  <CardHeader className="p-8 flex flex-row items-start justify-between">
+                    <div className="flex gap-6 items-start">
+                      <div className="w-16 h-16 rounded-[22px] bg-slate-50 text-slate-600 dark:bg-slate-800 dark:text-slate-400 flex items-center justify-center shrink-0 shadow-inner group-hover:bg-blue-50 group-hover:text-blue-600 transition-colors duration-500">
+                        <PenTool className="w-7 h-7" />
                       </div>
-                      <Link href="/dashboard" className="p-2 border border-slate-200 rounded-lg hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-colors shrink-0 dark:border-slate-800 dark:hover:bg-slate-800 dark:hover:border-slate-700">
-                        <Download className="w-5 h-5" />
-                      </Link>
-                    </CardHeader>
-                  </Card>
-                </div>
+                      <div>
+                        <div className="text-[10px] font-black text-blue-600 dark:text-blue-400 mb-2 tracking-widest">{doc.type}</div>
+                        <CardTitle className="text-xl font-black mb-3 group-hover:text-blue-600 transition-colors tracking-tight">{doc.title}</CardTitle>
+                        <CardDescription className="text-[11px] font-bold opacity-70 leading-relaxed uppercase">{doc.desc}</CardDescription>
+                      </div>
+                    </div>
+                    <Link href="/dashboard" className="p-4 bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-2xl hover:bg-blue-600 hover:text-white transition-all shadow-sm hover:shadow-blue-600/20 shrink-0">
+                      <Download className="w-5 h-5" />
+                    </Link>
+                  </CardHeader>
+                </Card>
               ))}
             </div>
           </div>
