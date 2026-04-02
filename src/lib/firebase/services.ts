@@ -1,4 +1,4 @@
-import { db } from "../firebase";
+import { db, storage } from "../firebase";
 import { 
   collection, 
   addDoc, 
@@ -7,8 +7,13 @@ import {
   where, 
   orderBy, 
   Timestamp, 
-  limit 
+  limit,
+  collectionGroup,
+  doc,
+  setDoc,
+  deleteDoc
 } from "firebase/firestore";
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
 // Mock services for EplanDoctor
 export type Problem = {
@@ -156,4 +161,78 @@ export async function createProblem(problem: Omit<Problem, "id" | "createdAt">):
   };
   MOCK_PROBLEMS.push(newProblem);
   return newProblem;
+}
+
+// ----------------------------------------------------
+// DYNAMIC MVP SERVICES (Firestore & Storage)
+// ----------------------------------------------------
+
+// 1. Storage Upload
+export async function uploadFileToStorage(file: File, path: string): Promise<string> {
+  const storageRef = ref(storage, path);
+  const uploadTask = await uploadBytesResumable(storageRef, file);
+  const downloadUrl = await getDownloadURL(uploadTask.ref);
+  return downloadUrl;
+}
+
+// 2. Save User Form Request
+export async function saveUserRequest(userId: string, type: 'problem' | 'macro' | 'project_proposal', payload: any) {
+  try {
+    const docRef = collection(db, `users/${userId}/requests`);
+    await addDoc(docRef, {
+      userId,
+      type,
+      ...payload,
+      createdAt: Timestamp.now(),
+      status: 'pending' // pending | resolved | rejected
+    });
+    return true;
+  } catch (error) {
+    console.error("Error saving user request: ", error);
+    return false;
+  }
+}
+
+// 3. Admin: Get all requests across all users
+export async function getRequestsForAdmin(): Promise<any[]> {
+  try {
+    const q = query(
+      collectionGroup(db, 'requests'),
+      orderBy('createdAt', 'desc')
+    );
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+  } catch (error) {
+    console.error("Error getting admin requests: ", error);
+    return [];
+  }
+}
+
+// 4. Dynamic Content Getters
+export async function getDynamicContent(collectionName: string): Promise<any[]> {
+  try {
+    const q = query(collection(db, collectionName), orderBy("createdAt", "desc"));
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  } catch (error) {
+    console.error(`Error getting content from ${collectionName}: `, error);
+    return [];
+  }
+}
+
+// 5. Dynamic Content Add (For Admin)
+export async function addDynamicContent(collectionName: string, data: any) {
+  try {
+    await addDoc(collection(db, collectionName), {
+      ...data,
+      createdAt: Timestamp.now()
+    });
+    return true;
+  } catch (error) {
+    console.error(`Error adding content to ${collectionName}: `, error);
+    return false;
+  }
 }

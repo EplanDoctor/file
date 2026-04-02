@@ -9,6 +9,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Package, Cog, Zap, CheckCircle2 } from "lucide-react";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import { useAuth } from "@/context/AuthContext";
+import { saveUserRequest } from "@/lib/firebase/services";
 
 export default function MacroServicePage() {
   return (
@@ -22,8 +24,14 @@ function MacroServicePageContent() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
+  const { user } = useAuth();
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!user) {
+      alert("Lütfen giriş yapın");
+      return;
+    }
     setIsLoading(true);
 
     const formData = new FormData(e.currentTarget);
@@ -33,6 +41,10 @@ function MacroServicePageContent() {
     const details = formData.get("details");
 
     try {
+      await saveUserRequest(user.uid, "macro", {
+        fullName, companyName, summary, details
+      });
+
       const resp = await fetch("/api/send-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -43,7 +55,7 @@ function MacroServicePageContent() {
       });
 
       if (!resp.ok) {
-        throw new Error("Mail servisi hatası");
+        console.error("Mail servisi hatası");
       }
 
       setIsSuccess(true);

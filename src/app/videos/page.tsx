@@ -8,7 +8,8 @@ import { VideoAdOverlay } from "@/components/VideoAdOverlay";
 import { VideoPlayerModal } from "@/components/VideoPlayerModal";
 import { PlayCircle, Zap } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getDynamicContent } from "@/lib/firebase/services";
 
 // Mock data
 const MOCK_VIDEOS = [
@@ -33,6 +34,17 @@ export default function VideosPage() {
 function VideosPageContent() {
   const { t } = useLanguage();
   const [activeVideo, setActiveVideo] = useState<{ id: number, title: string } | null>(null);
+  const [videos, setVideos] = useState<any[]>([]);
+
+  useEffect(() => {
+    getDynamicContent("videos").then(data => {
+      if (data && data.length > 0) {
+        setVideos(data);
+      } else {
+        setVideos(MOCK_VIDEOS);
+      }
+    });
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 uppercase">
@@ -57,7 +69,7 @@ function VideosPageContent() {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10 max-w-7xl mx-auto relative z-10 px-4">
-            {MOCK_VIDEOS.map((video) => (
+            {videos.map((video) => (
                 <VideoAdOverlay key={video.id} videoId={`video-${video.id}`} title={video.title}>
                   <div className="group relative">
                     <div className="absolute inset-0 bg-blue-600 rounded-[40px] blur-2xl opacity-0 group-hover:opacity-10 transition-opacity duration-500"></div>

@@ -8,6 +8,8 @@ import { FileText, Download, BookOpen, Search, ArrowRight, PenTool } from "lucid
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/context/LanguageContext";
+import { useState, useEffect } from "react";
+import { getDynamicContent } from "@/lib/firebase/services";
 
 const MOCK_DOCS = [
   { id: 1, title: "EPLAN P8 Klavye Kısayolları (PDF)", desc: "En çok kullanılan kısayollarla tasarım hızınızı 2 katına çıkarın.", type: "PDF" },
@@ -44,6 +46,15 @@ export default function DocsPage() {
 
 function DocsPageContent() {
   const { t } = useLanguage();
+  const [docs, setDocs] = useState<any[]>([]);
+  const [circuits, setCircuits] = useState<any[]>([]);
+  const [autocadList, setAutocadList] = useState<any[]>([]);
+
+  useEffect(() => {
+    getDynamicContent("docs").then(data => setDocs(data.length ? data : MOCK_DOCS));
+    getDynamicContent("circuits").then(data => setCircuits(data.length ? data : MOCK_CIRCUITS));
+    getDynamicContent("autocad").then(data => setAutocadList(data.length ? data : MOCK_AUTOCAD));
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 uppercase">
@@ -65,7 +76,7 @@ function DocsPageContent() {
           </div>
 
           <div className="grid md:grid-cols-2 gap-8 mb-32 max-w-6xl mx-auto">
-            {MOCK_DOCS.map((doc) => (
+            {docs.map((doc) => (
               <Card key={doc.id} className="group hover:-translate-y-2 transition-all duration-500 border-none shadow-xl bg-white dark:bg-slate-900 rounded-[35px] overflow-hidden">
                 <CardHeader className="p-8 flex flex-row items-start justify-between">
                   <div className="flex gap-6 items-start">
@@ -78,7 +89,7 @@ function DocsPageContent() {
                       <CardDescription className="text-[11px] font-bold opacity-70 leading-relaxed uppercase">{doc.desc}</CardDescription>
                     </div>
                   </div>
-                  <Link href="/dashboard" className="p-4 bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-2xl hover:bg-electric-600 hover:text-white transition-all shadow-sm hover:shadow-electric-600/20 shrink-0">
+                  <Link href={doc.fileUrl || "/dashboard"} target={doc.fileUrl ? "_blank" : "_self"} className="p-4 bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-2xl hover:bg-electric-600 hover:text-white transition-all shadow-sm hover:shadow-electric-600/20 shrink-0">
                     <Download className="w-5 h-5" />
                   </Link>
                 </CardHeader>
@@ -100,7 +111,7 @@ function DocsPageContent() {
             </div>
 
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
-              {MOCK_CIRCUITS.map((circuit) => (
+              {circuits.map((circuit) => (
                 <Card key={circuit.id} className="group overflow-hidden border-none shadow-2xl bg-white dark:bg-slate-900 rounded-[40px] transition-all hover:scale-[1.02] duration-500">
                   <div className="relative aspect-[16/10] bg-slate-100 dark:bg-slate-800 flex items-center justify-center overflow-hidden">
                     <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent dark:from-slate-950/20"></div>
@@ -117,7 +128,7 @@ function DocsPageContent() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="p-8 pt-0">
-                    <Link href="/dashboard" className="w-full">
+                    <Link href={circuit.fileUrl || "/dashboard"} target={circuit.fileUrl ? "_blank" : "_self"} className="w-full">
                       <Button variant="outline" className="w-full text-[10px] font-black uppercase tracking-widest h-12 rounded-2xl border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all">
                         {t.docs_page.btn_view}
                       </Button>
@@ -147,7 +158,7 @@ function DocsPageContent() {
             </div>
 
             <div className="grid md:grid-cols-2 gap-8">
-              {MOCK_AUTOCAD.map((doc) => (
+              {autocadList.map((doc) => (
                 <Card key={doc.id} className="group hover:-translate-y-2 transition-all duration-500 border-none shadow-xl bg-white dark:bg-slate-900 rounded-[35px] overflow-hidden border-l-[6px] border-l-blue-600">
                   <CardHeader className="p-8 flex flex-row items-start justify-between">
                     <div className="flex gap-6 items-start">
@@ -160,7 +171,7 @@ function DocsPageContent() {
                         <CardDescription className="text-[11px] font-bold opacity-70 leading-relaxed uppercase">{doc.desc}</CardDescription>
                       </div>
                     </div>
-                    <Link href="/dashboard" className="p-4 bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-2xl hover:bg-blue-600 hover:text-white transition-all shadow-sm hover:shadow-blue-600/20 shrink-0">
+                    <Link href={doc.fileUrl || "/dashboard"} target={doc.fileUrl ? "_blank" : "_self"} className="p-4 bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-2xl hover:bg-blue-600 hover:text-white transition-all shadow-sm hover:shadow-blue-600/20 shrink-0">
                       <Download className="w-5 h-5" />
                     </Link>
                   </CardHeader>

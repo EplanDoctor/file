@@ -1,14 +1,92 @@
 "use client";
 
-import { useState } from "react";
-import { Sidebar } from "lucide-react"; // using as a mock icon for sidebar toggle if needed
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Users, AlertCircle, FileVideo } from "lucide-react";
+import { Plus, Users, AlertCircle, FileVideo, LayoutDashboard, Database, UploadCloud } from "lucide-react";
+
+import { useAuth } from "@/context/AuthContext";
+import { getRequestsForAdmin, addDynamicContent, uploadFileToStorage } from "@/lib/firebase/services";
 
 export default function AdminDashboard() {
+  const { user, loading } = useAuth();
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState("overview");
+  
+  const [requests, setRequests] = useState<any[]>([]);
+  const [isFetchingRequests, setIsFetchingRequests] = useState(false);
+
+  // New Content States
+  const [newVideo, setNewVideo] = useState({ title: "", duration: "" });
+  const [newDoc, setNewDoc] = useState({ type: "PDF", title: "", desc: "", category: "docs" });
+  const [docFile, setDocFile] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+
+  useEffect(() => {
+    if (!loading) {
+      if (!user || user.email !== "cnr.pano@gmail.com") {
+        router.push("/admin/login");
+      } else {
+        fetchRequests();
+      }
+    }
+  }, [user, loading, router]);
+
+  const fetchRequests = async () => {
+    setIsFetchingRequests(true);
+    const data = await getRequestsForAdmin();
+    setRequests(data);
+    setIsFetchingRequests(false);
+  };
+
+  const handleAddVideo = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsUploading(true);
+    const success = await addDynamicContent("videos", newVideo);
+    if (success) {
+      alert("Video başarıyla eklendi");
+      setNewVideo({title: "", duration: ""});
+    } else {
+      alert("Hata oluştu");
+    }
+    setIsUploading(false);
+  }
+
+  const handleAddDoc = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsUploading(true);
+    try {
+      let fileUrl = "";
+      if (docFile) {
+        fileUrl = await uploadFileToStorage(docFile, `admin_uploads/${Date.now()}_${docFile.name}`);
+      }
+      
+      const success = await addDynamicContent(newDoc.category, {
+        type: newDoc.type,
+        title: newDoc.title,
+        desc: newDoc.desc,
+        fileUrl
+      });
+      
+      if (success) {
+        alert("Doküman başarıyla eklendi");
+        setNewDoc({ type: "PDF", title: "", desc: "", category: "docs" });
+        setDocFile(null);
+      } else {
+        alert("Hata oluştu.");
+      }
+    } catch(err) {
+      alert("Hata oluştu.");
+    } finally {
+      setIsUploading(false);
+    }
+  }
+
+  if (loading || !user || user.email !== "cnr.pano@gmail.com") {
+    return <div className="min-h-screen flex items-center justify-center bg-slate-950 text-white">Yükleniyor...</div>;
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex">
@@ -22,19 +100,13 @@ export default function AdminDashboard() {
             onClick={() => setActiveTab("overview")}
             className={`w-full flex items-center px-4 py-3 rounded-xl transition-colors ${activeTab === "overview" ? "bg-electric-600 text-white" : "hover:bg-slate-800 hover:text-white"}`}
           >
-            Dashboard
+            <LayoutDashboard className="w-5 h-5 mr-3"/> Gelen Talepler
           </button>
           <button 
-            onClick={() => setActiveTab("problems")}
-            className={`w-full flex items-center px-4 py-3 rounded-xl transition-colors ${activeTab === "problems" ? "bg-electric-600 text-white" : "hover:bg-slate-800 hover:text-white"}`}
+            onClick={() => setActiveTab("content")}
+            className={`w-full flex items-center px-4 py-3 rounded-xl transition-colors ${activeTab === "content" ? "bg-electric-600 text-white" : "hover:bg-slate-800 hover:text-white"}`}
           >
-            Sorunlar (Veritabanı)
-          </button>
-          <button 
-            onClick={() => setActiveTab("users")}
-            className={`w-full flex items-center px-4 py-3 rounded-xl transition-colors ${activeTab === "users" ? "bg-electric-600 text-white" : "hover:bg-slate-800 hover:text-white"}`}
-          >
-            Kullanıcılar & Premium
+            <Database className="w-5 h-5 mr-3"/> İçerik Yönetimi
           </button>
         </nav>
       </aside>
@@ -42,61 +114,63 @@ export default function AdminDashboard() {
       {/* Main Content */}
       <main className="flex-1 flex flex-col h-screen overflow-hidden">
         <header className="h-16 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-6">
-          <h2 className="text-xl font-semibold capitalize">{activeTab}</h2>
+          <h2 className="text-xl font-semibold capitalize">{activeTab === 'overview' ? 'Gelen Talepler' : 'İçerik Ekleme'}</h2>
           <div className="flex items-center gap-4">
+             <div className="text-sm text-slate-500">{user.email}</div>
              <div className="w-8 h-8 rounded-full bg-electric-100 flex items-center justify-center text-electric-600 font-bold">A</div>
           </div>
         </header>
         
         <div className="flex-1 overflow-auto p-6 md:p-8">
           {activeTab === "overview" && (
-            <div className="space-y-6">
-              <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-6">
+            <div className="space-y-6 max-w-5xl mx-auto">
+              <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
                 <Card>
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-medium text-slate-500">Toplam Sorun</CardTitle>
+                    <CardTitle className="text-sm font-medium text-slate-500">Toplam Gelen Talep</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-3xl font-bold">1,284</div>
-                    <p className="text-xs text-emerald-500 mt-1">+24 bu ay</p>
-                  </CardContent>
-                </Card>
-                <Card>
-                   <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-medium text-slate-500">Çözümlenen</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-3xl font-bold">982</div>
-                    <p className="text-xs text-emerald-500 mt-1">%76 Başarı Oranı</p>
-                  </CardContent>
-                </Card>
-                <Card>
-                   <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-medium text-slate-500">Premium Üyeler</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-3xl font-bold">145</div>
-                    <p className="text-xs text-emerald-500 mt-1">+12 bu hafta</p>
+                    <div className="text-3xl font-bold">{requests.length}</div>
                   </CardContent>
                 </Card>
               </div>
 
               <Card>
-                <CardHeader>
-                  <CardTitle>Son Bekleyen Talepler</CardTitle>
+                <CardHeader className="flex flex-row items-center justify-between">
+                  <CardTitle>Tüm Kullanıcı Talepleri</CardTitle>
+                  <Button size="sm" onClick={fetchRequests} disabled={isFetchingRequests}>Yenile</Button>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {[1, 2, 3].map((i) => (
-                      <div key={i} className="flex items-center justify-between p-4 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50">
-                        <div className="flex items-center gap-4">
-                          <AlertCircle className="w-5 h-5 text-amber-500" />
+                    {requests.length === 0 && !isFetchingRequests && (
+                      <div className="text-center py-10 text-slate-500">Henüz hiç talep yok.</div>
+                    )}
+                    {requests.map((req, i) => (
+                      <div key={i} className="flex flex-col md:flex-row md:items-center justify-between p-4 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 gap-4">
+                        <div className="flex items-start gap-4">
+                          <AlertCircle className="w-5 h-5 text-electric-500 mt-1 shrink-0" />
                           <div>
-                            <p className="font-medium">Macro dosyası yüklenmiyor hata kodu: 404</p>
-                            <p className="text-xs text-slate-500">Kullanıcı: ahmet@... - 2 saat önce</p>
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="text-[10px] font-bold bg-slate-200 dark:bg-slate-800 px-2 py-0.5 rounded uppercase tracking-wider text-slate-600 dark:text-slate-400">
+                                {req.type}
+                              </span>
+                              <span className="text-xs text-slate-500">{new Date(req.createdAt?.seconds * 1000).toLocaleString('tr-TR')}</span>
+                            </div>
+                            <p className="font-medium">{req.title || req.fullName || "İsimsiz Talep"}</p>
+                            <p className="text-sm text-slate-600 dark:text-slate-400 mt-1 line-clamp-2">{req.description || req.details || req.summary}</p>
+                            {req.fileUrl && (
+                              <a href={req.fileUrl} target="_blank" rel="noreferrer" className="text-xs text-electric-600 mt-2 inline-block">Ekli Dosyayı Görüntüle</a>
+                            )}
                           </div>
                         </div>
-                        <Button size="sm" variant="outline">İncele</Button>
+                        <div className="text-right shrink-0">
+                          <div className="text-xs text-slate-500 mb-2">UID: {req.userId.substring(0,8)}...</div>
+                          <select className="text-xs bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded p-1">
+                            <option>Bekliyor</option>
+                            <option>İnceleniyor</option>
+                            <option>Çözüldü</option>
+                          </select>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -105,34 +179,74 @@ export default function AdminDashboard() {
             </div>
           )}
 
-          {activeTab === "problems" && (
-            <div className="max-w-3xl">
-              <div className="flex justify-between items-center mb-6">
-                <h3 className="text-lg font-semibold">Yeni Sorun Ekle (Mock)</h3>
-              </div>
+          {activeTab === "content" && (
+            <div className="max-w-4xl mx-auto space-y-8">
+              
               <Card>
-                <CardContent className="p-6 space-y-4">
-                   <div className="space-y-2">
-                      <label className="text-sm font-medium">Başlık</label>
-                      <Input placeholder="Sorun başlığı" />
-                   </div>
-                   <div className="space-y-2">
-                      <label className="text-sm font-medium">Açıklama</label>
-                      <textarea className="w-full rounded-xl border border-slate-200 p-3 text-sm focus:outline-none focus:ring-2 focus:ring-electric-500 dark:bg-slate-950 dark:border-slate-800" rows={4}></textarea>
-                   </div>
-                   <div className="space-y-2">
-                      <label className="text-sm font-medium">Çözüm (Markdown destekli)</label>
-                      <textarea className="w-full rounded-xl border border-slate-200 p-3 text-sm focus:outline-none focus:ring-2 focus:ring-electric-500 dark:bg-slate-950 dark:border-slate-800" rows={6}></textarea>
-                   </div>
-                   <Button><Plus className="w-4 h-4 mr-2"/> Veritabanına Ekle</Button>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2"><FileVideo className="w-5 h-5"/> Eğitim Videosu Ekle</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <form onSubmit={handleAddVideo} className="space-y-4">
+                     <div className="grid grid-cols-2 gap-4">
+                       <div className="space-y-2">
+                          <label className="text-sm font-medium">Video Başlığı</label>
+                          <Input required value={newVideo.title} onChange={e => setNewVideo({...newVideo, title: e.target.value})} placeholder="Örn: Klemens Planı Oluşturma" />
+                       </div>
+                       <div className="space-y-2">
+                          <label className="text-sm font-medium">Süre</label>
+                          <Input required value={newVideo.duration} onChange={e => setNewVideo({...newVideo, duration: e.target.value})} placeholder="Örn: 15:24" />
+                       </div>
+                     </div>
+                     <Button type="submit" disabled={isUploading}><Plus className="w-4 h-4 mr-2"/> Videoyu Yayınla</Button>
+                  </form>
                 </CardContent>
               </Card>
-            </div>
-          )}
 
-           {activeTab === "users" && (
-            <div className="text-center py-20 text-slate-500">
-              Kullanıcı yönetimi modülü henüz aktif değil.
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2"><Database className="w-5 h-5"/> Doküman / Kütüphane Ekle</CardTitle>
+                  <CardDescription>Sitedeki Docs, Circuits ve AutoCAD listelerine anında yansır.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <form onSubmit={handleAddDoc} className="space-y-4">
+                     <div className="grid md:grid-cols-2 gap-4">
+                       <div className="space-y-2">
+                          <label className="text-sm font-medium">Koleksiyon / Kategori</label>
+                          <select 
+                            value={newDoc.category} 
+                            onChange={e => setNewDoc({...newDoc, category: e.target.value})}
+                            className="flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-500 dark:border-slate-800 dark:bg-slate-950"
+                          >
+                            <option value="docs">Dokümanlar (Rehberler)</option>
+                            <option value="circuits">Tipik Devreler (Circuits)</option>
+                            <option value="autocad">AutoCAD (DWG/DXF)</option>
+                          </select>
+                       </div>
+                       <div className="space-y-2">
+                          <label className="text-sm font-medium">Dosya Tipi Etiketi</label>
+                          <Input required value={newDoc.type} onChange={e => setNewDoc({...newDoc, type: e.target.value})} placeholder="PDF, DWG, Rehber vb." />
+                       </div>
+                       <div className="space-y-2 md:col-span-2">
+                          <label className="text-sm font-medium">İçerik Başlığı</label>
+                          <Input required value={newDoc.title} onChange={e => setNewDoc({...newDoc, title: e.target.value})} placeholder="İçerik Başlığı" />
+                       </div>
+                       <div className="space-y-2 md:col-span-2">
+                          <label className="text-sm font-medium">Açıklama</label>
+                          <Input required value={newDoc.desc} onChange={e => setNewDoc({...newDoc, desc: e.target.value})} placeholder="Kısa içerik açıklaması" />
+                       </div>
+                       <div className="space-y-2 md:col-span-2">
+                          <label className="text-sm font-medium">Dosya (Firebase Storage'a Yüklenecek)</label>
+                          <Input type="file" onChange={e => setDocFile(e.target.files?.[0] || null)} />
+                       </div>
+                     </div>
+                     <Button type="submit" disabled={isUploading}>
+                        <UploadCloud className="w-4 h-4 mr-2"/> {isUploading ? 'Yükleniyor...' : 'İçeriği Yükle ve Yayınla'}
+                     </Button>
+                  </form>
+                </CardContent>
+              </Card>
+
             </div>
           )}
         </div>

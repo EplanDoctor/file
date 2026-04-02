@@ -7,9 +7,10 @@ import { Section } from "@/components/layout/Section";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { createProblem } from "@/lib/firebase/services";
+import { createProblem, saveUserRequest, uploadFileToStorage } from "@/lib/firebase/services";
 import { CheckCircle2, UploadCloud } from "lucide-react";
 import Link from "next/link";
+import { useAuth } from "@/context/AuthContext";
 
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 
@@ -24,9 +25,15 @@ export default function SubmitProblemPage() {
 function SubmitProblemPageContent() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const { user } = useAuth(); // getting logged in user
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!user) {
+      alert("Lütfen giriş yapın");
+      return;
+    }
     setIsLoading(true);
     
     const formData = new FormData(e.currentTarget);
@@ -35,12 +42,21 @@ function SubmitProblemPageContent() {
     const description = formData.get("description") as string;
 
     try {
+      let fileUrl = "";
+      if (selectedFile) {
+        fileUrl = await uploadFileToStorage(selectedFile, `users/${user.uid}/uploads/${Date.now()}_${selectedFile.name}`);
+      }
+
+      await saveUserRequest(user.uid, "problem", {
+        title, category, description, fileUrl
+      });
+
       const resp = await fetch("/api/send-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           source: "submit-problem",
-          payload: { title, category, description }
+          payload: { title, category, description: description + (fileUrl ? `\n\nDosya: ${fileUrl}` : "") }
         })
       });
 
@@ -48,13 +64,8 @@ function SubmitProblemPageContent() {
         console.error("Email send API failed");
       }
 
-      await createProblem({
-        title: title || "Yeni Kullanıcı Sorunu",
-        description: description || "Açıklama belirtilmedi",
-        category: category || "Kullanıcı Bildirimi",
-        resolved: false
-      });
       setIsSuccess(true);
+      setSelectedFile(null);
     } catch (error) {
       console.error(error);
       alert("Bir hata oluştu, lütfen daha sonra tekrar deneyin.");
@@ -132,13 +143,22 @@ function SubmitProblemPageContent() {
                         Ekran Görüntüsü / Log Dosyası (İsteğe Bağlı)
                         <span className="text-xs text-slate-400">Max 5MB</span>
                       </label>
-                      <div className="border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-xl p-8 flex flex-col items-center justify-center text-center hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer">
+                      <label className="border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-xl p-8 flex flex-col items-center justify-center text-center hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer relative">
+                        <input 
+                          type="file" 
+                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                          onChange={(e) => {
+                            if (e.target.files && e.target.files[0]) {
+                              setSelectedFile(e.target.files[0]);
+                            }
+                          }}
+                        />
                         <UploadCloud className="w-8 h-8 text-slate-400 mb-3" />
                         <p className="text-sm text-slate-600 dark:text-slate-400 mb-1">
-                          Dosyayı buraya sürükleyin veya <span className="text-electric-500 font-medium">bilgisayarınızdan seçin</span>
+                          {selectedFile ? <span className="text-electric-500 font-bold">{selectedFile.name}</span> : <span>Dosyayı buraya sürükleyin veya <span className="text-electric-500 font-medium">bilgisayarınızdan seçin</span></span>}
                         </p>
                         <p className="text-xs text-slate-400">PNG, JPG, PDF veya ZIP desteklenir.</p>
-                      </div>
+                      </label>
                     </div>
 
                     <Button type="submit" size="lg" className="w-full" isLoading={isLoading}>

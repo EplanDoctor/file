@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Zap, Send, FileCheck2, Clock, CheckCircle2, Factory } from "lucide-react";
 import { useState } from "react";
+import { useAuth } from "@/context/AuthContext";
+import { saveUserRequest } from "@/lib/firebase/services";
 
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 
@@ -23,8 +25,14 @@ function ProjeTeklifiPageContent() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
+  const { user } = useAuth();
+  
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!user) {
+      alert("Lütfen giriş yapın");
+      return;
+    }
     setIsLoading(true);
     
     const formData = new FormData(e.currentTarget);
@@ -35,6 +43,10 @@ function ProjeTeklifiPageContent() {
     const details = formData.get("details");
 
     try {
+      await saveUserRequest(user.uid, "project_proposal", {
+        fullName, phone, email, projectType, details
+      });
+
       const resp = await fetch("/api/send-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -45,7 +57,7 @@ function ProjeTeklifiPageContent() {
       });
 
       if (!resp.ok) {
-        throw new Error("Mail servisi hatası");
+        console.error("Mail servisi hatası");
       }
 
       setIsSubmitted(true);
