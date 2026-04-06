@@ -65,9 +65,9 @@ export default function AdminDashboard() {
       } else {
         alert("Hata oluştu.");
       }
-    } catch(err) {
-      console.error(err);
-      alert("Video yükleme hatası.");
+    } catch(err: any) {
+      console.error("Upload process error:", err);
+      alert(`Video yükleme hatası: ${err.message || 'Bilinmeyen bir hata oluştu'}`);
     } finally {
       setIsUploading(false);
     }

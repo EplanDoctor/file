@@ -14,7 +14,7 @@ const firebaseConfig = {
 };
 
 // Use the original storage bucket as defined before
-firebaseConfig.storageBucket = "eplandoktor.firebasestorage.app";
+firebaseConfig.storageBucket = "eplandoktor.appspot.com";
 
 // Initialize Firebase only if it hasn't been initialized already
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();

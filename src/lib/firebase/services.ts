@@ -177,11 +177,16 @@ export async function createProblem(problem: Omit<Problem, "id" | "createdAt">):
 
 // 1. Storage Upload
 export async function uploadFileToStorage(file: File, path: string): Promise<string> {
-  const storageRef = ref(storage, path);
-  const uploadTask = uploadBytesResumable(storageRef, file);
-  
-  const snapshot = await uploadTask;
-  return getDownloadURL(snapshot.ref);
+  try {
+    const storageRef = ref(storage, path);
+    const uploadTask = uploadBytesResumable(storageRef, file);
+    
+    const snapshot = await uploadTask;
+    return getDownloadURL(snapshot.ref);
+  } catch (error: any) {
+    console.error("Firebase Storage Upload Error Details:", error);
+    throw error;
+  }
 }
 
 // 2. Save User Form Request
