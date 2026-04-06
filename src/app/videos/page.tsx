@@ -76,6 +76,7 @@ function VideosPageContent() {
                     <VideoCard 
                         title={video.title} 
                         duration={video.duration} 
+                        description={video.description}
                         onClick={() => setActiveVideo(video)} 
                     />
                   </div>

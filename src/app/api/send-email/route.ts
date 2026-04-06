@@ -42,12 +42,23 @@ export async function POST(req: Request) {
     }
 
     // SMTP Ayarları
+    console.log('Sending email using:', process.env.SMTP_EMAIL);
+    const startTime = Date.now();
+    
+    if (!process.env.SMTP_PASSWORD) {
+      console.error('SMTP_PASSWORD is missing');
+      return NextResponse.json({ success: false, message: 'Sunucu yapılandırma hatası: SMTP şifresi eksik.' }, { status: 500 });
+    }
+
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: process.env.SMTP_EMAIL || 'cnr.pano@gmail.com', // Gönderici adresi
-        pass: process.env.SMTP_PASSWORD, // .env.local içerisinden alınacak uygulama şifresi
+        user: process.env.SMTP_EMAIL || 'cnr.pano@gmail.com',
+        pass: process.env.SMTP_PASSWORD,
       },
+      connectionTimeout: 20000, 
+      greetingTimeout: 20000, 
+      socketTimeout: 120000, // Wait up to 2 mins for socket
     });
 
     const mailOptions = {
@@ -58,10 +69,15 @@ export async function POST(req: Request) {
     };
 
     await transporter.sendMail(mailOptions);
+    const duration = (Date.now() - startTime) / 1000;
+    console.log(`Email sent successfully in ${duration}s`);
 
-    return NextResponse.json({ success: true, message: 'E-posta başarıyla gönderildi.' });
-  } catch (error) {
+    return NextResponse.json({ success: true, message: `E-posta başarıyla gönderildi (${duration}s).` });
+  } catch (error: any) {
     console.error('Email sending error:', error);
-    return NextResponse.json({ success: false, message: 'E-posta gönderilirken bir hata oluştu.' }, { status: 500 });
+    return NextResponse.json({ 
+      success: false, 
+      message: 'Sunucu tarafında bir hata oluştu: ' + (error.message || 'Gönderilemedi') 
+    }, { status: 500 });
   }
 }

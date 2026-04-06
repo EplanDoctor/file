@@ -22,6 +22,7 @@ export default function MacroServicePage() {
 
 function MacroServicePageContent() {
   const [isLoading, setIsLoading] = useState(false);
+  const [statusMessage, setStatusMessage] = useState("");
   const [isSuccess, setIsSuccess] = useState(false);
 
   const { user } = useAuth();
@@ -33,6 +34,7 @@ function MacroServicePageContent() {
       return;
     }
     setIsLoading(true);
+    setStatusMessage("İşlem başlatılıyor...");
 
     const formData = new FormData(e.currentTarget);
     const fullName = formData.get("fullName");
@@ -41,11 +43,13 @@ function MacroServicePageContent() {
     const details = formData.get("details");
 
     try {
-      await saveUserRequest(user.uid, "macro", {
+      setStatusMessage("Kaydediliyor ve E-posta gönderiliyor...");
+      
+      const firestorePromise = saveUserRequest(user.uid, "macro", {
         fullName, companyName, summary, details
       });
 
-      const resp = await fetch("/api/send-email", {
+      const emailPromise = fetch("/api/send-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -54,14 +58,23 @@ function MacroServicePageContent() {
         })
       });
 
-      if (!resp.ok) {
-        console.error("Mail servisi hatası");
+      // Run in parallel
+      const [fireSuccess, emailResp] = await Promise.all([firestorePromise, emailPromise]);
+
+      const result = await emailResp.json();
+
+      if (!emailResp.ok) {
+        throw new Error(result.message || "E-posta gönderilemedi.");
+      }
+
+      if (!fireSuccess) {
+        console.warn("Firestore kaydı başarısız oldu ama e-posta gönderildi.");
       }
 
       setIsSuccess(true);
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      alert("Bir hata oluştu, lütfen daha sonra tekrar deneyin.");
+      setStatusMessage("Hata: " + (error.message || "Bilinmeyen bir sorun."));
     } finally {
       setIsLoading(false);
     }
@@ -156,8 +169,8 @@ function MacroServicePageContent() {
                             required
                           ></textarea>
                         </div>
-                        <Button type="submit" size="lg" className="w-full mt-2 text-base h-14" isLoading={isLoading}>
-                          Talebi Gönder
+                        <Button type="submit" size="lg" className="w-full mt-2 text-base h-14" isLoading={isLoading} disabled={isLoading}>
+                          {isLoading ? statusMessage || "Gönderiliyor..." : (statusMessage.startsWith("Hata") ? statusMessage : "Talebi Gönder")}
                         </Button>
                       </form>
                     )}

@@ -24,6 +24,7 @@ export default function ProjeTeklifiPage() {
 function ProjeTeklifiPageContent() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [statusMessage, setStatusMessage] = useState("");
 
   const { user } = useAuth();
   
@@ -34,6 +35,7 @@ function ProjeTeklifiPageContent() {
       return;
     }
     setIsLoading(true);
+    setStatusMessage("İşlem başlatılıyor...");
     
     const formData = new FormData(e.currentTarget);
     const fullName = formData.get("fullName");
@@ -43,11 +45,13 @@ function ProjeTeklifiPageContent() {
     const details = formData.get("details");
 
     try {
-      await saveUserRequest(user.uid, "project_proposal", {
+      setStatusMessage("Kaydediliyor ve E-posta gönderiliyor...");
+      
+      const firestorePromise = saveUserRequest(user.uid, "project_proposal", {
         fullName, phone, email, projectType, details
       });
 
-      const resp = await fetch("/api/send-email", {
+      const emailPromise = fetch("/api/send-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -56,14 +60,23 @@ function ProjeTeklifiPageContent() {
         })
       });
 
-      if (!resp.ok) {
-        console.error("Mail servisi hatası");
+      // Run in parallel
+      const [fireSuccess, emailResp] = await Promise.all([firestorePromise, emailPromise]);
+
+      const result = await emailResp.json();
+
+      if (!emailResp.ok) {
+        throw new Error(result.message || "E-posta gönderilemedi.");
+      }
+
+      if (!fireSuccess) {
+        console.warn("Firestore kaydı başarısız oldu ama e-posta gönderildi.");
       }
 
       setIsSubmitted(true);
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      alert("Bir hata oluştu, lütfen daha sonra tekrar deneyin.");
+      setStatusMessage("Hata: " + (error.message || "Bilinmeyen bir sorun."));
     } finally {
       setIsLoading(false);
     }
@@ -180,8 +193,8 @@ function ProjeTeklifiPageContent() {
                           ></textarea>
                         </div>
 
-                        <Button type="submit" className="w-full h-12 text-base font-bold bg-amber-500 hover:bg-amber-600 text-white shadow-xl shadow-amber-500/20" isLoading={isLoading}>
-                          <Send className="w-4 h-4 mr-2" /> Teklif İste
+                        <Button type="submit" className="w-full h-12 text-base font-bold bg-amber-500 hover:bg-amber-600 text-white shadow-xl shadow-amber-500/20" isLoading={isLoading} disabled={isLoading}>
+                          {isLoading ? statusMessage || "Gönderiliyor..." : (statusMessage.startsWith("Hata") ? statusMessage : <><Send className="w-4 h-4 mr-2" /> Teklif İste</>)}
                         </Button>
                       </form>
                     </>

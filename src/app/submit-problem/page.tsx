@@ -24,6 +24,7 @@ export default function SubmitProblemPage() {
 
 function SubmitProblemPageContent() {
   const [isLoading, setIsLoading] = useState(false);
+  const [statusMessage, setStatusMessage] = useState("");
   const [isSuccess, setIsSuccess] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const { user } = useAuth(); // getting logged in user
@@ -35,6 +36,7 @@ function SubmitProblemPageContent() {
       return;
     }
     setIsLoading(true);
+    setStatusMessage("İşlem başlatılıyor...");
     
     const formData = new FormData(e.currentTarget);
     const title = formData.get("title") as string;
@@ -44,14 +46,17 @@ function SubmitProblemPageContent() {
     try {
       let fileUrl = "";
       if (selectedFile) {
+        setStatusMessage("Dosya yükleniyor (Firebase Storage)...");
         fileUrl = await uploadFileToStorage(selectedFile, `users/${user.uid}/uploads/${Date.now()}_${selectedFile.name}`);
       }
 
-      await saveUserRequest(user.uid, "problem", {
+      setStatusMessage("Kaydediliyor ve E-posta gönderiliyor...");
+      
+      const firestorePromise = saveUserRequest(user.uid, "problem", {
         title, category, description, fileUrl
       });
 
-      const resp = await fetch("/api/send-email", {
+      const emailPromise = fetch("/api/send-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -60,17 +65,29 @@ function SubmitProblemPageContent() {
         })
       });
 
-      if (!resp.ok) {
-        console.error("Email send API failed");
+      // Run in parallel
+      const [fireSuccess, emailResp] = await Promise.all([firestorePromise, emailPromise]);
+
+      const result = await emailResp.json();
+
+      if (!emailResp.ok) {
+        throw new Error(result.message || "E-posta gönderilemedi.");
+      }
+
+      if (!fireSuccess) {
+        console.warn("Firestore kaydı başarısız oldu ama e-posta gönderildi.");
       }
 
       setIsSuccess(true);
       setSelectedFile(null);
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      alert("Bir hata oluştu, lütfen daha sonra tekrar deneyin.");
+      setStatusMessage("Hata: " + (error.message || "Bilinmeyen bir sorun."));
+      // Optional: keep isLoading true for a bit to show the error on the button, 
+      // but usually we set it to false so they can retry.
     } finally {
       setIsLoading(false);
+      // Don't clear statusMessage immediately if there was an error
     }
   };
 
@@ -161,8 +178,8 @@ function SubmitProblemPageContent() {
                       </label>
                     </div>
 
-                    <Button type="submit" size="lg" className="w-full" isLoading={isLoading}>
-                      Sorunu Gönder
+                    <Button type="submit" size="lg" className="w-full" isLoading={isLoading} disabled={isLoading}>
+                      {isLoading ? statusMessage || "Gönderiliyor..." : (statusMessage.startsWith("Hata") ? statusMessage : "Sorunu Gönder")}
                     </Button>
                   </form>
                 </CardContent>

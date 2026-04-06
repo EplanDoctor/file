@@ -4,11 +4,12 @@ import { PlayCircle } from "lucide-react";
 interface VideoCardProps {
   title: string;
   duration: string;
+  description?: string;
   thumbnailUrl?: string; // or an image prompt reference
   onClick?: () => void;
 }
 
-export function VideoCard({ title, duration, onClick }: VideoCardProps) {
+export function VideoCard({ title, duration, description, onClick }: VideoCardProps) {
   return (
     <Card 
       onClick={onClick}
@@ -23,9 +24,14 @@ export function VideoCard({ title, duration, onClick }: VideoCardProps) {
         </span>
       </div>
       <CardHeader className="p-6">
-        <CardTitle className="text-sm font-black leading-tight group-hover:text-blue-600 transition-colors uppercase tracking-widest h-10 line-clamp-2">
+        <CardTitle className="text-sm font-black leading-tight group-hover:text-blue-600 transition-colors uppercase tracking-widest mb-2 line-clamp-1">
           {title}
         </CardTitle>
+        {description && (
+          <p className="text-[10px] font-bold text-slate-500 line-clamp-2 leading-relaxed uppercase italic">
+            {description}
+          </p>
+        )}
       </CardHeader>
     </Card>
   );

@@ -19,7 +19,8 @@ export default function AdminDashboard() {
   const [isFetchingRequests, setIsFetchingRequests] = useState(false);
 
   // New Content States
-  const [newVideo, setNewVideo] = useState({ title: "", duration: "" });
+  const [newVideo, setNewVideo] = useState({ title: "", duration: "", description: "" });
+  const [videoFile, setVideoFile] = useState<File | null>(null);
   const [newDoc, setNewDoc] = useState({ type: "PDF", title: "", desc: "", category: "docs" });
   const [docFile, setDocFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -43,15 +44,33 @@ export default function AdminDashboard() {
 
   const handleAddVideo = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsUploading(true);
-    const success = await addDynamicContent("videos", newVideo);
-    if (success) {
-      alert("Video başarıyla eklendi");
-      setNewVideo({title: "", duration: ""});
-    } else {
-      alert("Hata oluştu");
+    if (!videoFile) {
+      alert("Lütfen önce bir video dosyası seçin.");
+      return;
     }
-    setIsUploading(false);
+
+    setIsUploading(true);
+    try {
+      const fileUrl = await uploadFileToStorage(videoFile, `videos/${Date.now()}_${videoFile.name}`);
+      
+      const success = await addDynamicContent("videos", {
+        ...newVideo,
+        fileUrl
+      });
+      
+        if (success) {
+        alert("Video başarıyla yüklendi ve yayınlandı");
+        setNewVideo({title: "", duration: "", description: ""});
+        setVideoFile(null);
+      } else {
+        alert("Hata oluştu.");
+      }
+    } catch(err) {
+      console.error(err);
+      alert("Video yükleme hatası.");
+    } finally {
+      setIsUploading(false);
+    }
   }
 
   const handleAddDoc = async (e: React.FormEvent) => {
@@ -197,8 +216,45 @@ export default function AdminDashboard() {
                           <label className="text-sm font-medium">Süre</label>
                           <Input required value={newVideo.duration} onChange={e => setNewVideo({...newVideo, duration: e.target.value})} placeholder="Örn: 15:24" />
                        </div>
+                       <div className="space-y-2 col-span-2">
+                          <label className="text-sm font-medium">Video İçeriği / Açıklaması</label>
+                          <textarea 
+                            required 
+                            value={newVideo.description} 
+                            onChange={e => setNewVideo({...newVideo, description: e.target.value})} 
+                            placeholder="Videonun içeriği hakkında kısa bilgi..."
+                            className="flex min-h-[80px] w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-500 dark:border-slate-800 dark:bg-slate-950"
+                          />
+                       </div>
+                       <div className="space-y-2 col-span-2">
+                          <label className="text-sm font-medium">Video Dosyası (Bilgisayardan Seç)</label>
+                          <div className="flex items-center gap-3">
+                            <Input 
+                              type="file" 
+                              accept="video/*"
+                              onChange={e => setVideoFile(e.target.files?.[0] || null)}
+                              className="cursor-pointer file:bg-electric-500 file:text-white file:border-none file:rounded file:px-3 file:py-1 file:mr-4 file:hover:bg-electric-600 transition-all"
+                            />
+                            {videoFile && (
+                              <span className="text-xs text-slate-500 truncate max-w-[200px]">
+                                {videoFile.name} ({(videoFile.size / (1024 * 1024)).toFixed(1)} MB)
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-[10px] text-slate-500 italic mt-1">* Desteklenen tüm video formatlarını içerir.</p>
+                       </div>
                      </div>
-                     <Button type="submit" disabled={isUploading}><Plus className="w-4 h-4 mr-2"/> Videoyu Yayınla</Button>
+                     <Button type="submit" disabled={isUploading || !videoFile} className="w-full">
+                        {isUploading ? (
+                          <>
+                            <UploadCloud className="w-4 h-4 mr-2 animate-bounce"/> Yükleniyor...
+                          </>
+                        ) : (
+                          <>
+                            <Plus className="w-4 h-4 mr-2"/> Videoyu Yükle ve Yayınla
+                          </>
+                        )}
+                     </Button>
                   </form>
                 </CardContent>
               </Card>

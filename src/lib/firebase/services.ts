@@ -15,6 +15,14 @@ import {
 } from "firebase/firestore";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
+// Helper for timeouts
+const withTimeout = (promise: Promise<any>, ms: number, errorMessage: string) => {
+  const timeout = new Promise((_, reject) =>
+    setTimeout(() => reject(new Error(errorMessage)), ms)
+  );
+  return Promise.race([promise, timeout]);
+};
+
 // Mock services for EplanDoctor
 export type Problem = {
   id: string;
@@ -170,9 +178,10 @@ export async function createProblem(problem: Omit<Problem, "id" | "createdAt">):
 // 1. Storage Upload
 export async function uploadFileToStorage(file: File, path: string): Promise<string> {
   const storageRef = ref(storage, path);
-  const uploadTask = await uploadBytesResumable(storageRef, file);
-  const downloadUrl = await getDownloadURL(uploadTask.ref);
-  return downloadUrl;
+  const uploadTask = uploadBytesResumable(storageRef, file);
+  
+  const snapshot = await uploadTask;
+  return getDownloadURL(snapshot.ref);
 }
 
 // 2. Save User Form Request
@@ -187,7 +196,7 @@ export async function saveUserRequest(userId: string, type: 'problem' | 'macro' 
       status: 'pending' // pending | resolved | rejected
     });
     return true;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error saving user request: ", error);
     return false;
   }

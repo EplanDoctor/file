@@ -141,11 +141,20 @@ export function Navbar() {
                  
                  {/* Dropdown Menu */}
                  <div className="absolute top-full right-0 mt-3 w-56 pt-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all translate-y-2 group-hover:translate-y-0 z-50">
-                   <div className="bg-slate-900 rounded-2xl shadow-2xl border border-slate-800 overflow-hidden p-2 flex flex-col gap-1">
+                    <div className="bg-slate-900 rounded-2xl shadow-2xl border border-slate-800 overflow-hidden p-2 flex flex-col gap-1">
                      <Link href="/dashboard" className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
                        <User className="w-4 h-4 text-slate-400" />
                        <span className="text-[10px] font-black tracking-widest">{t.nav.profile_settings}</span>
                      </Link>
+
+                     {/* Admin Link - Only for owner */}
+                     {user.email === "cnr.pano@gmail.com" && (
+                       <Link href="/admin" className="flex items-center gap-3 p-3 rounded-xl bg-electric-500/10 hover:bg-electric-500/20 text-electric-400 transition-colors">
+                         <Activity className="w-4 h-4" />
+                         <span className="text-[10px] font-black tracking-widest">YÖNETİM PANELİ</span>
+                       </Link>
+                     )}
+
                      <div className="h-px bg-slate-100 dark:bg-slate-800 my-1"></div>
                      <button 
                        onClick={logout}
