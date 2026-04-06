@@ -3,7 +3,7 @@ import { PlayCircle } from "lucide-react";
 
 interface VideoCardProps {
   title: string;
-  duration: string;
+  duration?: string;
   description?: string;
   thumbnailUrl?: string; // or an image prompt reference
   onClick?: () => void;
@@ -19,9 +19,11 @@ export function VideoCard({ title, duration, description, onClick }: VideoCardPr
         {/* Mock Placeholder for Thumbnail */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10" />
         <PlayCircle className="w-16 h-16 text-white/50 group-hover:scale-110 group-hover:text-white transition-all z-20 group-hover:drop-shadow-[0_0_15px_rgba(59,130,246,0.8)]" />
-        <span className="absolute bottom-4 right-4 text-[10px] font-black text-white bg-black/70 px-3 py-1.5 rounded-full z-20 uppercase tracking-widest border border-white/20">
-          {duration}
-        </span>
+        {duration && (
+          <span className="absolute bottom-4 right-4 text-[10px] font-black text-white bg-black/70 px-3 py-1.5 rounded-full z-20 uppercase tracking-widest border border-white/20">
+            {duration}
+          </span>
+        )}
       </div>
       <CardHeader className="p-6">
         <CardTitle className="text-sm font-black leading-tight group-hover:text-blue-600 transition-colors uppercase tracking-widest mb-2 line-clamp-1">

@@ -19,7 +19,7 @@ export default function AdminDashboard() {
   const [isFetchingRequests, setIsFetchingRequests] = useState(false);
 
   // New Content States
-  const [newVideo, setNewVideo] = useState({ title: "", duration: "", description: "" });
+  const [newVideo, setNewVideo] = useState({ title: "", description: "" });
   const [videoFile, setVideoFile] = useState<File | null>(null);
   const [newDoc, setNewDoc] = useState({ type: "PDF", title: "", desc: "", category: "docs" });
   const [docFile, setDocFile] = useState<File | null>(null);
@@ -60,7 +60,7 @@ export default function AdminDashboard() {
       
         if (success) {
         alert("Video başarıyla yüklendi ve yayınlandı");
-        setNewVideo({title: "", duration: "", description: ""});
+        setNewVideo({title: "", description: ""});
         setVideoFile(null);
       } else {
         alert("Hata oluştu.");
@@ -207,16 +207,12 @@ export default function AdminDashboard() {
                 </CardHeader>
                 <CardContent>
                   <form onSubmit={handleAddVideo} className="space-y-4">
-                     <div className="grid grid-cols-2 gap-4">
+                     <div className="grid grid-cols-1 gap-4">
                        <div className="space-y-2">
                           <label className="text-sm font-medium">Video Başlığı</label>
                           <Input required value={newVideo.title} onChange={e => setNewVideo({...newVideo, title: e.target.value})} placeholder="Örn: Klemens Planı Oluşturma" />
                        </div>
                        <div className="space-y-2">
-                          <label className="text-sm font-medium">Süre</label>
-                          <Input required value={newVideo.duration} onChange={e => setNewVideo({...newVideo, duration: e.target.value})} placeholder="Örn: 15:24" />
-                       </div>
-                       <div className="space-y-2 col-span-2">
                           <label className="text-sm font-medium">Video İçeriği / Açıklaması</label>
                           <textarea 
                             required 
@@ -226,7 +222,7 @@ export default function AdminDashboard() {
                             className="flex min-h-[80px] w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-500 dark:border-slate-800 dark:bg-slate-950"
                           />
                        </div>
-                       <div className="space-y-2 col-span-2">
+                       <div className="space-y-2">
                           <label className="text-sm font-medium">Video Dosyası (Bilgisayardan Seç)</label>
                           <div className="flex items-center gap-3">
                             <Input 
