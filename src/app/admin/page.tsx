@@ -24,6 +24,7 @@ export default function AdminDashboard() {
   const [newDoc, setNewDoc] = useState({ type: "PDF", title: "", desc: "", category: "docs" });
   const [docFile, setDocFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   useEffect(() => {
     if (!loading) {
@@ -50,8 +51,13 @@ export default function AdminDashboard() {
     }
 
     setIsUploading(true);
+    setUploadProgress(0);
     try {
-      const fileUrl = await uploadFileToStorage(videoFile, `videos/${Date.now()}_${videoFile.name}`);
+      const fileUrl = await uploadFileToStorage(
+        videoFile, 
+        `videos/${Date.now()}_${videoFile.name}`,
+        (progress) => setUploadProgress(Math.round(progress))
+      );
       
       const success = await addDynamicContent("videos", {
         ...newVideo,
@@ -240,11 +246,11 @@ export default function AdminDashboard() {
                           <p className="text-[10px] text-slate-500 italic mt-1">* Desteklenen tüm video formatlarını içerir.</p>
                        </div>
                      </div>
-                     <Button type="submit" disabled={isUploading || !videoFile} className="w-full">
+                     <Button type="submit" disabled={isUploading || !videoFile} className="w-full bg-electric-600 hover:bg-electric-700 font-black">
                         {isUploading ? (
-                          <>
-                            <UploadCloud className="w-4 h-4 mr-2 animate-bounce"/> Yükleniyor...
-                          </>
+                          <span className="flex items-center gap-2">
+                            <span className="animate-spin">🌀</span> Yükleniyor %{uploadProgress}
+                          </span>
                         ) : (
                           <>
                             <Plus className="w-4 h-4 mr-2"/> Videoyu Yükle ve Yayınla

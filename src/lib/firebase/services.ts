@@ -176,15 +176,34 @@ export async function createProblem(problem: Omit<Problem, "id" | "createdAt">):
 // ----------------------------------------------------
 
 // 1. Storage Upload
-export async function uploadFileToStorage(file: File, path: string): Promise<string> {
+export async function uploadFileToStorage(
+  file: File, 
+  path: string, 
+  onProgress?: (progress: number) => void
+): Promise<string> {
   try {
     const storageRef = ref(storage, path);
     const uploadTask = uploadBytesResumable(storageRef, file);
     
-    const snapshot = await uploadTask;
-    return getDownloadURL(snapshot.ref);
+    return new Promise((resolve, reject) => {
+      uploadTask.on(
+        'state_changed',
+        (snapshot) => {
+          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          if (onProgress) onProgress(progress);
+        },
+        (error) => {
+          console.error("Firebase Storage Upload Error Details:", error);
+          reject(error);
+        },
+        async () => {
+          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+          resolve(downloadURL);
+        }
+      );
+    });
   } catch (error: any) {
-    console.error("Firebase Storage Upload Error Details:", error);
+    console.error("Firebase Storage Upload Initiation Error:", error);
     throw error;
   }
 }
