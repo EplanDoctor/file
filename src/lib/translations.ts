@@ -138,6 +138,13 @@ export const translations = {
       title_part2: "Video Eğitimleri",
       desc: "Gerçek hayat senaryoları üzerinden ilerleyen uygulamalı eğitim videoları ile projelerinizi daha hızlı ve hatasız çizin.",
       free_hint: "(İlk 3 videonuz tamamen ücretsiz!)",
+    },
+    stats: {
+      visitors: "Toplam Ziyaretçi",
+      users: "Kayıtlı Uzman",
+      documents: "Kayıtlı Doküman",
+      videos: "Eğitim Videosu",
+      problems_solved: "Çözülen Sorun",
     }
   },
   en: {
@@ -279,6 +286,13 @@ export const translations = {
       title_part2: "Training from Experts",
       desc: "Draw your projects faster and more accurately with practical training videos proceeding through real-life scenarios.",
       free_hint: "(Your first 3 videos are completely free!)",
+    },
+    stats: {
+      visitors: "Total Visitors",
+      users: "Registered Experts",
+      documents: "Registered Documents",
+      videos: "Training Videos",
+      problems_solved: "Solved Problems",
     }
   },
   de: {
@@ -420,6 +434,13 @@ export const translations = {
       title_part2: "von Experten",
       desc: "Zeichnen Sie Ihre Projekte schneller und fehlerfreier mit praxisnahen Schulungsvideos, die realen Szenarien folgen.",
       free_hint: "(Ihre ersten 3 Videos sind völlig kostenlos!)",
+    },
+    stats: {
+      visitors: "Gesamte Besucher",
+      users: "Registrierte Experten",
+      documents: "Registrierte Dokumente",
+      videos: "Schulungsvideos",
+      problems_solved: "Gelöste Probleme",
     }
   }
 };

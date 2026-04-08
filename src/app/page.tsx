@@ -7,7 +7,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { ProblemCard } from "@/components/ProblemCard";
 import { getProblems, Problem } from "@/lib/firebase/services";
-import { ArrowRight, CheckCircle2, ShieldCheck, Zap, Activity } from "lucide-react";
+import { ArrowRight, CheckCircle2, ShieldCheck, Zap, Activity, Users, UserCheck, FileText, PlayCircle, Wrench } from "lucide-react";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 
@@ -247,6 +247,51 @@ export default function Home() {
                  </Button>
                </Link>
              </div>
+          </div>
+        </Section>
+
+        {/* STATS SECTION */}
+        <Section background="dark" className="border-t border-slate-800 py-16">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 max-w-7xl mx-auto">
+            <div className="flex flex-col items-center justify-center text-center p-6 bg-slate-900/80 backdrop-blur-md rounded-3xl border border-slate-800 hover:border-electric-500/50 transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-electric-900/20 group">
+              <div className="p-4 bg-electric-500/10 rounded-2xl mb-4 text-electric-400 group-hover:scale-110 transition-transform">
+                <Users className="w-8 h-8" />
+              </div>
+              <div className="text-3xl md:text-4xl font-black text-white mb-2 tracking-tighter">145K+</div>
+              <div className="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-widest">{t.stats.visitors}</div>
+            </div>
+            
+            <div className="flex flex-col items-center justify-center text-center p-6 bg-slate-900/80 backdrop-blur-md rounded-3xl border border-slate-800 hover:border-emerald-500/50 transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-emerald-900/20 group">
+              <div className="p-4 bg-emerald-500/10 rounded-2xl mb-4 text-emerald-400 group-hover:scale-110 transition-transform">
+                <UserCheck className="w-8 h-8" />
+              </div>
+              <div className="text-3xl md:text-4xl font-black text-white mb-2 tracking-tighter">14.5K+</div>
+              <div className="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-widest">{t.stats.users}</div>
+            </div>
+
+            <div className="flex flex-col items-center justify-center text-center p-6 bg-slate-900/80 backdrop-blur-md rounded-3xl border border-slate-800 hover:border-amber-500/50 transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-amber-900/20 group">
+              <div className="p-4 bg-amber-500/10 rounded-2xl mb-4 text-amber-400 group-hover:scale-110 transition-transform">
+                <FileText className="w-8 h-8" />
+              </div>
+              <div className="text-3xl md:text-4xl font-black text-white mb-2 tracking-tighter">2.4K+</div>
+              <div className="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-widest">{t.stats.documents}</div>
+            </div>
+
+            <div className="flex flex-col items-center justify-center text-center p-6 bg-slate-900/80 backdrop-blur-md rounded-3xl border border-slate-800 hover:border-purple-500/50 transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-purple-900/20 group">
+              <div className="p-4 bg-purple-500/10 rounded-2xl mb-4 text-purple-400 group-hover:scale-110 transition-transform">
+                <PlayCircle className="w-8 h-8" />
+              </div>
+              <div className="text-3xl md:text-4xl font-black text-white mb-2 tracking-tighter">350+</div>
+              <div className="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-widest">{t.stats.videos}</div>
+            </div>
+
+            <div className="flex flex-col items-center justify-center text-center p-6 bg-slate-900/80 backdrop-blur-md rounded-3xl border border-slate-800 hover:border-blue-500/50 transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-900/20 group col-span-2 md:col-span-1 lg:col-span-1 mx-auto w-full max-w-[280px] lg:max-w-none">
+              <div className="p-4 bg-blue-500/10 rounded-2xl mb-4 text-blue-400 group-hover:scale-110 transition-transform">
+                <Wrench className="w-8 h-8" />
+              </div>
+              <div className="text-3xl md:text-4xl font-black text-white mb-2 tracking-tighter">8.4K+</div>
+              <div className="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-widest">{t.stats.problems_solved}</div>
+            </div>
           </div>
         </Section>
 
