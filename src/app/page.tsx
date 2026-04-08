@@ -6,7 +6,7 @@ import { Section } from "@/components/layout/Section";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { ProblemCard } from "@/components/ProblemCard";
-import { getProblems, Problem } from "@/lib/firebase/services";
+import { getProblems, Problem, getPlatformStats, incrementVisitorCount } from "@/lib/firebase/services";
 import { ArrowRight, CheckCircle2, ShieldCheck, Zap, Activity, Users, UserCheck, FileText, PlayCircle, Wrench } from "lucide-react";
 import { useState, useEffect } from "react";
 import Link from "next/link";
@@ -14,6 +14,13 @@ import Link from "next/link";
 export default function Home() {
   const { t } = useLanguage();
   const [recentProblems, setRecentProblems] = useState<Problem[]>([]);
+  const [stats, setStats] = useState({
+    visitorsCount: 145000,
+    usersCount: 14500,
+    docsCount: 2400,
+    videosCount: 350,
+    problemsSolvedCount: 8400
+  });
 
   useEffect(() => {
     const fetch = async () => {
@@ -21,6 +28,17 @@ export default function Home() {
       setRecentProblems(data.slice(0, 1));
     };
     fetch();
+
+    const fetchStats = async () => {
+      // Check session storage to avoid incrementing multiple times per session
+      if (!sessionStorage.getItem("visited")) {
+        await incrementVisitorCount();
+        sessionStorage.setItem("visited", "true");
+      }
+      const platformStats = await getPlatformStats();
+      setStats(platformStats);
+    };
+    fetchStats();
   }, []);
 
   return (
@@ -257,7 +275,9 @@ export default function Home() {
               <div className="p-4 bg-electric-500/10 rounded-2xl mb-4 text-electric-400 group-hover:scale-110 transition-transform">
                 <Users className="w-8 h-8" />
               </div>
-              <div className="text-3xl md:text-4xl font-black text-white mb-2 tracking-tighter">145K+</div>
+              <div className="text-3xl md:text-4xl font-black text-white mb-2 tracking-tighter">
+                {stats.visitorsCount > 1000 ? (stats.visitorsCount / 1000).toFixed(1) + 'K+' : stats.visitorsCount}
+              </div>
               <div className="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-widest">{t.stats.visitors}</div>
             </div>
             
@@ -265,7 +285,9 @@ export default function Home() {
               <div className="p-4 bg-emerald-500/10 rounded-2xl mb-4 text-emerald-400 group-hover:scale-110 transition-transform">
                 <UserCheck className="w-8 h-8" />
               </div>
-              <div className="text-3xl md:text-4xl font-black text-white mb-2 tracking-tighter">14.5K+</div>
+              <div className="text-3xl md:text-4xl font-black text-white mb-2 tracking-tighter">
+                {stats.usersCount > 1000 ? (stats.usersCount / 1000).toFixed(1) + 'K+' : stats.usersCount}
+              </div>
               <div className="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-widest">{t.stats.users}</div>
             </div>
 
@@ -273,7 +295,7 @@ export default function Home() {
               <div className="p-4 bg-amber-500/10 rounded-2xl mb-4 text-amber-400 group-hover:scale-110 transition-transform">
                 <FileText className="w-8 h-8" />
               </div>
-              <div className="text-3xl md:text-4xl font-black text-white mb-2 tracking-tighter">2.4K+</div>
+              <div className="text-3xl md:text-4xl font-black text-white mb-2 tracking-tighter">{stats.docsCount}</div>
               <div className="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-widest">{t.stats.documents}</div>
             </div>
 
@@ -281,7 +303,7 @@ export default function Home() {
               <div className="p-4 bg-purple-500/10 rounded-2xl mb-4 text-purple-400 group-hover:scale-110 transition-transform">
                 <PlayCircle className="w-8 h-8" />
               </div>
-              <div className="text-3xl md:text-4xl font-black text-white mb-2 tracking-tighter">350+</div>
+              <div className="text-3xl md:text-4xl font-black text-white mb-2 tracking-tighter">{stats.videosCount}</div>
               <div className="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-widest">{t.stats.videos}</div>
             </div>
 
@@ -289,7 +311,7 @@ export default function Home() {
               <div className="p-4 bg-blue-500/10 rounded-2xl mb-4 text-blue-400 group-hover:scale-110 transition-transform">
                 <Wrench className="w-8 h-8" />
               </div>
-              <div className="text-3xl md:text-4xl font-black text-white mb-2 tracking-tighter">8.4K+</div>
+              <div className="text-3xl md:text-4xl font-black text-white mb-2 tracking-tighter">{stats.problemsSolvedCount}</div>
               <div className="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-widest">{t.stats.problems_solved}</div>
             </div>
           </div>

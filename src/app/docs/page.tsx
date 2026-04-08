@@ -11,28 +11,11 @@ import { useLanguage } from "@/context/LanguageContext";
 import { useState, useEffect } from "react";
 import { getDynamicContent } from "@/lib/firebase/services";
 
-const MOCK_DOCS = [
-  { id: 1, title: "EPLAN P8 Klavye Kısayolları (PDF)", desc: "En çok kullanılan kısayollarla tasarım hızınızı 2 katına çıkarın.", type: "PDF" },
-  { id: 2, title: "Standart Sembol Kütüphanesi Rehberi", desc: "IEC ve NFPA standartlarında sembol kullanımı.", type: "Rehber" },
-  { id: 3, title: "Pano Montaj Çizimi Standartları", desc: "Uluslararası pano tasarımı yönergeleri.", type: "Doküman" },
-  { id: 4, title: "Özel Antet (Plot Frame) Tasarımı Oluşturma", desc: "Şirketinize özel antet tasarımı adım adım anlatım.", type: "Doküman" },
-];
 
-const MOCK_CIRCUITS = [
-  { id: 1, category: "Motor Kontrol", title: "Yıldız - Üçgen Yol Verme Kumanda ve Güç Devresi" },
-  { id: 2, category: "PLC Donanım / IO", title: "Siemens S7-1200 / S7-1500 Dijital Bağlantıları" },
-  { id: 3, category: "Tahrik Sistemleri", title: "Frekans Konvertörü (Sürücü) Tipik Bağlantı Şeması" },
-  { id: 4, category: "Güvenlik (Safety)", title: "Acil Stop (Safety Relay) Güvenlik Devresi" },
-  { id: 5, category: "Sensör / Ölçüm", title: "Analog ve Dijital Sensör Besleme Hatları" },
-  { id: 6, category: "Aydınlatma / Pano", title: "Pano İçi Isıtma, Soğutma ve Aydınlatma Lojikleri" },
-];
 
-const MOCK_AUTOCAD = [
-  { id: 1, title: "Dikili Tip Pano Genel Görünüm (800x200x600)", desc: "Standart dikili tip pano için 2D ön, yan ve iç sac yerleşim çizimleri.", type: "DWG" },
-  { id: 2, title: "Duvar Tipi Pano Yerleşimi (600x800x250)", desc: "Otomasyon kontrol panosu için örnek 2D montaj paneli dizilimi.", type: "DXF" },
-  { id: 3, title: "Piyano Tipi Konsol Pano Çizimi", desc: "Operatör masası / konsol tipi pano için ölçülendirilmiş şablon.", type: "DWG" },
-  { id: 4, title: "Örnek Klemens Dizilimi ve Ray Ölçekleri", desc: "1:1 ölçekli klemens, şalter ve kablo kanalı taslakları.", type: "DWG" },
-];
+
+
+
 
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 
@@ -51,9 +34,9 @@ function DocsPageContent() {
   const [autocadList, setAutocadList] = useState<any[]>([]);
 
   useEffect(() => {
-    getDynamicContent("docs").then(data => setDocs(data.length ? data : MOCK_DOCS));
-    getDynamicContent("circuits").then(data => setCircuits(data.length ? data : MOCK_CIRCUITS));
-    getDynamicContent("autocad").then(data => setAutocadList(data.length ? data : MOCK_AUTOCAD));
+    getDynamicContent("docs").then(data => setDocs(data));
+    getDynamicContent("circuits").then(data => setCircuits(data));
+    getDynamicContent("autocad").then(data => setAutocadList(data));
   }, []);
 
   return (

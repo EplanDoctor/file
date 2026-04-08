@@ -11,7 +11,10 @@ import {
   collectionGroup,
   doc,
   setDoc,
-  deleteDoc
+  deleteDoc,
+  getDoc,
+  increment,
+  updateDoc
 } from "firebase/firestore";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
@@ -267,5 +270,96 @@ export async function addDynamicContent(collectionName: string, data: any) {
   } catch (error) {
     console.error(`Error adding content to ${collectionName}: `, error);
     return false;
+  }
+}
+
+// 6. Stats & Activity Tracking
+export async function incrementVisitorCount() {
+  try {
+    const statsRef = doc(db, "stats", "main");
+    // Only increment if document exists, otherwise create it first
+    const statsDoc = await getDoc(statsRef);
+    if (!statsDoc.exists()) {
+      await setDoc(statsRef, { visitors: 1, registeredUsers: 0 });
+    } else {
+      await updateDoc(statsRef, { visitors: increment(1) });
+    }
+  } catch (error) {
+    console.error("Error incrementing visitor count", error);
+  }
+}
+
+export async function saveUserOnLogin(user: { uid: string; email: string | null; displayName: string | null }) {
+  try {
+    const userRef = doc(db, "users", user.uid);
+    const userDoc = await getDoc(userRef);
+    if (!userDoc.exists()) {
+      await setDoc(userRef, {
+        email: user.email,
+        name: user.displayName,
+        createdAt: Timestamp.now(),
+        lastLogin: Timestamp.now()
+      });
+      // also increment registered users count
+      const statsRef = doc(db, "stats", "main");
+      const statsDoc = await getDoc(statsRef);
+      if (!statsDoc.exists()) {
+         await setDoc(statsRef, { visitors: 0, registeredUsers: 1 });
+      } else {
+         await updateDoc(statsRef, { registeredUsers: increment(1) });
+      }
+    } else {
+      await updateDoc(userRef, { lastLogin: Timestamp.now() });
+    }
+  } catch(error) {
+    console.error("Error saving user on login: ", error);
+  }
+}
+
+export async function getPlatformStats() {
+  try {
+    // 1. Get visitors and registered users from stats/main
+    const statsRef = doc(db, "stats", "main");
+    const statsDoc = await getDoc(statsRef);
+    let visitors = 0;
+    let users = 0;
+    if (statsDoc.exists()) {
+      const data = statsDoc.data();
+      visitors = data.visitors || 0;
+      users = data.registeredUsers || 0;
+    }
+
+    // 2. Count dynamic items
+    const videosSnap = await getDocs(collection(db, "videos"));
+    const videosCount = videosSnap.size;
+
+    const docsSnap = await getDocs(collection(db, "docs"));
+    const circuitsSnap = await getDocs(collection(db, "circuits"));
+    const autocadSnap = await getDocs(collection(db, "autocad"));
+    const totalDocsCount = docsSnap.size + circuitsSnap.size + autocadSnap.size;
+
+    // 3. Solved problems (baseline: 1540 + tickets) -> Let's use 0 baseline if preferred.
+    // The user said "1. madde cevabım 0 dan başlasın".
+    // I will set the problemsSolved baseline to 0.
+    const ticketsSnap = await getDocs(query(collection(db, "tickets"), where("status", "==", "closed")));
+    const problemsSolved = ticketsSnap.size; 
+
+    return {
+      visitorsCount: visitors,
+      usersCount: users,
+      docsCount: totalDocsCount,
+      videosCount: videosCount,
+      problemsSolvedCount: problemsSolved
+    };
+
+  } catch (error) {
+    console.error("Error fetching platform stats: ", error);
+    return {
+      visitorsCount: 0,
+      usersCount: 0,
+      docsCount: 0,
+      videosCount: 0,
+      problemsSolvedCount: 0
+    };
   }
 }

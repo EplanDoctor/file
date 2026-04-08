@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { onAuthStateChanged, User as FirebaseUser } from "firebase/auth";
 import { auth } from "@/lib/firebase/auth";
+import { saveUserOnLogin } from "@/lib/firebase/services";
 
 export interface AuthUser {
   uid: string;
@@ -32,6 +33,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           displayName: firebaseUser.displayName,
           photoURL: firebaseUser.photoURL,
         });
+
+        // Trigger dynamic stats user save logic
+        saveUserOnLogin({
+          uid: firebaseUser.uid,
+          email: firebaseUser.email,
+          displayName: firebaseUser.displayName,
+        }).catch(err => console.error("Failed to save user dynamic stats:", err));
+        
       } else {
         setUser(null);
       }

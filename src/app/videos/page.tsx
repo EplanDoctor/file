@@ -11,15 +11,7 @@ import { useLanguage } from "@/context/LanguageContext";
 import { useState, useEffect } from "react";
 import { getDynamicContent } from "@/lib/firebase/services";
 
-// Mock data
-const MOCK_VIDEOS = [
-  { id: 1, title: "EPLAN ile Hızlı Projelendirme", duration: "15:24" },
-  { id: 2, title: "Klemens Planı Oluşturma Temelleri", duration: "08:45" },
-  { id: 3, title: "Projeyi PDF'e Kayıpsız Çıkarma (Türkçe Karakter Çözümü)", duration: "05:12" },
-  { id: 4, title: "Sık Kullanılan Makroları Düzenleme ve Ekleme", duration: "12:30" },
-  { id: 5, title: "2D Panel Tasarımına Giriş - Temel Pratikler", duration: "21:15" },
-  { id: 6, title: "Veritabanı Hatalarını Giderme ve Backup Stratejileri", duration: "16:05" },
-];
+// No mock data
 
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 
@@ -38,11 +30,7 @@ function VideosPageContent() {
 
   useEffect(() => {
     getDynamicContent("videos").then(data => {
-      if (data && data.length > 0) {
-        setVideos(data);
-      } else {
-        setVideos(MOCK_VIDEOS);
-      }
+      setVideos(data || []);
     });
   }, []);
 

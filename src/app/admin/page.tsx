@@ -19,10 +19,25 @@ export default function AdminDashboard() {
   const [isFetchingRequests, setIsFetchingRequests] = useState(false);
 
   // New Content States
-  const [newVideo, setNewVideo] = useState({ title: "", description: "" });
+  const [newVideo, setNewVideo] = useState({ title: "", description: "", duration: "10:00" });
   const [videoFile, setVideoFile] = useState<File | null>(null);
   const [newDoc, setNewDoc] = useState({ type: "PDF", title: "", desc: "", category: "docs" });
   const [docFile, setDocFile] = useState<File | null>(null);
+
+  // Auto-categorize document based on file extension
+  useEffect(() => {
+    if (docFile) {
+      const ext = docFile.name.split('.').pop()?.toLowerCase() || '';
+      if (ext === 'pdf') {
+        setNewDoc(prev => ({ ...prev, category: 'docs', type: 'PDF' }));
+      } else if (['dwg', 'dxf'].includes(ext)) {
+        setNewDoc(prev => ({ ...prev, category: 'autocad', type: ext.toUpperCase() }));
+      } else {
+        setNewDoc(prev => ({ ...prev, category: 'circuits', type: ext.toUpperCase() || 'EPLAN' }));
+      }
+    }
+  }, [docFile]);
+
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
 
@@ -64,9 +79,9 @@ export default function AdminDashboard() {
         fileUrl
       });
       
-        if (success) {
+      if (success) {
         alert("Video başarıyla yüklendi ve yayınlandı");
-        setNewVideo({title: "", description: ""});
+        setNewVideo({title: "", description: "", duration: "10:00"});
         setVideoFile(null);
       } else {
         alert("Hata oluştu.");
@@ -219,6 +234,10 @@ export default function AdminDashboard() {
                           <Input required value={newVideo.title} onChange={e => setNewVideo({...newVideo, title: e.target.value})} placeholder="Örn: Klemens Planı Oluşturma" />
                        </div>
                        <div className="space-y-2">
+                          <label className="text-sm font-medium">Süre (Dk:Sn)</label>
+                          <Input required value={newVideo.duration} onChange={e => setNewVideo({...newVideo, duration: e.target.value})} placeholder="Örn: 10:24" />
+                       </div>
+                       <div className="space-y-2">
                           <label className="text-sm font-medium">Video İçeriği / Açıklaması</label>
                           <textarea 
                             required 
@@ -274,10 +293,11 @@ export default function AdminDashboard() {
                           <select 
                             value={newDoc.category} 
                             onChange={e => setNewDoc({...newDoc, category: e.target.value})}
+                            title="Dosya tipine göre otomatik seçilir"
                             className="flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-500 dark:border-slate-800 dark:bg-slate-950"
                           >
-                            <option value="docs">Dokümanlar (Rehberler)</option>
-                            <option value="circuits">Tipik Devreler (Circuits)</option>
+                            <option value="docs">Dokümanlar (PDF, Rehberler)</option>
+                            <option value="circuits">Tipik Devreler (EPLAN vb.)</option>
                             <option value="autocad">AutoCAD (DWG/DXF)</option>
                           </select>
                        </div>
