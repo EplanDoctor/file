@@ -16,6 +16,8 @@ export const translations = {
       logout: "Güvenli Çıkış",
       profile_settings: "Profil Ayarları",
       start: "Kayıt Ol",
+      ai_analyzer: "AI Devre Analizörü",
+      ai_analyzer_desc: "Simülasyon ve kısa devre denetimi",
     },
     hero: {
       badge: "Hatasız Tasarımlar İçin Kesintisiz Dijital Çözüm Ortağınız",
@@ -164,6 +166,8 @@ export const translations = {
       logout: "Log Out",
       profile_settings: "Profile Settings",
       start: "Register",
+      ai_analyzer: "AI Circuit Analyzer",
+      ai_analyzer_desc: "Simulation and short circuit check",
     },
     hero: {
       badge: "Your Digital Solution Partner for Error-Free Designs",
@@ -312,6 +316,8 @@ export const translations = {
       logout: "Abmelden",
       profile_settings: "Profil-Einstellungen",
       start: "Registrieren",
+      ai_analyzer: "AI Schaltungsanalysator",
+      ai_analyzer_desc: "Simulation und Kurzschlussprüfung",
     },
     hero: {
       badge: "Ihr digitaler Lösungspartner für fehlerfreie Konstruktionen",

@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { User, Activity, Zap, ChevronDown, Wrench, FileCode2, MessageCircle } from "lucide-react"
+import { User, Activity, Zap, ChevronDown, Wrench, FileCode2, MessageCircle, Sparkles } from "lucide-react"
 import { usePathname, useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { useState, useEffect } from "react"
@@ -36,6 +36,7 @@ export function Navbar() {
     { name: t.nav.submit, href: "/submit-problem" },
     { name: t.nav.videos, href: "/videos" },
     { name: t.nav.docs, href: "/docs" },
+    { name: t.nav.ai_analyzer, href: "/ai-analyzer" },
   ]
 
   return (
@@ -99,6 +100,16 @@ export function Navbar() {
                     <div>
                       <div className="text-sm font-bold text-amber-700 dark:text-amber-500 leading-none mb-1">{t.nav.project}</div>
                       <div className="text-xs text-slate-500 line-clamp-1">{t.nav.project_desc}</div>
+                    </div>
+                  </Link>
+
+                  <Link href="/ai-analyzer" className="flex items-start gap-3 p-3 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/10 transition-colors border-t border-slate-800 mt-1 pt-4">
+                    <div className="w-8 h-8 rounded-md bg-purple-100 text-purple-600 flex items-center justify-center shrink-0">
+                      <Sparkles className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <div className="text-sm font-bold text-purple-700 dark:text-purple-400 leading-none mb-1">{t.nav.ai_analyzer}</div>
+                      <div className="text-xs text-slate-500 line-clamp-1">{t.nav.ai_analyzer_desc}</div>
                     </div>
                   </Link>
 

@@ -363,3 +363,49 @@ export async function getPlatformStats() {
     };
   }
 }
+// ----------------------------------------------------
+// AI ANALYZER SERVICES
+// ----------------------------------------------------
+
+export async function saveAIAnalysis(userId: string, fileName: string, fileUrl: string, analysis: string) {
+  try {
+    const docRef = collection(db, `users/${userId}/ai_analyses`);
+    await addDoc(docRef, {
+      userId,
+      fileName,
+      fileUrl,
+      analysis,
+      createdAt: Timestamp.now()
+    });
+
+    // Record activity
+    await addDoc(collection(db, "activities"), {
+      userId,
+      description: `"${fileName}" projesi AI ile analiz edildi.`,
+      createdAt: Timestamp.now(),
+      icon: 'zap'
+    });
+
+    return true;
+  } catch (error: any) {
+    console.error("Error saving AI analysis: ", error);
+    return false;
+  }
+}
+
+export async function getUserAIAnalyses(userId: string) {
+  try {
+    const q = query(
+      collection(db, `users/${userId}/ai_analyses`),
+      orderBy("createdAt", "desc")
+    );
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+  } catch (error) {
+    console.error("Error getting user AI analyses: ", error);
+    return [];
+  }
+}

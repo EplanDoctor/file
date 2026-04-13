@@ -1,0 +1,982 @@
+[
+  {
+    "id": 1776076389266,
+    "name": "SENECA T201DC - Akım Transdüseri (Current Transducer)",
+    "description": "Dikdörtgen gövde içerisinde bir içinden geçen kablo deliği olan ve 4-20mA çıkış veren endüstriyel bir modül.",
+    "logic": "Bu eleman, hattından geçen DC akımı temassız (Hall-effect prensibiyle) ölçerek, PLC veya kontrol ünitesinin okuyabileceği 4-20mA analog sinyaline dönüştürür. Motorun yük akımını izlemek ve koruma sağlamak için kullanılır.",
+    "image": null
+  },
+  {
+    "id": 1776076396568,
+    "name": "Termostat (0-60°C)",
+    "description": "Bimetal kontak yapısına sahip, üzerinde sıcaklık ayar aralığı belirtilmiş anahtarlama sembolü.",
+    "logic": "Ortam sıcaklığı ayarlanan değerin (0-60°C) üzerine çıktığında kontağını kapatarak (veya açarak) soğutma fanlarının (-0M1) devreye girmesini veya çıkmasını sağlayan bir sıcaklık anahtarıdır.",
+    "image": null
+  },
+  {
+    "id": 1776076401315,
+    "name": "Klemens Grubu (Terminal Block)",
+    "description": "Hatların birleştiği veya dağıtıldığı 2 girişli noktasal bağlantı sembolü.",
+    "logic": "Şebekeden gelen 24VDC besleme hatlarının farklı kontrol panellerine veya elemanlarına dağıtılması için kullanılan fiziksel bağlantı noktalarıdır.",
+    "image": null
+  },
+  {
+    "id": 1776077364976,
+    "name": "ABB ACS580 Serisi Frekans Konvertörü (VFD)",
+    "description": "Dikdörtgen gövde içerisinde yer alan, çok sayıda giriş/çıkış terminaline sahip, motor kontrol ünitesi.",
+    "logic": "Alternatif akım motorunun hızını ve torkunu, frekans ve voltajı değiştirerek kontrol eder. Modbus/TCP haberleşme özelliği ile otomasyon sistemine entegredir.",
+    "image": null
+  },
+  {
+    "id": 1776077368548,
+    "name": "ABB Elektronik Aşırı Yük Rölesi",
+    "description": "Kontaktör altına monte edilen, akım değerlerini izleyen koruma cihazı.",
+    "logic": "Motorun nominal akım değerini aşması durumunda devreyi keserek aşırı yükten kaynaklanan motor hasarlarını önler.",
+    "image": null
+  },
+  {
+    "id": 1776077372774,
+    "name": "ABB Yük Ayırıcı (Disconnector)",
+    "description": "Üç kutuplu, manuel açma-kapama kollu endüstriyel şalter.",
+    "logic": "Devrenin enerjisini keserek güvenli bakım yapılmasını sağlar. Yük altında açma yapabilme kapasitesine sahiptir.",
+    "image": null
+  },
+  {
+    "id": 1776077376399,
+    "name": "ABB Tmax Kompakt Şalter (MCCB)",
+    "description": "Kısa devre koruması sağlayan, manyetik termik açmalı devre kesici.",
+    "logic": "Tesisatın ve bağlı cihazların aşırı akım ve kısa devre durumlarına karşı korunmasını sağlar.",
+    "image": null
+  },
+  {
+    "id": 1776077378954,
+    "name": "ABB Kompakt Pilot Işık (Sinyal Lambası)",
+    "description": "Panel kapağına monte edilen, farklı renklerde (G: Yeşil, R: Kırmızı, L: Şeffaf/Beyaz) ışık veren gösterge.",
+    "logic": "Sistemin çalışma durumunu (Run), arıza durumunu (Fault) veya hazır olma (Ready) bilgisini operatöre görsel olarak bildirir.",
+    "image": null
+  },
+  {
+    "id": 1776077381321,
+    "name": "ABB Kontaktör",
+    "description": "Elektromanyetik bobinli, ana güç kontaklarına sahip anahtarlama elemanı.",
+    "logic": "Bobinine enerji verildiğinde kontaklarını kapatarak motoru besler. Bu sistemde by-pass ve sürücü çıkışı için kullanılır.",
+    "image": null
+  },
+  {
+    "id": 1776077400709,
+    "name": "Endüstriyel Kontrol Rölesi (Muhtemelen Omron G2R veya Finder 40 Serisi)",
+    "description": "Şemada dikdörtgen kutu içinde A1/A2 bobin terminalleri ve 11-12-14 (NC/NO) kontak numaraları ile gösterilen, kontrol sinyallerini izole eden veya anahtarlayan elektromanyetik röleler.",
+    "logic": "Bu röleler, PLC'den veya butonlardan gelen düşük gerilimli sinyalleri işleyerek; VFD (Frekans Konvertörü) başlatma, hata bildirme, çalışma durumu geri bildirimi ve by-pass modu geçişleri gibi yardımcı mantıksal işlemleri yönetir.",
+    "image": null
+  },
+  {
+    "id": 1776077402954,
+    "name": "ABB CL2 Serisi 22mm Sinyal Lambası (LED)",
+    "description": "Daire içinde çarpı işareti olan, CL2-523 serisi etiketli, panoya monteli görsel ikaz lambaları.",
+    "logic": "Sistemin güncel durumunu görsel olarak operatöre bildirir. Yeşil (çalışıyor), Kırmızı (arıza), Sarı (by-pass durumu) veya Beyaz (hazır) gibi renk kodları ile makine veya pompa durumunu gösterir.",
+    "image": null
+  },
+  {
+    "id": 1776077405178,
+    "name": "Endüstriyel Kontrol Butonları ve Seçici Anahtarlar (ABB veya muadili)",
+    "description": "Yaylı buton sembolleri (Start, Stop, Emergency) ve 2 konumlu seçici anahtar (Local-Remote/By-pass ON-OFF) sembolü.",
+    "logic": "Start/Stop butonları sistemin manuel başlatılmasını/durdurulmasını sağlar. Emergency buton devreyi acil durumda keser. Seçici anahtar, kontrolün panel üzerinden (Local) mı yoksa uzaktan (Remote) mı sağlanacağını veya motorun VFD üzerinden mi yoksa by-pass hattından mı besleneceğini belirler.",
+    "image": null
+  },
+  {
+    "id": 1776077407075,
+    "name": "ABB EF Serisi Elektronik Aşırı Yük Rölesi",
+    "description": "VFD'den sonra motor hattına bağlı, aşırı akım koruma elemanı sembolü.",
+    "logic": "Motorun nominal akım değerini izleyerek, aşırı yüklenme durumunda devreyi koruma altına alır. VFD'nin çıkışını kontrol ederek motorun yanmasını önler.",
+    "image": null
+  },
+  {
+    "id": 1776077502691,
+    "name": "ABB E90 Serisi Sigorta Ayırıcısı (Fuse Disconnector)",
+    "description": "Şemada silindirik kartuş sigorta yuvası sembolü olarak gösterilen, üzerinde 'E91/32' kodu bulunan komponent.",
+    "logic": "Şebeke girişinden gelen elektriksel hattı (L1-N hattı) korumak için kullanılan sigorta taşıyıcıdır. İçerisinde genellikle silindirik gG tipi kartuş sigortalar bulunur, kısa devre ve aşırı akıma karşı Cabinet Air Fan ve Cabinet Light devrelerini korur.",
+    "image": null
+  },
+  {
+    "id": 1776077503992,
+    "name": "Bimetalik Termostat (0-60°C)",
+    "description": "NC (Normalde Kapalı) kontak yapısına sahip, sıcaklık duyarlı anahtar sembolü.",
+    "logic": "Kabin iç sıcaklığı 60°C'ye ulaştığında kontaklarını açarak veya kapayarak Cabinet Air Fans (Kabin fanları) sistemini tetikler. Isınmayı önlemek için bir soğutma döngüsü başlatma veya durdurma mantığıyla çalışır.",
+    "image": null
+  },
+  {
+    "id": 1776077505042,
+    "name": "Klemens Grubu (Terminal Block)",
+    "description": "İki noktalı giriş-çıkış bağlantı terminali sembolü.",
+    "logic": "Kabin içerisindeki ana besleme hatlarının dış cihazlara veya diğer modüllere dağıtıldığı fiziksel bağlantı noktalarıdır. Sinyal ve güç geçişlerini yönetmek için kullanılan pasif bağlantı elemanlarıdır.",
+    "image": null
+  },
+  {
+    "id": 1776077507776,
+    "name": "ABB Tmax T2N250 Kompakt Şalter (MCCB)",
+    "description": "Üç fazlı termik manyetik koruma sembolü, 'A2N250, TMF, In=250A' etiketli.",
+    "logic": "Motor sürücü (VFD) besleme hattını ana beslemeden izole etmek ve yüksek akım/kısa devre anında sistemi korumak için tasarlanmıştır. TMF (Termik Manyetik Sabit) birim sayesinde hem aşırı yük nem de anlık kısa devre koruması sağlar.",
+    "image": null
+  },
+  {
+    "id": 1776077510499,
+    "name": "ABB OT315E03P Yük Ayırıcı (Switch-Disconnector)",
+    "description": "Üç kutuplu yük ayırıcı sembolü, '315 A' değeri ile işaretlenmiş.",
+    "logic": "Devreyi yük altında güvenli bir şekilde kesmeye yarayan manuel mekanik anahtardır. Koruma görevi yoktur, bakım ve servis esnasında VFD ünitesinin enerjisini ana hattan fiziksel olarak ayırmak için kullanılır.",
+    "image": null
+  },
+  {
+    "id": 1776077526465,
+    "name": "ABB/Elco veya muadili 3-Konumlu Seçici Anahtar (BYPASS-OFF-ON)",
+    "description": "Panel kapağına monteli, 3 pozisyonlu manuel seçici anahtar.",
+    "logic": "Bu eleman devrenin çalışma modunu belirler. 'BY PASS' modunda motoru doğrudan şebekeden (veya yardımcı kontaktör üzerinden) çalıştırır, 'ON' modunda VFD üzerinden kontrolü sağlar, 'OFF' konumunda ise sistemi devre dışı bırakır.",
+    "image": null
+  },
+  {
+    "id": 1776077528185,
+    "name": "Bimetalik Termostat (0-60°C)",
+    "description": "Üzerinde sıcaklık aralığı (0-60°C) belirtilen, genellikle pano içi fan kontrolü için kullanılan kontaklı termostat sembolü.",
+    "logic": "Pano içerisindeki sıcaklık 60 dereceye ulaştığında kontaklarını kapatarak (veya açarak) -0M1 kodlu kabin fanını enerjilendirir ve soğutma sağlar.",
+    "image": null
+  },
+  {
+    "id": 1776077550123,
+    "name": "Bimetalik Termostat (NC Kontak)",
+    "description": "Devre şemasında bir anahtar sembolü olarak gösterilen, üzerinde 0-60°C aralığı belirtilmiş sıcaklık kontrollü kontak.",
+    "logic": "Bu eleman pano içi sıcaklık kontrolü için kullanılır. Sıcaklık 60°C'ye ulaştığında devreyi açarak veya kapatarak bağlı olduğu -0M1 fan motorunun çalışmasını tetikler. Çalışma mantığı termal genleşme prensibine dayanır.",
+    "image": null
+  },
+  {
+    "id": 1776077553112,
+    "name": "SENECA T201DC Akım Transdüseri",
+    "description": "DC akımı izole bir şekilde ölçen, 4-20mA çıkış sinyaline dönüştüren endüstriyel akım dönüştürücü.",
+    "logic": "Motorun (M-EP-5501) çektiği akımı izlemek için hattın üzerine yerleştirilmiştir. Ölçtüğü akım değerini 4-20mA analog sinyaline çevirerek VFD'nin (ACS580) analog girişine iletir. VFD bu veriyi kullanarak motorun aşırı akım veya yük durumlarını izler.",
+    "image": null
+  },
+  {
+    "id": 1776077567424,
+    "name": "ABB SH201-C2 Minyatür Devre Kesici (MCB)",
+    "description": "Görsel sembolü, termal-manyetik açma karakteristiğine sahip standart bir minyatür sigortadır.",
+    "logic": "24VDC besleme hatlarını kısa devre ve aşırı akımlara karşı korur. C2 karakteristiği, düşük ani akımlı endüktif yükler için uygun olduğunu gösterir.",
+    "image": null
+  },
+  {
+    "id": 1776077568682,
+    "name": "0.5A Kontrol Devresi Sigortası",
+    "description": "Kontrol devresi için kullanılan minyatür sigorta (Glass/Ceramic fuse veya MCB tipi)",
+    "logic": "Panel üzerindeki lambaların ve yardımcı rölelerin besleme hatlarını korur. Devredeki kontrol sinyallerinin aşırı akımdan zarar görmesini engeller.",
+    "image": null
+  },
+  {
+    "id": 1776077570042,
+    "name": "Saha Bağlantı Klemensi (Marshalling Terminal)",
+    "description": "Kablo gruplarını PLC veya ana kontrol paneline taşımak için kullanılan geçiş klemens bloğu.",
+    "logic": "Saha cihazları ile PLC giriş/çıkış kartları arasında sinyal izolasyonu ve düzenli bağlantı noktası sağlar. Bakım ve montaj sırasında kabloların tanımlanmasını kolaylaştırır.",
+    "image": null
+  },
+  {
+    "id": 1776077580578,
+    "name": "ABB CL2 Serisi 22mm LED Sinyal Lambası (CL2-523G/R/Y/L)",
+    "description": "Dairesel gövdeli, montaj paneli (Panel_Door) üzerinde bulunan standart 22mm sinyal lambası sembolü.",
+    "logic": "Devrede çalışma, hata, baypas ve hazır durumlarını görsel olarak operatöre bildirmek için kullanılır. 24VDC besleme ile çalışır.",
+    "image": null
+  },
+  {
+    "id": 1776077582589,
+    "name": "ABB/Elco 3-Konumlu (BYPASS-OFF-ON) Seçici Anahtar",
+    "description": "Üç pozisyonlu (0-1-2 veya ByPass-Off-On) döner anahtar mekanizması.",
+    "logic": "Sistemin çalışma modunu seçer; VFD üzerinden sürüş (ON), sistemin durdurulması (OFF) veya motorun doğrudan şebekeden beslendiği baypas modu (BYPASS) arasında geçişi sağlar.",
+    "image": null
+  },
+  {
+    "id": 1776077583738,
+    "name": "ABB E91/32 Sigorta Ayırıcısı (Fuse Disconnector)",
+    "description": "Kabin içi fan ve ışık devrelerini korumak için kullanılan modüler sigorta yuvası.",
+    "logic": "Yardımcı devrelerin (aydınlatma ve fan) kısa devre ve aşırı akım korumasını sağlar; bakım esnasında devre izolasyonu yapılmasına imkan tanır.",
+    "image": null
+  },
+  {
+    "id": 1776077584816,
+    "name": "Bimetalik Termostat (0-60°C)",
+    "description": "Kabin sıcaklığını kontrol eden, genellikle NC (Normalde Kapalı) kontak yapısına sahip termal sensör.",
+    "logic": "Kabin içi sıcaklık ayarlanan 60°C eşiğini aştığında devreyi kapatarak kabin fanlarını (-0M1) otomatik olarak çalıştırır ve aşırı ısınmayı önler.",
+    "image": null
+  },
+  {
+    "id": 1776077643461,
+    "name": "PTC Termistör (Pozitif Sıcaklık Katsayılı Sensör)",
+    "description": "Motor sembolü içinde, sargılarla ilişkilendirilmiş küçük bir termal eleman sembolü",
+    "logic": "Motor sargılarının aşırı ısınmasını algılar. Sıcaklık kritik seviyeye ulaştığında direnci hızla artar. VFD üzerindeki DI6 (PTC girişi) üzerinden sinyal göndererek motorun termal korunmasını ve aşırı ısınma durumunda sürücünün durdurulmasını sağlar.",
+    "image": null
+  },
+  {
+    "id": 1776077645056,
+    "name": "Saha Bağlantı Klemensi (Terminal Strip)",
+    "description": "Motor kablo bağlantılarını içeren ve sahada motor ile panoyu birbirine bağlayan çoklu klemens bloğu",
+    "logic": "Pano ile motor arasındaki güç (U, V, W, PE) ve sinyal (PTC) bağlantılarının sonlandığı ve sahada montaj kolaylığı sağlayan ara bağlantı noktasıdır.",
+    "image": null
+  },
+  {
+    "id": 1776077655609,
+    "name": "ABB CL2 Serisi Sinyal Lambası (LED)",
+    "description": "Daire içerisinde çarpı işareti olan, yanında CL2-523G/R/Y/L gibi kodlar bulunan standart endüstriyel LED sinyal lambası sembolü.",
+    "logic": "Kontrol paneli üzerinde cihazın durumunu (Run, Fault, Ready, By-pass) görsel olarak operatöre bildirmek için kullanılan 24VDC ile çalışan sinyal elemanlarıdır.",
+    "image": null
+  },
+  {
+    "id": 1776077656619,
+    "name": "Endüstriyel Kontrol Butonları",
+    "description": "Normalde açık (NO) ve normalde kapalı (NC) kontak yapısına sahip, buton sembolleri.",
+    "logic": "Sistemi manuel olarak başlatmak (Start), durdurmak (Stop), acil durumda kesmek (Emergency) veya çalışma modunu seçmek (Local/Remote) için kullanılan arayüz elemanlarıdır.",
+    "image": null
+  },
+  {
+    "id": 1776077657705,
+    "name": "Saha Bağlantı Klemensi (Marshalling Terminal Block)",
+    "description": "Düz hatlar üzerinde numaralandırılmış bağlantı noktalarını temsil eden klemens sembolleri.",
+    "logic": "Saha ekipmanları ile ana kontrol paneli (PLC) arasındaki sinyal alışverişini düzenleyen, kabloların geçişini ve ayrıştırılmasını sağlayan ara bağlantı noktalarıdır.",
+    "image": null
+  },
+  {
+    "id": 1776077690658,
+    "name": "ABB ACS580 Modbus/TCP Haberleşme Kartı/Modülü (FENA-xx veya muadili)",
+    "description": "VFD üzerinde bulunan RJ45 portu ve Bus Connector (X1, X2) birimleri",
+    "logic": "Bu eleman, frekans konvertörünün (VFD) Modbus/TCP protokolü üzerinden bir PLC veya üst kontrol sistemi ile haberleşmesini sağlar. Veri iletimi, durum izleme ve uzaktan komut kontrolü için kullanılır.",
+    "image": null
+  },
+  {
+    "id": 1776077692170,
+    "name": "ABB ACS580 Dahili Analog Giriş/Çıkış Arayüzü (AI/AO)",
+    "description": "S1 (AI1), S2 (AI2) ve S3 (AO1) olarak işaretlenmiş, U/I (Gerilim/Akım) seçim anahtarlarını içeren kontrol bloğu",
+    "logic": "VFD'nin analog hız referansını (AI1) ve motor hızı/akımı gibi geri besleme sinyallerini (AO1) dış dünya ile (PLC veya potansiyometre) eşleştirmesini sağlar. U/I anahtarları sinyalin 0-10V gerilim mi yoksa 0/4-20mA akım mı olacağını belirler.",
+    "image": null
+  },
+  {
+    "id": 1776077694150,
+    "name": "Çok Damarlı Kontrol Kablosu Konnektörü (Marshaling Cabinet Interconnect)",
+    "description": "Şemada kesikli hatlarla belirtilen, PLC ve saha panosu arasındaki bağlantı noktalarını temsil eden çok pinli terminal dizileri",
+    "logic": "Saha panosu ile PLC panosu arasındaki tüm kontrol sinyallerinin (Analog, Dijital, Feedback) bir araya toplandığı ve düzenli bir şekilde diğer panoya aktarıldığı fiziksel ara bağlantı noktasıdır.",
+    "image": null
+  },
+  {
+    "id": 1776078784533,
+    "name": "ABB ATS022 Otomatik Transfer Anahtarı Denetleyicisi",
+    "description": "Mikroişlemci tabanlı dijital kontrol ünitesi, çok sayıda giriş ve çıkış klemensine sahip (x11, x21, x32 vb.)",
+    "logic": "İki güç kaynağı (şebeke veya jeneratör) arasındaki transferi yönetir. Gerilimleri izler, jeneratörü başlatma sinyalleri gönderir ve kontaktör veya şalter (QF01, QF02) durumlarını kontrol ederek yükü öncelikli kaynağa aktarır.",
+    "image": null
+  },
+  {
+    "id": 1776078790080,
+    "name": "Chint NA1 Serisi Kompakt Şalter (Motorlu)",
+    "description": "Motorlu işletim mekanizmasına (M 1~) and açtırma (YO) / kapama (YC) bobinlerine sahip kompakt şalter.",
+    "logic": "Otomatik transfer sisteminde elektriksel olarak açma ve kapama yapabilen anahtarlama elemanıdır. Kontrol ünitesinden gelen komutla (ATS022) hatları bağlar veya ayırır.",
+    "image": null
+  },
+  {
+    "id": 1776078793088,
+    "name": "Phoenix Contact ESSENTIAL-PS Güç Kaynağı",
+    "description": "Endüstriyel 24VDC güç kaynağı modülü.",
+    "logic": "AC şebeke gerilimini, otomasyon devreleri ve röleler için gerekli olan kararlı 24VDC gerilimine dönüştürür. Yedekli modül (Redundancy module) ile birlikte kullanılarak sistemin güvenilirliğini artırır.",
+    "image": null
+  },
+  {
+    "id": 1776078795749,
+    "name": "MEAN WELL Redundancy Module (Yedekleme Modülü)",
+    "description": "İki güç kaynağını birleştiren diyot bazlı modül.",
+    "logic": "İki ayrı güç kaynağından gelen 24VDC hattını birleştirir. Eğer bir güç kaynağı arızalanırsa, sistemin enerjisiz kalmaması için diğer kaynağın kesintisiz çalışmasını sağlar.",
+    "image": null
+  },
+  {
+    "id": 1776078798526,
+    "name": "SPD (Surge Protection Device) - Aşırı Gerilim Koruma Cihazı",
+    "description": "Uc:275V, Imax:40kA değerlerine sahip şebeke koruma cihazı.",
+    "logic": "Şebekede meydana gelen ani gerilim yükselmelerini (yıldırım düşmesi, anahtarlama darbeleri) toprağa deşarj ederek hassas elektronik bileşenleri aşırı gerilimden korur.",
+    "image": null
+  },
+  {
+    "id": 1776078800157,
+    "name": "Şebeke Analizörü (Power Analyzer)",
+    "description": "Akım (I1, I2, I3) ve Gerilim girişlerine sahip, RJ45 çıkışlı dijital analizör.",
+    "logic": "Sistemin elektriksel parametrelerini (akım, gerilim, güç, harmonikler) ölçer. Modbus haberleşme protokolü ile verileri merkezi sisteme/PLC'ye iletir.",
+    "image": null
+  },
+  {
+    "id": 1776078824547,
+    "name": "ABB Emax 2 veya Tmax XT serisi Açık Tip veya Kompakt Şalter (LSI özellikli)",
+    "description": "Aşırı akım (L), kısa devre (S), anlık hata (I) koruma özellikli 630A, 3 kutuplu devre kesici sembolü.",
+    "logic": "Tesisin ana besleme korumasını sağlayan, aşırı yük ve kısa devre durumlarında hattı kesen ana koruma elemanıdır. LSI birimleri sayesinde seçici koruma ayarları yapılabilir.",
+    "image": null
+  },
+  {
+    "id": 1776078825495,
+    "name": "ABB ATS022 Otomatik Transfer Anahtarı Denetleyicisi",
+    "description": "NA1-2000 serisi motorlu şalterleri (QF01, QF02) yöneten mikroişlemcili kontrol modülü.",
+    "logic": "Şebeke veya jeneratör kaynakları arasında otomatik geçiş sağlar. Kaynak gerilimlerini izler, bir kaynak kesildiğinde diğerine geçişi (mekanik kilitli şalterler aracılığıyla) otonom olarak yönetir.",
+    "image": null
+  },
+  {
+    "id": 1776078826494,
+    "name": "Chint NA1 Serisi Kompakt Şalter (Motorlu)",
+    "description": "YO (Açtırma bobini) ve YC (Kapama bobini) içeren, 2000A kapasiteli motorlu şalter mekanizması.",
+    "logic": "ATS022 denetleyicisinden gelen sinyallerle enerjiyi kesme veya verme işlemini gerçekleştiren, ATS sisteminin anahtarlama gücünü sağlayan motorlu kesici ünitelerdir.",
+    "image": null
+  },
+  {
+    "id": 1776078827393,
+    "name": "Şebeke Analizörü (Power Analyzer)",
+    "description": "Akım trafosu (TR) girişleri ve gerilim girişleri olan, haberleşme (RJ45) çıkışlı ölçüm cihazı.",
+    "logic": "Sistemdeki akım, gerilim ve güç parametrelerini ölçer. Verileri Modbus üzerinden PLC'ye aktararak enerji yönetimi ve izleme sağlar.",
+    "image": null
+  },
+  {
+    "id": 1776078828448,
+    "name": "SPD (Surge Protection Device) - Tip 2 Aşırı Gerilim Koruma Cihazı",
+    "description": "Fazlar (L, L', L'') ve N hattı arasında bağlantılı, 275V Uc ve 40kA Imax değerine sahip koruma cihazı.",
+    "logic": "Şebekede meydana gelen ani yüksek gerilim darbelerini (yıldırım veya anahtarlama kaynaklı) toprağa aktararak hassas elektronik ekipmanları korur.",
+    "image": null
+  },
+  {
+    "id": 1776078829682,
+    "name": "Phoenix Contact ESSENTIAL-PS Güç Kaynağı",
+    "description": "10A/24VDC çıkışlı, DIN ray montajlı endüstriyel anahtarlamalı güç kaynağı.",
+    "logic": "230VAC şebeke gerilimini 24VDC kontrol gerilimine dönüştürür. PLC, röleler ve diğer sensörlerin beslemesini sağlar.",
+    "image": null
+  },
+  {
+    "id": 1776078830625,
+    "name": "MEAN WELL Redundancy Module (Yedekleme Modülü)",
+    "description": "İki ayrı güç kaynağından gelen 24VDC beslemeyi birleştirip tek çıkışta toplayan diyot tabanlı modül.",
+    "logic": "Güç kaynağı redundansı sağlar. Bir güç kaynağı arızalandığında veya aşırı yüklendiğinde, sistemin kesintisiz çalışması için diğerinden besleme almaya devam etmesini sağlar.",
+    "image": null
+  },
+  {
+    "id": 1776078831768,
+    "name": "Modbus TCP Arayüz Modülü (ABB FenA-xx benzeri)",
+    "description": "VFD (Frekans Konvertörü) ile PLC arasında Ethernet tabanlı haberleşmeyi sağlayan modül.",
+    "logic": "Saha cihazlarının (Motor sürücülerin) PLC tarafından uzaktan yönetilmesini ve izlenmesini sağlayan haberleşme köprüsüdür.",
+    "image": null
+  },
+  {
+    "id": 1776079196547,
+    "name": "Chint NA1-2000 Açık Tip Devre Kesici (ACB)",
+    "description": "Şemada NA1-2000 olarak etiketlenmiş, içerisinde motorlu (M) ve açma/kapama bobinlerine (YO, YC) sahip büyük boyutlu bir devre kesici sembolü.",
+    "logic": "Bu eleman, ATS (Otomatik Transfer Anahtarı) sisteminin ana anahtarlama bileşenidir. PLC veya ATS denetleyicisi tarafından gönderilen sinyallerle (YO - Açtırma, YC - Kapama bobinleri) uzaktan elektrikli olarak kontrol edilir. Devrenin ana besleme kaynakları (LINE 1 ve LINE 2) arasında otomatik geçişi sağlar.",
+    "image": null
+  },
+  {
+    "id": 1776079197882,
+    "name": "ABB E93/32 Sigorta Yük Ayırıcısı",
+    "description": "3 kutuplu, E90 serisi (32A kapasiteli) sigorta yuvalı yük ayırıcısı sembolü.",
+    "logic": "Devrenin ana hatlarında veya kontrol hatlarında fiziksel bir ayırma noktası sağlar ve içindeki sigortalar sayesinde kısa devre ve aşırı yük durumlarında koruma yapar.",
+    "image": null
+  },
+  {
+    "id": 1776079199214,
+    "name": "ABB SH201-C2 Minyatür Devre Kesici (MCB)",
+    "description": "Tek kutuplu, C eğrisi, 2A nominal akımlı minyatür devre kesici sembolü.",
+    "logic": "Özellikle haberleşme modülleri veya kontrol besleme hatlarının aşırı akımdan korunması için kullanılan, hızlı müdahale sağlayan bir koruma elemanıdır.",
+    "image": null
+  },
+  {
+    "id": 1776079220202,
+    "name": "Chint NA1 Serisi Açık Tip Devre Kesici (ACB)",
+    "description": "Büyük boyutlu, motor mekanizmalı (M), kapama bobini (YC) ve açtırma bobini (YO) içeren modüler devre kesici sembolü.",
+    "logic": "Bu cihaz, ATS (Otomatik Transfer Anahtarı) sisteminin bir parçası olarak ana giriş kaynaklarını (Şebeke/Jeneratör) yönetir. Uzaktan kumanda ile açma/kapama yapabilir ve enerji besleme hattını korur.",
+    "image": null
+  },
+  {
+    "id": 1776079220932,
+    "name": "ABB ATS022 Otomatik Transfer Anahtarı Denetleyicisi",
+    "description": "Giriş/çıkış pinleri (DI1-DI3, DO1-DO12, RS485 vb.) bulunan elektronik kontrol ünitesi.",
+    "logic": "İki farklı güç kaynağı arasındaki enerji transferini otonom olarak yönetir. Şebeke enerjisi kesildiğinde jeneratöre geçişi sağlar ve güç kaynaklarının durumunu izler.",
+    "image": null
+  },
+  {
+    "id": 1776079245000,
+    "name": "ABB CAM Anahtar (Load Break Switch / Selector Switch)",
+    "description": "It is represented as a multi-contact rotary switch with multiple positions (OFF, ON, BY PASS).",
+    "logic": "The switch controls the selection between different power circuits (like Bypass or Normal operation) for the ABB ACS580 drive, allowing manual selection of operational modes.",
+    "image": null
+  },
+  {
+    "id": 1776079245487,
+    "name": "ABB E93/32 Fuse Disconnector",
+    "description": "A modular fuse holder block for voltage measurement circuits.",
+    "logic": "Provides short-circuit protection for the voltage inputs of the power analyzer unit (-3P1/-3P2). It disconnects the voltage lines during maintenance.",
+    "image": null
+  },
+  {
+    "id": 1776079245962,
+    "name": "ABB E93/32 Fuse Disconnector",
+    "description": "A fuse holder used in conjunction with Surge Protection Devices (SPD).",
+    "logic": "Acts as a protective fuse for the SPD modules (-4U1/-4U2) to isolate them in case of an internal short circuit due to surge absorption.",
+    "image": null
+  },
+  {
+    "id": 1776079246397,
+    "name": "ABB E92/32 Fuse Disconnector",
+    "description": "A modular fuse holder for 24VDC control circuits.",
+    "logic": "Protects the DC side power supply circuit derived from the Phoenix Contact power supplies. It allows individual isolation of the control supply line.",
+    "image": null
+  },
+  {
+    "id": 1776079246836,
+    "name": "ABB S202-C10 Miniature Circuit Breaker (MCB)",
+    "description": "A 2-pole modular DIN-rail mounted circuit breaker.",
+    "logic": "Protects the control circuit downstream of the redundancy module by limiting current to 10A, providing overload and short-circuit protection for the connected control instrumentation.",
+    "image": null
+  },
+  {
+    "id": 1776079247276,
+    "name": "MEAN WELL DR-RDN20 Redundancy Module",
+    "description": "A DC power supply redundancy module that allows parallel connection of two power supplies for backup.",
+    "logic": "Ensures high system reliability by decoupling two 24VDC power supplies. If one power supply fails, the module keeps the output powered by the other, preventing a system shutdown.",
+    "image": null
+  },
+  {
+    "id": 1776079247749,
+    "name": "SPD (Surge Protection Device) Type 2",
+    "description": "A modular surge protection device with L, L', N, and PE terminals.",
+    "logic": "Protects sensitive electrical equipment by diverting excess voltage transients (caused by lightning or grid switching) to ground, effectively clamping the voltage to safe levels.",
+    "image": null
+  },
+  {
+    "id": 1776079265833,
+    "name": "Şebeke Analizörü (Power Analyzer)",
+    "description": "Dikdörtgen gövde içerisinde akım (I1, I2, I3, IN) ve gerilim (L1, L2, L3, N) girişleri ile Modbus haberleşme (RJ45) ve dijital çıkış (DO) portları bulunan ölçüm cihazı.",
+    "logic": "Sistemin enerji kalitesini ve tüketim verilerini izlemek için kullanılır. Akım trafolarından (TR1-TR6) gelen verileri ve doğrudan gerilim hatlarını işleyerek Modbus üzerinden üst sisteme iletir.",
+    "image": null
+  },
+  {
+    "id": 1776079266353,
+    "name": "SPD (Aşırı Gerilim Koruma Cihazı) - Tip 2",
+    "description": "L, L', L'', N ve PE terminallerine sahip, yüksek gerilim darbelerini toprağa aktaran koruma cihazı.",
+    "logic": "Şebekede oluşabilecek ani yüksek gerilim darbelerini (surge) sönümleyerek bağlı olan hassas ekipmanları (VFD, PLC vb.) korur.",
+    "image": null
+  },
+  {
+    "id": 1776079318100,
+    "name": "SENECA T201DC - Akım Transdüseri (Current Transducer)",
+    "description": "Şemada SENECA T201DC etiketiyle gösterilen, kare sembol içerisine yerleştirilmiş ve 4-20mA çıkışına sahip akım algılama cihazıdır.",
+    "logic": "Bu eleman, sürücü (VFD) çıkışındaki motor akımını ölçmek ve bu veriyi PLC veya kontrol sistemine 4-20mA analog sinyal olarak iletmek için kullanılır. Devredeki akım miktarının sürekli izlenmesini ve korunmasını sağlar.",
+    "image": null
+  },
+  {
+    "id": 1776079318636,
+    "name": "Bimetalik Termostat (0-60°C)",
+    "description": "Normalde açık (NO) kontak yapısına sahip, sıcaklığa duyarlı anahtar sembolü.",
+    "logic": "Belirli bir sıcaklık aralığında (0-60°C) çalışacak şekilde ayarlanmıştır. Pano içi sıcaklığı izler ve sıcaklık eşik değerini aştığında devreye girerek pano fanlarını (7M1) enerjilendirerek soğutma işlemini başlatır.",
+    "image": null
+  },
+  {
+    "id": 1776079319058,
+    "name": "Bimetalik Termostat (0-60°C)",
+    "description": "Normalde açık (NO) kontak yapısına sahip, sıcaklığa duyarlı anahtar sembolü.",
+    "logic": "Kabin (pano) içerisindeki sıcaklığı takip eder. Sıcaklık artışına bağlı olarak termostatın kontağı kapanır ve 'Cabinet Air Fans' (Kabin Fanları) grubunu çalıştırarak sistemin aşırı ısınmasını önler.",
+    "image": null
+  },
+  {
+    "id": 1776079348874,
+    "name": "Bimetalik Termostat (0-60°C)",
+    "description": "NC (Normalde Kapalı) kontak sembolü ile gösterilen, sıcaklık kontrollü anahtar.",
+    "logic": "Kabin içi sıcaklık ayarlandığı eşik değerin (0-60°C) üzerine çıktığında kontağını kapatarak veya açarak fan sistemini (Cabinet Air Fans) tetikler veya devre dışı bırakır. Aşırı ısınmaya karşı koruma sağlar.",
+    "image": null
+  },
+  {
+    "id": 1776079349050,
+    "name": "SPD (Surge Protection Device) - Tip 2 Aşırı Gerilim Koruma Cihazı",
+    "description": "Fazlar (L, L', L'') ve Nötr (N) hatları ile PE (Toprak) hattı arasına bağlı koruma elemanı sembolü.",
+    "logic": "Şebekede meydana gelen ani gerilim yükselmelerini (yıldırım düşmesi, şalt işlemleri vb.) algılayarak fazla enerjiyi toprak hattına deşarj eder, böylece sistemin geri kalanındaki hassas elektronik cihazları korur.",
+    "image": null
+  },
+  {
+    "id": 1776079367906,
+    "name": "ABB ACS580-01 Serisi Frekans Konvertörü (VFD)",
+    "description": "Dikdörtgen blok sembolü, üzerinde 'ACS580-01-xxxx-4' etiketi, I/O terminalleri, DC bağlantı noktaları ve motor çıkış terminalleri (T1/U, T2/V, T3/W) bulunur.",
+    "logic": "Motor hızını kontrol eden ana güç elektroniği cihazıdır. PLC'den aldığı 4-20mA analog sinyali veya Modbus üzerinden aldığı komutlarla motorun frekansını ve dolayısıyla hızını düzenler. Ayrıca motorun çalışması, arızası ve hazır olma durumunu dijital giriş/çıkışlar aracılığıyla kontrol sistemine bildirir.",
+    "image": null
+  },
+  {
+    "id": 1776079368972,
+    "name": "SENECA T201DC Akım Transdüseri",
+    "description": "Kare veya dikdörtgen gövde içerisinde bir iletkenin içinden geçtiği sembol, çıkışında 4-20mA işareti bulunmaktadır.",
+    "logic": "Motor besleme kablosundaki akımı ölçerek 4-20mA analog sinyale dönüştürür. Bu sinyal, VFD üzerinden veya doğrudan PLC'ye gönderilerek motorun yük durumu, aşırı yüklenmesi veya çalışma akımının izlenmesi için kullanılır.",
+    "image": null
+  },
+  {
+    "id": 1776079369679,
+    "name": "ABB EF/TF Serisi Elektronik Aşırı Yük Rölesi",
+    "description": "Güç devresinde VFD çıkışından sonra veya kontaktör öncesinde/sonrasında bağlı koruma elemanı sembolü.",
+    "logic": "Motoru aşırı akım ve faz kaybı gibi elektriksel arızalara karşı korur. Aşırı yük algılandığında devreyi keserek motorun yanmasını engeller ve ilgili sinyalleri kontrol sistemine iletir.",
+    "image": null
+  },
+  {
+    "id": 1776079388358,
+    "name": "ABB ACS580-01 Serisi Frekans Konvertörü (VFD)",
+    "description": "Şemada ABB ACS580-01-xxxx serisi olarak gösterilen, motor kontrolü için kullanılan frekans konvertörüdür.",
+    "logic": "Motorun hızını ve torkunu kontrol eden sürücüdür. Modbus TCP arayüzü ile otomasyon sistemine veri gönderir ve komut alır. Dijital/Analog giriş/çıkışları ile saha sensörlerinden bilgi alır ve motoru korur/yönetir.",
+    "image": null
+  },
+  {
+    "id": 1776079389054,
+    "name": "ABB A2N250 Kompakt Şalter (MCCB)",
+    "description": "Termomanyetik koruma özellikli, ayarlanabilir kompakt devre kesici.",
+    "logic": "Motor besleme hattını aşırı akım ve kısa devrelere karşı korur. Devrenin enerjisini kesmek ve güvenli izolasyon sağlamak için kullanılır.",
+    "image": null
+  },
+  {
+    "id": 1776079389663,
+    "name": "ABB OT315E03P / OS Serisi Yük Ayırıcı",
+    "description": "Sigortalı veya sigortasız, hatayı izole etmeye yarayan manuel anahtar.",
+    "logic": "Bakım veya onarım sırasında devreyi şebekeden fiziksel olarak ayırmak için kullanılır.",
+    "image": null
+  },
+  {
+    "id": 1776079390313,
+    "name": "ABB EF/TF Serisi Elektronik Aşırı Yük Rölesi",
+    "description": "Motoru aşırı ısınmaya ve akım dengesizliğine karşı koruyan elektronik cihaz.",
+    "logic": "Motor akımını sürekli izler, belirlenen limitlerin dışına çıkıldığında hata sinyali üreterek kontaktörün açılmasını sağlar.",
+    "image": null
+  },
+  {
+    "id": 1776079390907,
+    "name": "SENECA T201DC Akım Transdüseri",
+    "description": "DC akımı izole bir şekilde 4-20mA sinyaline dönüştürür sensör.",
+    "logic": "Motor akımını ölçerek PLC veya sürücüye gerçek zamanlı akım bilgisi iletir.",
+    "image": null
+  },
+  {
+    "id": 1776079409254,
+    "name": "SENECA T201DC - Akım Transdüseri (Current Transducer)",
+    "description": "Rectangular symbol labeled SENECA/T201DC with terminals P1, P2, S1, S2, + and - ports.",
+    "logic": "Acts as a current transducer to monitor motor current. The current carrying conductor passes through the aperture (P1-P2), and the secondary terminals (S1-S2) provide a scaled output signal to the VFD or PLC to indicate load, typically used for protection and feedback in motor control circuits.",
+    "image": null
+  },
+  {
+    "id": 1776079433442,
+    "name": "ABB/Elco 3-Konumlu Seçici Anahtar (BYPASS-OFF-ON)",
+    "description": "Panel kapağında (Panel_Door) bulunan, 3 konumlu (BYPASS-OFF-ON) seçici anahtar.",
+    "logic": "Motorun veya yükün beslemesini frekans konvertöründen (VFD) veya doğrudan şebekeden (BYPASS) manuel olarak seçmeye yarar. ON konumu normal çalışma, OFF konumu durdurma, BYPASS konumu ise VFD arızalarında motoru doğrudan şebekeden çalıştırmak içindir.",
+    "image": null
+  },
+  {
+    "id": 1776079434034,
+    "name": "SENECA T201DC - Akım Transdüseri (Current Transducer)",
+    "description": "Motorun akım besleme hattına monte edilmiş, 4-20mA çıkışlı akım sensörü.",
+    "logic": "Motordan geçen akımı izler ve bunu PLC'nin anlayabileceği bir analog (4-20mA) sinyale dönüştürerek motor yükünün veya arızalarının PLC üzerinden izlenmesini sağlar.",
+    "image": null
+  },
+  {
+    "id": 1776079434508,
+    "name": "Şebeke Analizörü (Power Analyzer)",
+    "description": "Pano ana giriş hatlarına bağlı 3 fazlı enerji ölçüm cihazı.",
+    "logic": "Şebekenin gerilim, akım, güç faktörü ve enerji tüketimi gibi parametrelerini analiz eder. Modbus (RJ45 portu üzerinden) haberleşme ile bu verileri merkezi SCADA veya PLC sistemine aktarır.",
+    "image": null
+  },
+  {
+    "id": 1776079435097,
+    "name": "SPD (Surge Protection Device) - Tip 2 Aşırı Gerilim Koruma Cihazı",
+    "description": "Şebeke girişinde, sigorta ayırıcılardan sonra bağlanan modüler koruma cihazı.",
+    "logic": "Ani gerilim darbelerine (yıldırım veya şebeke anahtarlamaları) karşı panodaki hassas elektronik cihazları korur. Faz-Nötr-Toprak arasına bağlanarak aşırı gerilimi toprağa deşarj eder.",
+    "image": null
+  },
+  {
+    "id": 1776079435678,
+    "name": "ABB ATS022 Otomatik Transfer Anahtarı Denetleyicisi",
+    "description": "ATS bağlantı şemasında merkezi denetleyici ünite.",
+    "logic": "Şebeke ve jeneratör (veya iki farklı şebeke girişi) arasındaki otomatik geçişi yönetir. Ana giriş kesicilerini (NA1-2000) kontrol ederek elektriğin kesintisiz devamlılığını sağlar.",
+    "image": null
+  },
+  {
+    "id": 1776079453879,
+    "name": "Chint NA1-2000 Açık Tip Devre Kesici (ACB)",
+    "description": "Şemada NA1-2000 olarak etiketlenmiş, içerisinde motorlu (M) ve açma/kapama bobinlerine (YO, YC) sahip büyük boyutlu bir devre kesici sembolü.",
+    "logic": "Bu eleman, ATS (Otomatik Transfer Anahtarı) sisteminin ana anahtarlama bileşenidir. PLC veya ATS denetleyicisi tarafından gönderilen sinyallerle (YO - Açtırma, YC - Kapama bobinleri) uzaktan elektrikli olarak kontrol edilir. Devrenin ana besleme kaynakları (LINE 1 ve LINE 2) arasında otomatik geçişi sağlar.",
+    "image": null
+  },
+  {
+    "id": 1776079472193,
+    "name": "EMR (Emergency Relay)",
+    "description": "Şemada ATS devresinde kullanılan, normalde kapalı (NC) ve normalde açık (NO) kontaklara sahip endüstriyel röle bloğu",
+    "logic": "Otomatik Transfer Anahtarı (ATS) sisteminde acil durum veya hata durumunda devreyi güvenlik moduna almak veya transferi engellemek için kullanılan denetim rölesidir. Sistemin emniyet zincirinde kilit rol oynar.",
+    "image": null
+  },
+  {
+    "id": 1776079472751,
+    "name": "Acil Stop Butonu (Emergency Stop Button)",
+    "description": "Şemada 13-14 kontakları ile gösterilen, basıldığında devreyi kesen buton",
+    "logic": "Operatörün tehlike anında sistemi acil olarak durdurmasını sağlar. Basıldığında kontrol devresindeki enerjiyi keserek ilgili kontaktör veya şalterlerin (örneğin -QF01, -QF02, -QF03) açılmasını tetikler.",
+    "image": null
+  },
+  {
+    "id": 1776079474625,
+    "name": "Chint NA1-2000 Açık Tip Devre Kesici (ACB)",
+    "description": "Büyük boyutlu, motorlu mekanizmaya (YO - Açtırma bobini, YC - Kapatma bobini) sahip ana devre kesici",
+    "logic": "Şebeke veya jeneratör girişlerinde yüksek akım anahtarlama yapmak için kullanılır. ATS (Otomatik Transfer Anahtarı) senaryosunda, hangi kaynağın sisteme besleneceğine karar veren kontrolcü tarafından (ATS022) elektrikli olarak açılıp kapatılır.",
+    "image": null
+  },
+  {
+    "id": 1776079475408,
+    "name": "İnterlok / Yardımcı Kontrol Rölesi",
+    "description": "Devredeki Chint ACB'lerin birbirini kilitlemesi veya anahtarlama sekansını yönetmesi için kullanılan röleler",
+    "logic": "Güç kaynaklarının çakışmasını önlemek için elektriksel kilitleme (interlock) mantığıyla çalışırlar. Biri çekiliyken diğerinin devreye girmesini engelleyen bir lojik kontrolü gerçekleştirirler.",
+    "image": null
+  },
+  {
+    "id": 1776079492698,
+    "name": "ABB ACS580-01 Serisi Frekans Konvertörü (VFD)",
+    "description": "Şemada ABB ACS580-01-206A-4 ve benzeri modelleriyle gösterilen, motor kontrolü için kullanılan frekans konvertörüdür.",
+    "logic": "Bu cihaz, gelen AC gücünü motorun hız ve tork kontrolünü sağlamak için değişken frekanslı ve gerilimli çıkışa dönüştürür. Modbus haberleşme kartı ile PLC üzerinden izlenir ve kontrol edilir. Aşırı yük koruması ve PTC sıcaklık geri bildirimi ile motoru koruma altında tutar.",
+    "image": null
+  },
+  {
+    "id": 1776079493111,
+    "name": "Chint NA1 Serisi Açık Tip Devre Kesici (ACB)",
+    "description": "NA1-2000 koduyla tanımlanan, büyük güç sistemlerinde ana dağıtım ve koruma için kullanılan açık tip devre kesici.",
+    "logic": "Şemadaki ATS (Otomatik Transfer Anahtarı) sisteminin bir parçası olarak, şebeke ve jeneratör arasında ana güç transferini yapmak için motorlu mekanizması üzerinden kontrol edilir.",
+    "image": null
+  },
+  {
+    "id": 1776079493568,
+    "name": "ABB E90 Serisi Sigorta Yük Ayırıcısı",
+    "description": "Şemada E93/32, E91/32, E92/32 olarak belirtilen sigortalı yük ayırıcı üniteler.",
+    "logic": "Kontrol devrelerinde ve yardımcı besleme hatlarında aşırı akım koruması ve devrenin fiziksel olarak izole edilmesi (ayrılması) işlevini görürler.",
+    "image": null
+  },
+  {
+    "id": 1776079493986,
+    "name": "ABB S200 Serisi Minyatür Devre Kesici (MCB)",
+    "description": "S202-C10 ve S202-C16 kodlarıyla belirtilen otomatik sigortalar.",
+    "logic": "Kontrol voltajı ve güç kaynağı hatlarını kısa devre ve aşırı yüklenmelere karşı koruyan, manuel olarak açılıp kapatılabilen koruma cihazlarıdır.",
+    "image": null
+  },
+  {
+    "id": 1776079494433,
+    "name": "SPD (Surge Protection Device) - Tip 2 Aşırı Gerilim Koruma Cihazı",
+    "description": "Uc:275V, Imax:40kA değerlerine sahip, şebeke girişlerinde kullanılan parafudr tipi koruma cihazı.",
+    "logic": "Sistemde oluşabilecek ani gerilim yükselmelerini (yıldırım düşmesi veya şebeke anahtarlamaları sonucu) toprağa deşarj ederek cihazları korur.",
+    "image": null
+  },
+  {
+    "id": 1776079494866,
+    "name": "Phoenix Contact ESSENTIAL-PS Güç Kaynağı",
+    "description": "10A/24VDC çıkış veren endüstriyel tip 240W güç kaynağı ünitesi.",
+    "logic": "Kontrol devresinin 24V DC beslemesini sağlamak için kullanılır. Redundancy (yedekleme) modülü ile birlikte çalışarak enerji sürekliliği sağlar.",
+    "image": null
+  },
+  {
+    "id": 1776079495331,
+    "name": "MEAN WELL DR-RDN20 Yedekleme Modülü",
+    "description": "Redundancy (yedekleme) modülü, güç kaynaklarının paralel bağlanmasına olanak tanır.",
+    "logic": "İki ayrı güç kaynağının birleşerek 24V DC beslemesini beslemesini sağlar; bir güç kaynağı arızalandığında diğeri üzerinden yükü karşılayarak sistemin durmasını engeller.",
+    "image": null
+  },
+  {
+    "id": 1776079496109,
+    "name": "Modbus TCP Arayüz Modülü",
+    "description": "Modbus haberleşme altyapısını yöneten arayüz modülleri.",
+    "logic": "Saha cihazları ile PLC veya merkez kontrol ünitesi arasında veri iletişimini (TCP protokolü üzerinden) yönetir.",
+    "image": null
+  },
+  {
+    "id": 1776079522996,
+    "name": "Chint NA1 Serisi Açık Tip Devre Kesici (ACB)",
+    "description": "Büyük boyutlu, motorlu mekanizmaya sahip, güç dağıtım panolarında ana kesici olarak kullanılan, çekmeceli tip devre kesici.",
+    "logic": "Sistemdeki ana enerji girişini yönetir. Motorlu mekanizma sayesinde uzaktan açma/kapama yapabilir ve ATS (Otomatik Transfer Anahtarı) ile senkronize çalışarak şebeke veya jeneratör kaynakları arasında güvenli geçiş sağlar.",
+    "image": null
+  },
+  {
+    "id": 1776079523575,
+    "name": "EMR (Emergency Relay) - Acil Stop Rölesi",
+    "description": "Güvenlik devrelerinde kullanılan, genellikle kırmızı veya sarı etiketli, hata durumunda enerjiyi anında kesen özel kontrol rölesi.",
+    "logic": "Acil stop butonlarından gelen sinyalleri izler. Eğer acil durdurma tetiklenirse, devredeki tüm kritik kontaktör ve sürücü enerjisini güvenli bir şekilde keserek tehlikeli durumları önler.",
+    "image": null
+  },
+  {
+    "id": 1776079524064,
+    "name": "Auxiliary Control Switch / Yardımcı Kontrol Anahtarı",
+    "description": "Genellikle pano üzerinde bulunan manuel bir anahtar sembolü.",
+    "logic": "ATS sisteminin kontrol modunu veya manuel/otomatik çalışma modunu seçmek için kullanılan, sistem mantığını yönlendiren yardımcı bir anahtardır.",
+    "image": null
+  },
+  {
+    "id": 1776079524677,
+    "name": "ABB Emax veya Tmax Serisi LSI Özellikli Kompakt/Açık Tip Şalter",
+    "description": "Aşırı akım (L), kısa devre (S), anlık hata (I) koruma özellikli, ayarlanabilir elektronik koruma ünitesine sahip şalter.",
+    "logic": "Devrelerin aşırı yük ve kısa devre korumasını sağlar. LSI özellikleri sayesinde hassas koordinasyon ve seçicilik ayarları yapılarak sistemin kararlı çalışması sağlanır.",
+    "image": null
+  },
+  {
+    "id": 1776079538793,
+    "name": "SENECA T201DC - Current Transducer (Akım Transdüseri)",
+    "description": "A rectangular block symbol with primary and secondary current monitoring terminals, labeled SENECA/T201DC.",
+    "logic": "The T201DC acts as a galvanic isolated current transducer. It senses the current flowing through a primary cable passed through it and converts it into a proportional 4-20mA analog signal for the ABB VFD (Analog Input) for monitoring and feedback control.",
+    "image": null
+  },
+  {
+    "id": 1776079557869,
+    "name": "SENECA T201DC - Akım Transdüseri (Current Transducer)",
+    "description": "Devre şemasında bir kutu içerisinde '+' ve '-' terminalleri ile gösterilen, 4-20mA çıkış veren bir akım algılama cihazıdır.",
+    "logic": "Bu eleman, sürücü çıkışındaki veya ana hatlardaki akımı izlemek için kullanılır. Akım değerini 4-20mA analog sinyale dönüştürerek PLC veya kontrol sistemine iletir. Devrede akım değerinin uzaktan gözlemlenmesi ve aşırı akım durumlarında kontrol işlemleri (hız azaltma, durdurma vb.) yapılmasına olanak sağlar.",
+    "image": null
+  },
+  {
+    "id": 1776079558040,
+    "name": "ABB ACS580-01 Serisi Frekans Konvertörü (VFD)",
+    "description": "Şemada büyük bir blok içerisinde güç girişleri (L1, L2, L3), motor çıkışları (T1/U, T2/V, T3/W), kontrol terminalleri (AI, DI, RO) ve Modbus arayüzü ile tanımlanan cihaz.",
+    "logic": "Bu cihaz, endüstriyel bir motorun (pompa veya fan) hızını ve torkunu değişken frekans ve voltaj ile kontrol etmek için kullanılır. Girişinden aldığı AC elektriği istenilen hızda motor sürmek üzere dönüştürür. Hata yönetimi, start/stop komutları ve Modbus haberleşmesi üzerinden sistemin beyni gibi davranır.",
+    "image": null
+  },
+  {
+    "id": 1776079558243,
+    "name": "ABB A2N250 / MS165 Kompakt Şalter (MCCB) / Motor Koruma Şalteri",
+    "description": "Şemada termik ve manyetik koruma sembolleri (I>, I>>) ile gösterilen anahtar elemanı.",
+    "logic": "Devreyi aşırı akım, kısa devre ve (motor uygulamalarında) faz kaybı/aşırı yük gibi durumlardan korumak için tasarlanmıştır. Devrenin enerjisini kesmek veya güvenli şekilde açma/kapama yapmak amacıyla kullanılan bir koruma cihazıdır.",
+    "image": null
+  },
+  {
+    "id": 1776079558420,
+    "name": "Bimetalik Termostat (0-60°C)",
+    "description": "NC kontak sembolü ile gösterilen ve 0-60°C aralığında çalışma aralığı tanımlanan sıcaklık kontrol cihazı.",
+    "logic": "Kabin içi sıcaklık yönetimi için kullanılır. Ayarlanan eşik değerinin (60°C) üzerine çıkıldığında kontağını açarak veya kapayarak soğutma fanlarını veya ısıtıcıları kontrol eder. Kabin ekipmanlarının aşırı ısınmasını engeller.",
+    "image": null
+  },
+  {
+    "id": 1776079558602,
+    "name": "MEAN WELL DR-RDN20 Yedekleme Modülü",
+    "description": "Güç kaynaklarının çıkışlarını birleştiren ve giriş voltaj farklarını yöneten, üzerinde 'Out', 'IN1', 'IN2' girişleri bulunan modül.",
+    "logic": "İki farklı güç kaynağının (Redundancy) paralel çalışmasını sağlar. Eğer bir güç kaynağı arızalanırsa, yükün diğer güç kaynağından beslenmeye devam etmesini sağlayarak sistemin sürekliliğini ve yedekliliğini garanti eder.",
+    "image": null
+  },
+  {
+    "id": 1776079558804,
+    "name": "SPD (Surge Protection Device) Type 2 - Aşırı Gerilim Koruma Cihazı",
+    "description": "Uc: 275V, Imax: 40kA değerlerine sahip, hatlar ile toprak (PE) arasına bağlı koruma cihazı.",
+    "logic": "Şebekedeki ani voltaj yükselmelerine (yıldırım düşmesi, anahtarlama hataları) karşı koruma sağlar. Faz hatlarını toprağa deşarj ederek hassas elektronik bileşenlerin hasar görmesini engeller.",
+    "image": null
+  },
+  {
+    "id": 1776079577558,
+    "name": "Centrifugal Pump (Santrifüj Pompa) / Pomp Modülü",
+    "description": "Şemada ABB ACS580-01 VFD ile sürülen, termistör (PTC) korumalı ve çok damarlı kontrol kablolu 45kW/75kW motor birimi.",
+    "logic": "Bu eleman, tesis içindeki sıvı akışını sağlayan ana tahrik ünitesidir. VFD (Frekans Konvertörü) tarafından kontrol edilir, PTC termistörü ile aşırı ısınmaya karşı korunur ve bypass kontaktörü ile direkt yol verme (veya yedekleme) moduna sahip olma yeteneğine sahiptir.",
+    "image": null
+  },
+  {
+    "id": 1776079578218,
+    "name": "Centrifugal Pump (Santrifüj Pompa) - Air Fan Opsiyonlu Motor",
+    "description": "Şemada M-VP-5606A etiketli 37kW güç değerinde, ABB VFD sürücülü ve PTC sensörlü motor.",
+    "logic": "Bu pompa/fan ünitesi, proses süreçlerinde hava veya sıvı transferi sağlar. VFD kontrolü, hız ayarı yapılmasını sağlar ve sistemdeki PTC sensörleri motor sıcaklığını sürekli izleyerek sistem güvenliğini sağlar.",
+    "image": null
+  },
+  {
+    "id": 1776079621724,
+    "name": "Chint NA1-2000 Air Circuit Breaker (ACB)",
+    "description": "Large industrial-grade circuit breaker typically used for main distribution or high-current switching, equipped with motor-operated (YO, YC) coils.",
+    "logic": "Functions as a high-capacity circuit breaker for main power lines, likely part of an Automatic Transfer Switch (ATS) configuration managed by the ATS022 controller, allowing for automatic power source switching.",
+    "image": null
+  },
+  {
+    "id": 1776079642597,
+    "name": "Chint NA1-2000 Açık Tip Devre Kesici (ACB)",
+    "description": "Büyük boyutlu, motorlu ve elektronik üniteli (YO, YC bobinleri ile) modüler devre kesici sembolü.",
+    "logic": "Otomatik transfer anahtarı (ATS) sisteminde ana hatlar arasında geçişi sağlayan anahtarlama elemanıdır. YO (Açtırma) ve YC (Kapama) bobinleri sayesinde ATS kontrol ünitesi (ATS022) tarafından yönetilir.",
+    "image": null
+  },
+  {
+    "id": 1776079642759,
+    "name": "ABB ATS022 Otomatik Transfer Anahtarı Denetleyicisi",
+    "description": "Giriş/çıkış klemensleri ve lojik kontrol blokları olan, üzerinde dijital haberleşme (DATA A/B) ve dijital girişler bulunan merkezi kontrol modülü.",
+    "logic": "İki farklı enerji kaynağını (LINE_1 ve LINE_2) izler ve sistem gereksinimlerine göre NA1-2000 devre kesicilerini yöneterek enerjinin kesintisiz veya güvenli şekilde aktarılmasını sağlar.",
+    "image": null
+  },
+  {
+    "id": 1776079642932,
+    "name": "ABB E90 Serisi Sigorta Yük Ayırıcısı (Fuse Disconnector)",
+    "description": "Sigorta kartuşu içeren modüler DIN ray montajlı ayırıcı sembolü.",
+    "logic": "Kontrol ve güç devrelerinde kısa devre koruması sağlar. E91 1 fazlı, E92 2 fazlı, E93 3 fazlı koruma için kullanılır.",
+    "image": null
+  },
+  {
+    "id": 1776079643101,
+    "name": "ABB S200 Serisi Minyatür Devre Kesici (MCB)",
+    "description": "Termik-manyetik açma özellikli, 2 kutuplu otomatik sigorta sembolü.",
+    "logic": "Kontrol devresini aşırı akım ve kısa devre durumlarına karşı korur.",
+    "image": null
+  },
+  {
+    "id": 1776079643274,
+    "name": "Phoenix Contact ESSENTIAL-PS Güç Kaynağı",
+    "description": "AC girişli (L, N), DC çıkışlı (24VDC) endüstriyel güç kaynağı modülü.",
+    "logic": "Şebeke AC gerilimini, otomasyon sistemleri ve sensörler için gerekli 24V DC çalışma gerilimine dönüştürür.",
+    "image": null
+  },
+  {
+    "id": 1776079643444,
+    "name": "MEAN WELL DR-RDN20 Yedekleme Modülü",
+    "description": "İki ayrı DC güç kaynağını birleştiren ve çıkışta süreklilik sağlayan diyot tabanlı modül.",
+    "logic": "İki güç kaynağından birinin arızalanması durumunda, yükün diğer kaynaktan beslenmesini sağlayarak sistemin çalışmaya devam etmesini (redondans) garanti eder.",
+    "image": null
+  },
+  {
+    "id": 1776079643610,
+    "name": "SPD Tip 2 (Aşırı Gerilim Koruma Cihazı)",
+    "description": "Uc:275V, Imax:40kA değerlerine sahip, hat-nötr-toprak bağlantılı koruma cihazı.",
+    "logic": "Şebekedeki yüksek voltaj sıçramalarını (surge) algılayıp toprağa aktararak, bağlı hassas elektronik cihazları korur.",
+    "image": null
+  },
+  {
+    "id": 1776079643782,
+    "name": "ABB ACS580 Serisi Frekans Konvertörü (VFD)",
+    "description": "Güç girişleri, motor çıkışları ve geniş IO portlarına sahip sürücü.",
+    "logic": "Pompa veya fan motorlarının hızını ve torkunu V/Hz veya vektör kontrolü ile ayarlayarak enerji tasarrufu ve proses kontrolü sağlar.",
+    "image": null
+  },
+  {
+    "id": 1776079644130,
+    "name": "SENECA T201DC Akım Transdüseri",
+    "description": "DC akımı izole bir şekilde ölçen, 4-20mA çıkış veren sensör.",
+    "logic": "Motor akımını izleyerek sürücüye veya PLC'ye mevcut yük hakkında analog sinyal gönderir.",
+    "image": null
+  },
+  {
+    "id": 1776079661701,
+    "name": "ABB/Elco 3-Konumlu Seçici Anahtar (BYPASS-OFF-ON)",
+    "description": "Seçici anahtar sembolü, altında 'BY PASS', 'ON-OFF' ibareleri ve 'ON-OFF-OFF-ON' pozisyon dizilimi ile gösterilmiştir.",
+    "logic": "Bu eleman motorun veya pompanın çalışma modunu (Manuel Bypass veya Otomatik/VFD üzerinden kontrol) seçmek için kullanılır. BY-PASS konumunda VFD devre dışı bırakılarak motor doğrudan şebekeye bağlanırken, ON konumunda VFD üzerinden kontrol sağlanır.",
+    "image": null
+  },
+  {
+    "id": 1776079661866,
+    "name": "ABB CL2 Serisi 22mm LED Sinyal Lambası",
+    "description": "Daire içinde çarpı sembolü (lamba) and 'CL2-523L' kodu ile gösterilen mavi sinyal lambası.",
+    "logic": "Sistemin veya ilgili cihazın (pompa/fan) 'Hazır/Ready' durumunu görsel olarak bildiren bir LED göstergedir. Sinyal lambası yanıyorsa sistem çalışmaya hazır demektir.",
+    "image": null
+  },
+  {
+    "id": 1776079662370,
+    "name": "Endüstriyel Kontrol Butonları (Start, Stop, Emergency, Local/Remote)",
+    "description": "Panel kapısı veya kontrol paneli üzerindeki buton sembolleri (NO/NC kontak yapısı).",
+    "logic": "Operatörün sistemi manuel olarak başlatması, durdurması, acil durumlarda kesmesi veya kontrol yerini (Yerel/Uzak) değiştirmesi için kullanılan arayüz elemanlarıdır.",
+    "image": null
+  },
+  {
+    "id": 1776079731721,
+    "name": "ABB ACS580-01-206A-4 / 169A-4 / 145A-4 / 106A-4 / 089A-4 / 073A-4 Frekans Konvertörü (VFD)",
+    "description": "Büyük dikdörtgen blok halinde gösterilen, kontrol giriş/çıkışları (AI, AO, DI, RO, PTC) ve güç bağlantıları (L1, L2, L3, T1, T2, T3) olan değişken frekanslı sürücü.",
+    "logic": "Motorun hız ve tork kontrolünü sağlar. Modbus TCP arayüz modülü üzerinden PLC ile haberleşir, termistör (PTC) girişi ile motoru aşırı ısınmaya karşı korur ve hata/çalışma durumlarını röle çıkışları ile bildirir.",
+    "image": null
+  },
+  {
+    "id": 1776079731890,
+    "name": "SENECA T201DC Akım Transdüseri",
+    "description": "VFD çıkış hattı üzerinde yer alan, 4-20mA çıkış sinyali üreten akım algılayıcı eleman.",
+    "logic": "Motor besleme hattındaki akımı izleyerek 4-20mA analog sinyale dönüştürür. Bu sinyal VFD veya PLC tarafından motorun çektiği akımı uzaktan izlemek ve analiz etmek için kullanılır.",
+    "image": null
+  },
+  {
+    "id": 1776079732045,
+    "name": "ABB EF/TF Serisi Elektronik Aşırı Yük Rölesi",
+    "description": "VFD çıkışındaki kontaktörlerin hemen altına yerleştirilmiş aşırı yük koruma rölesi.",
+    "logic": "Motoru aşırı akım durumlarına karşı korur. Aşırı yük algılandığında devreyi keser ve hatayı PLC/Sürücü sistemine bildirmek için ilgili yardımcı kontaklarını açar/kapar.",
+    "image": null
+  },
+  {
+    "id": 1776079732219,
+    "name": "ABB 3-Konumlu Seçici Anahtar (BYPASS-OFF-ON)",
+    "description": "Panel kapağı üzerinde bulunan 3 konumlu anahtar sembolü.",
+    "logic": "Sistemin işletim modunu seçer. 'ON' konumunda VFD kontrolü, 'BY PASS' konumunda doğrudan şebeke beslemesi (bypass) ve 'OFF' konumunda sistemin tamamen durdurulması mantığıyla çalışır.",
+    "image": null
+  },
+  {
+    "id": 1776079732396,
+    "name": "Chint NA1-2000 Açık Tip Devre Kesici (ACB)",
+    "description": "1600A/2000A kapasiteli, LSI (Long time, Short time, Instantaneous) koruma özellikli, motorlu devre kesici.",
+    "logic": "Ana giriş ve transfer (ATS) bölümlerinde yer alır. Şebeke ve jeneratör kaynaklarını korur, ATS denetleyicisi komutu ile otomatik olarak açma veya kapama yapar.",
+    "image": null
+  },
+  {
+    "id": 1776080096300,
+    "name": "Chint NA1-2000 Air Circuit Breaker (ACB)",
+    "description": "Large frame circuit breaker with motor operator, closing coil (YC), and opening coil (YO) symbols.",
+    "logic": "Functions as a main switching and protection device for ATS (Automatic Transfer Switch) systems. The YC (closing) and YO (opening) coils are controlled by the ATS controller (-2Z1) to automate power source switching between two supply lines.",
+    "image": null
+  },
+  {
+    "id": 1776080098867,
+    "name": "ABB ATS022 Automatic Transfer Switch Controller",
+    "description": "A control module with multiple digital inputs (DI), outputs (Q), and communication ports.",
+    "logic": "The central intelligent unit that monitors the status of power lines (Line 1 and Line 2). It processes input signals and activates the closing (YC) or opening (YO) of the respective Air Circuit Breakers (NA1-2000) to ensure a seamless power transfer and prevent simultaneous connection of both sources.",
+    "image": null
+  },
+  {
+    "id": 1776080111831,
+    "name": "SENECA T201DC - Akım Transdüseri (Current Transducer)",
+    "description": "A square-shaped sensor symbol marked 'SENECA/T201DC' with input lines and output marked '4-20mA'.",
+    "logic": "Monitors motor current and provides a 4-20mA feedback signal proportional to the measured AC current to the VFD's control inputs, allowing the system to monitor load conditions.",
+    "image": null
+  },
+  {
+    "id": 1776080111993,
+    "name": "Bimetalik Termostat (0-60°C)",
+    "description": "Normally open contact symbol labeled '0-60°C' with tag -7S1.",
+    "logic": "Acts as a thermal switch for the cabinet ventilation system. When the ambient temperature inside the cabinet exceeds the set threshold (e.g., 60°C), the contact closes to activate the Cabinet Air Fans (-7M1).",
+    "image": null
+  },
+  {
+    "id": 1776080112198,
+    "name": "ABB Kontaktör",
+    "description": "Standard industrial magnetic contactor symbol with NO (Normally Open) main power poles.",
+    "logic": "Used in the VFD bypass or motor output circuit to control the power flow to the motor. Activated by the control logic relays to switch between direct-on-line (bypass) or VFD-driven operation.",
+    "image": null
+  },
+  {
+    "id": 1776080112367,
+    "name": "Kabin Havalandırma Fanı (Cabinet Air Fan)",
+    "description": "Motor symbol marked 'M 1~' representing a single-phase ventilation fan.",
+    "logic": "Provides active cooling for the electrical cabinet to maintain operating temperature within limits. Controlled by the cabinet thermostat (-0S1).",
+    "image": null
+  },
+  {
+    "id": 1776080112561,
+    "name": "Kabin İçi Aydınlatma (Cabinet Light)",
+    "description": "Lamp symbol marked 'Cabinet Light'.",
+    "logic": "Provides illumination inside the control cabinet for maintenance and troubleshooting purposes.",
+    "image": null
+  },
+  {
+    "id": 1776080112744,
+    "name": "MEAN WELL DR-RDN20 Redundancy Module",
+    "description": "Device symbol with two inputs (IN1, IN2) and one common output (Out), marked 'Redundancy module'.",
+    "logic": "Ensures power supply reliability. It connects two DC power supplies (e.g., -5G1 and -5G2) in parallel to the load; if one fails, the other automatically takes over the full load.",
+    "image": null
+  },
+  {
+    "id": 1776080112922,
+    "name": "SPD (Surge Protection Device) - Tip 2",
+    "description": "Protective device symbol connected between line phases and PE, labeled 'Uc:275V, Imax:40kA'.",
+    "logic": "Protects the electrical installation against transient overvoltages caused by switching or lightning strikes by diverting excess voltage to the ground.",
+    "image": null
+  },
+  {
+    "id": 1776080128010,
+    "name": "SENECA T201DC - Akım Transdüseri (Current Transducer)",
+    "description": "Dikdörtgen kutu içinde, SENECA markalı akım girişli transdüser sembolü",
+    "logic": "AC veya DC akımı ölçerek 4-20mA analog sinyale dönüştürür. PLC veya VFD kontrol devrelerinde akım takibi için kullanılır.",
+    "image": null
+  },
+  {
+    "id": 1776080128323,
+    "name": "Santrifüj Pompa Motoru",
+    "description": "3 fazlı asenkron motor sembolü, termistör (PTC) bağlantı çıkışları ile gösterilmiş",
+    "logic": "Elektrik enerjisini mekanik enerjiye dönüştürerek pompayı tahrik eder. VFD üzerinden hız kontrolü sağlanır ve motor içindeki PTC ile aşırı ısınma koruması denetlenir.",
+    "image": null
+  },
+  {
+    "id": 1776080128870,
+    "name": "BY-PASS ON-OFF Seçici Anahtar",
+    "description": "Döner anahtar sembolü, 0-1 pozisyonlu",
+    "logic": "Motorun VFD (sürücü) üzerinden mi yoksa direkt şebekeden (by-pass) mi besleneceğini seçmek için kullanılır. Bakım veya sürücü arızası durumunda bypass hattı üzerinden operasyonun devamını sağlar.",
+    "image": null
+  }
+]
