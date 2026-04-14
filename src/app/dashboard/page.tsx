@@ -10,7 +10,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { PlanManagementModal } from "@/components/payment/PlanManagementModal";
-import { useVideoAccess } from "@/hooks/useVideoAccess";
+import { usePurchases } from "@/hooks/usePurchases";
 import { PlayCircle } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
@@ -28,7 +28,7 @@ export default function DashboardPage() {
 function DashboardPageContent() {
   const [activeTab, setActiveTab] = useState("overview");
   const [isPlanModalOpen, setIsPlanModalOpen] = useState(false);
-  const { watchedCount, isLoaded } = useVideoAccess();
+  const { hasPurchased, loading: purchasesLoading } = usePurchases();
   const { user, loading, logout } = useAuth();
   const router = useRouter();
 
@@ -111,8 +111,8 @@ function DashboardPageContent() {
                   <div className="flex flex-col mt-1 gap-1.5">
                     <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">{user.email}</span>
                     <div className="flex items-center gap-2">
-                       <span className="inline-flex w-fit items-center rounded-full bg-green-100 px-2 py-0.5 text-[10px] font-bold text-green-700 dark:bg-green-900/50 dark:text-green-400 border border-green-200 dark:border-green-800">
-                         <CheckCircle2 className="w-3 h-3 mr-1" /> Premium Üye
+                       <span className="inline-flex w-fit items-center rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-bold text-blue-700 dark:bg-blue-900/50 dark:text-blue-400 border border-blue-200 dark:border-blue-800">
+                         <CheckCircle2 className="w-3 h-3 mr-1" /> Kayıtlı Kullanıcı
                        </span>
                     </div>
                   </div>
@@ -176,14 +176,14 @@ function DashboardPageContent() {
                 </Card>
                 <Card className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white border-0 shadow-lg shadow-indigo-900/20 relative overflow-hidden">
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-medium text-indigo-100 uppercase tracking-wider">İzlenen Videolar</CardTitle>
+                    <CardTitle className="text-sm font-medium text-indigo-100 uppercase tracking-wider">Satın Alınan İçerik</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="text-3xl font-black flex items-center mb-1">
-                      <PlayCircle className="w-6 h-6 mr-2 opacity-80" />
-                      {isLoaded ? watchedCount : "..."} Video
+                      <Zap className="w-6 h-6 mr-2 opacity-80" />
+                      {purchasesLoading ? "..." : "Aktif"}
                     </div>
-                    <p className="text-xs text-indigo-100 font-medium">Eğitim Kütüphanesi İstatistiği</p>
+                    <p className="text-xs text-indigo-100 font-medium">Shopier Ödeme Geçmişi</p>
                   </CardContent>
                 </Card>
               </div>

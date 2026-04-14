@@ -16,7 +16,7 @@ import {
   increment,
   updateDoc
 } from "firebase/firestore";
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { ref, uploadBytesResumable, getDownloadURL, listAll } from "firebase/storage";
 
 // Helper for timeouts
 const withTimeout = (promise: Promise<any>, ms: number, errorMessage: string) => {
@@ -178,6 +178,14 @@ export async function createProblem(problem: Omit<Problem, "id" | "createdAt">):
 // DYNAMIC MVP SERVICES (Firestore & Storage)
 // ----------------------------------------------------
 
+// Helper to sanitize file names
+function sanitizeFileName(fileName: string): string {
+  return fileName
+    .replace(/\s+/g, '_')           // Replace spaces with underscores
+    .replace(/[^a-zA-Z0-0\._-]/g, '') // Remove non-alphanumeric characters except dots, underscores, and hyphens
+    .toLowerCase();                 // Optional: consistent lowercase
+}
+
 // 1. Storage Upload
 export async function uploadFileToStorage(
   file: File, 
@@ -185,23 +193,46 @@ export async function uploadFileToStorage(
   onProgress?: (progress: number) => void
 ): Promise<string> {
   try {
-    const storageRef = ref(storage, path);
+    // Sanitize the filename part of the path if it exists
+    const pathParts = path.split('/');
+    const originalFileName = pathParts.pop() || 'file';
+    const sanitizedFileName = sanitizeFileName(originalFileName);
+    const finalPath = [...pathParts, sanitizedFileName].join('/');
+
+    const storageRef = ref(storage, finalPath);
     const uploadTask = uploadBytesResumable(storageRef, file);
     
     return new Promise((resolve, reject) => {
       uploadTask.on(
         'state_changed',
         (snapshot) => {
-          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          if (onProgress) onProgress(progress);
+          if (snapshot.totalBytes > 0) {
+            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            if (onProgress) onProgress(Math.round(progress));
+          }
         },
         (error) => {
           console.error("Firebase Storage Upload Error Details:", error);
-          reject(error);
+          let errorMessage = "Yükleme sırasında bir hata oluştu.";
+          
+          if (error.code === 'storage/unauthorized') {
+            errorMessage = "Yükleme izniniz yok. Lütfen giriş yaptığınızdan emin olun.";
+          } else if (error.code === 'storage/canceled') {
+            errorMessage = "Yükleme iptal edildi.";
+          } else if (error.code === 'storage/unknown') {
+            errorMessage = "Bilinmeyen bir hata oluştu. Bağlantınızı kontrol edin.";
+          }
+          
+          reject(new Error(errorMessage));
         },
         async () => {
-          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-          resolve(downloadURL);
+          try {
+            const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+            resolve(downloadURL);
+          } catch (urlError: any) {
+            console.error("Error getting download URL:", urlError);
+            reject(new Error("Dosya yüklendi fakat bağlantı adresi alınamadı."));
+          }
         }
       );
     });
@@ -250,11 +281,21 @@ export async function getRequestsForAdmin(): Promise<any[]> {
 // 4. Dynamic Content Getters
 export async function getDynamicContent(collectionName: string): Promise<any[]> {
   try {
-    const q = query(collection(db, collectionName), orderBy("createdAt", "desc"));
-    const snapshot = await getDocs(q);
-    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    // Attempt ordered fetch
+    try {
+      const q = query(collection(db, collectionName), orderBy("createdAt", "desc"));
+      const snapshot = await getDocs(q);
+      return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    } catch (orderError) {
+      console.warn(`Ordering failed for ${collectionName}, falling back to unordered fetch. Likely missing index.`, orderError);
+      // Fallback to unordered fetch
+      const q = query(collection(db, collectionName));
+      const snapshot = await getDocs(q);
+      // Sort manually in memory if needed, but for now just Return all
+      return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    }
   } catch (error) {
-    console.error(`Error getting content from ${collectionName}: `, error);
+    console.error(`Critical error getting content from ${collectionName}: `, error);
     return [];
   }
 }
@@ -270,6 +311,33 @@ export async function addDynamicContent(collectionName: string, data: any) {
   } catch (error) {
     console.error(`Error adding content to ${collectionName}: `, error);
     return false;
+  }
+}
+
+// 5b. Storage Video Lister
+export async function getStorageVideosOnly(): Promise<any[]> {
+  try {
+    const listRef = ref(storage, 'videos');
+    const res = await listAll(listRef);
+    
+    const videoData = await Promise.all(
+      res.items.map(async (itemRef) => {
+        const url = await getDownloadURL(itemRef);
+        return {
+          id: itemRef.name, // Use filename as fallback ID
+          title: itemRef.name.split('_').slice(1).join('_') || itemRef.name, // Attempt to remove timestamp prefix
+          fileUrl: url,
+          duration: "N/A",
+          description: "Otomatik listelenen depolama videosu.",
+          isFromStorageOnly: true
+        };
+      })
+    );
+    
+    return videoData;
+  } catch (error) {
+    console.error("Error listing storage videos: ", error);
+    return [];
   }
 }
 

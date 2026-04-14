@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -19,10 +19,14 @@ export default function AdminDashboard() {
   const [isFetchingRequests, setIsFetchingRequests] = useState(false);
 
   // New Content States
-  const [newVideo, setNewVideo] = useState({ title: "", description: "", duration: "10:00" });
+  const [newVideo, setNewVideo] = useState({ title: "", description: "" });
   const [videoFile, setVideoFile] = useState<File | null>(null);
   const [newDoc, setNewDoc] = useState({ type: "PDF", title: "", desc: "", category: "docs" });
   const [docFile, setDocFile] = useState<File | null>(null);
+
+  // Refs for resetting file inputs
+  const videoInputRef = useRef<HTMLInputElement>(null);
+  const docInputRef = useRef<HTMLInputElement>(null);
 
   // Auto-categorize document based on file extension
   useEffect(() => {
@@ -65,30 +69,46 @@ export default function AdminDashboard() {
       return;
     }
 
+    // 100MB Limit (optional but recommended for web uploads)
+    const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB
+    if (videoFile.size > MAX_FILE_SIZE) {
+      alert("Dosya çok büyük. Maksimum 100MB yükleyebilirsiniz.");
+      return;
+    }
+
     setIsUploading(true);
     setUploadProgress(0);
     try {
+      const timestamp = Date.now();
       const fileUrl = await uploadFileToStorage(
         videoFile, 
-        `videos/${Date.now()}_${videoFile.name}`,
-        (progress) => setUploadProgress(Math.round(progress))
+        `videos/${timestamp}_${videoFile.name}`,
+        (progress) => setUploadProgress(progress)
       );
       
       const success = await addDynamicContent("videos", {
         ...newVideo,
-        fileUrl
+        fileUrl,
+        fileName: videoFile.name,
+        fileSize: videoFile.size,
+        updatedAt: timestamp
       });
       
       if (success) {
-        alert("Video başarıyla yüklendi ve yayınlandı");
-        setNewVideo({title: "", description: "", duration: "10:00"});
-        setVideoFile(null);
+        setUploadProgress(100);
+        setTimeout(() => {
+          alert("Videonuz başarıyla yüklendi.");
+          setNewVideo({title: "", description: ""});
+          setVideoFile(null);
+          setUploadProgress(0);
+          if (videoInputRef.current) videoInputRef.current.value = "";
+        }, 300);
       } else {
-        alert("Hata oluştu.");
+        alert("Video kaydı veritabanına eklenirken bir hata oluştu.");
       }
     } catch(err: any) {
       console.error("Upload process error:", err);
-      alert(`Video yükleme hatası: ${err.message || 'Bilinmeyen bir hata oluştu'}`);
+      alert(`Hata: ${err.message || 'Video yüklenemedi. Lütfen internet bağlantınızı kontrol edin.'}`);
     } finally {
       setIsUploading(false);
     }
@@ -96,29 +116,48 @@ export default function AdminDashboard() {
 
   const handleAddDoc = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!docFile) {
+      alert("Lütfen önce bir dosya seçin.");
+      return;
+    }
+
     setIsUploading(true);
+    setUploadProgress(0);
     try {
       let fileUrl = "";
       if (docFile) {
-        fileUrl = await uploadFileToStorage(docFile, `admin_uploads/${Date.now()}_${docFile.name}`);
+        const timestamp = Date.now();
+        fileUrl = await uploadFileToStorage(
+          docFile, 
+          `admin_uploads/${timestamp}_${docFile.name}`,
+          (progress) => setUploadProgress(progress)
+        );
       }
       
       const success = await addDynamicContent(newDoc.category, {
         type: newDoc.type,
         title: newDoc.title,
         desc: newDoc.desc,
-        fileUrl
+        fileUrl,
+        fileName: docFile?.name || "",
+        createdAt: Date.now()
       });
       
       if (success) {
-        alert("Doküman başarıyla eklendi");
-        setNewDoc({ type: "PDF", title: "", desc: "", category: "docs" });
-        setDocFile(null);
+        setUploadProgress(100);
+        setTimeout(() => {
+          alert("Doküman başarıyla yüklendi.");
+          setNewDoc({ type: "PDF", title: "", desc: "", category: "docs" });
+          setDocFile(null);
+          setUploadProgress(0);
+          if (docInputRef.current) docInputRef.current.value = "";
+        }, 300);
       } else {
-        alert("Hata oluştu.");
+        alert("Doküman kaydı veritabanına eklenirken bir hata oluştu.");
       }
-    } catch(err) {
-      alert("Hata oluştu.");
+    } catch(err: any) {
+      console.error("Doc upload error:", err);
+      alert(`Hata: ${err.message || 'Doküman yüklenemedi.'}`);
     } finally {
       setIsUploading(false);
     }
@@ -234,10 +273,6 @@ export default function AdminDashboard() {
                           <Input required value={newVideo.title} onChange={e => setNewVideo({...newVideo, title: e.target.value})} placeholder="Örn: Klemens Planı Oluşturma" />
                        </div>
                        <div className="space-y-2">
-                          <label className="text-sm font-medium">Süre (Dk:Sn)</label>
-                          <Input required value={newVideo.duration} onChange={e => setNewVideo({...newVideo, duration: e.target.value})} placeholder="Örn: 10:24" />
-                       </div>
-                       <div className="space-y-2">
                           <label className="text-sm font-medium">Video İçeriği / Açıklaması</label>
                           <textarea 
                             required 
@@ -253,6 +288,7 @@ export default function AdminDashboard() {
                             <Input 
                               type="file" 
                               accept="video/*"
+                              ref={videoInputRef}
                               onChange={e => setVideoFile(e.target.files?.[0] || null)}
                               className="cursor-pointer file:bg-electric-500 file:text-white file:border-none file:rounded file:px-3 file:py-1 file:mr-4 file:hover:bg-electric-600 transition-all"
                             />
@@ -315,7 +351,7 @@ export default function AdminDashboard() {
                        </div>
                        <div className="space-y-2 md:col-span-2">
                           <label className="text-sm font-medium">Dosya (Firebase Storage'a Yüklenecek)</label>
-                          <Input type="file" onChange={e => setDocFile(e.target.files?.[0] || null)} />
+                          <Input type="file" ref={docInputRef} onChange={e => setDocFile(e.target.files?.[0] || null)} className="cursor-pointer file:bg-electric-500 file:text-white file:border-none file:rounded file:px-3 file:py-1 file:mr-4 file:hover:bg-electric-600 transition-all" />
                        </div>
                      </div>
                      <Button type="submit" disabled={isUploading}>

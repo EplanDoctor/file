@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Section } from "@/components/layout/Section";
@@ -9,6 +10,10 @@ import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/context/LanguageContext";
 import { useAuth } from "@/context/AuthContext";
 import { createSupportTicket } from "@/lib/firebase/services";
+import { usePurchases } from "@/hooks/usePurchases";
+import { BuyerInfoModal } from "@/components/payment/BuyerInfoModal";
+import { PRICES } from "@/lib/constants";
+import { Lock } from "lucide-react";
 
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 
@@ -23,8 +28,17 @@ export default function InstantSolvePage() {
 function InstantSolvePageContent() {
   const { t } = useLanguage();
   const { user } = useAuth();
+  const { hasPurchased } = usePurchases();
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+
+  const expertProductId = "instant-expert-connect";
 
   const handleWhatsAppConnect = async () => {
+    if (!hasPurchased(expertProductId)) {
+      setIsPaymentModalOpen(true);
+      return;
+    }
+
     const message = encodeURIComponent(t.instant_solve_page.btn);
     
     // If user is logged in, record the ticket
@@ -99,7 +113,11 @@ function InstantSolvePageContent() {
                     className="w-full h-20 text-[11px] font-black tracking-widest bg-emerald-600 hover:bg-emerald-500 text-white shadow-2xl shadow-emerald-600/30 rounded-[30px] transition-all hover:scale-[1.02] active:scale-[0.98] uppercase"
                     onClick={handleWhatsAppConnect}
                   >
-                    <MessageCircle className="w-6 h-6 mr-3" /> {t.instant_solve_page.btn}
+                    {hasPurchased(expertProductId) ? (
+                      <><MessageCircle className="w-6 h-6 mr-3" /> {t.instant_solve_page.btn}</>
+                    ) : (
+                      <><Lock className="w-4 h-4 mr-2" /> {PRICES.EXPERT} TL ÖDEME YAP VE BAĞLAN</>
+                    )}
                   </Button>
                   
                   <div className="mt-8 flex justify-center items-center text-[10px] text-slate-400 font-black tracking-widest opacity-50 uppercase italic">
@@ -110,6 +128,17 @@ function InstantSolvePageContent() {
           </div>
         </Section>
       </main>
+
+      <BuyerInfoModal 
+        isOpen={isPaymentModalOpen}
+        onClose={() => setIsPaymentModalOpen(false)}
+        product={{
+          type: 'expert',
+          id: expertProductId,
+          name: t.instant_solve_page.card_title,
+          price: PRICES.EXPERT
+        }}
+      />
 
       <Footer />
     </div>

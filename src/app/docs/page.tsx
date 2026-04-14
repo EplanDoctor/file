@@ -4,12 +4,15 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Section } from "@/components/layout/Section";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { FileText, Download, BookOpen, Search, ArrowRight, PenTool } from "lucide-react";
+import { FileText, Download, BookOpen, Search, ArrowRight, PenTool, Lock } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/context/LanguageContext";
 import { useState, useEffect } from "react";
 import { getDynamicContent } from "@/lib/firebase/services";
+import { usePurchases } from "@/hooks/usePurchases";
+import { BuyerInfoModal } from "@/components/payment/BuyerInfoModal";
+import { PRICES } from "@/lib/constants";
 
 
 
@@ -33,11 +36,31 @@ function DocsPageContent() {
   const [circuits, setCircuits] = useState<any[]>([]);
   const [autocadList, setAutocadList] = useState<any[]>([]);
 
+  const { hasPurchased, loading: purchasesLoading } = usePurchases();
+  const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
+
   useEffect(() => {
     getDynamicContent("docs").then(data => setDocs(data));
     getDynamicContent("circuits").then(data => setCircuits(data));
     getDynamicContent("autocad").then(data => setAutocadList(data));
   }, []);
+
+  const handleDownload = (item: any, type: 'doc' | 'circuit' | 'autocad') => {
+    if (hasPurchased(item.id)) {
+      window.open(item.fileUrl, "_blank");
+    } else {
+      let price = PRICES.DOC;
+      if (type === 'autocad') price = PRICES.AUTOCAD;
+      if (type === 'circuit') price = PRICES.CIRCUIT;
+
+      setSelectedProduct({
+        id: item.id,
+        type: type,
+        name: item.title,
+        price: price
+      });
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 uppercase">
@@ -72,9 +95,12 @@ function DocsPageContent() {
                       <CardDescription className="text-[11px] font-bold opacity-70 leading-relaxed uppercase">{doc.desc}</CardDescription>
                     </div>
                   </div>
-                  <Link href={doc.fileUrl || "/dashboard"} target={doc.fileUrl ? "_blank" : "_self"} className="p-4 bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-2xl hover:bg-electric-600 hover:text-white transition-all shadow-sm hover:shadow-electric-600/20 shrink-0">
-                    <Download className="w-5 h-5" />
-                  </Link>
+                  <button 
+                    onClick={() => handleDownload(doc, 'doc')} 
+                    className={`p-4 rounded-2xl transition-all shadow-sm shrink-0 ${hasPurchased(doc.id) ? "bg-emerald-500 text-white shadow-emerald-500/20" : "bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-electric-600 hover:text-white hover:shadow-electric-600/20"}`}
+                  >
+                    {hasPurchased(doc.id) ? <Download className="w-5 h-5" /> : <Lock className="w-5 h-5" />}
+                  </button>
                 </CardHeader>
               </Card>
             ))}
@@ -111,11 +137,13 @@ function DocsPageContent() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="p-8 pt-0">
-                    <Link href={circuit.fileUrl || "/dashboard"} target={circuit.fileUrl ? "_blank" : "_self"} className="w-full">
-                      <Button variant="outline" className="w-full text-[10px] font-black uppercase tracking-widest h-12 rounded-2xl border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all">
-                        {t.docs_page.btn_view}
-                      </Button>
-                    </Link>
+                    <Button 
+                      onClick={() => handleDownload(circuit, 'circuit')}
+                      variant={hasPurchased(circuit.id) ? "default" : "outline"} 
+                      className={`w-full text-[10px] font-black uppercase tracking-widest h-12 rounded-2xl transition-all ${hasPurchased(circuit.id) ? "bg-emerald-600 hover:bg-emerald-700" : "border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800"}`}
+                    >
+                      {hasPurchased(circuit.id) ? t.docs_page.btn_view : `${PRICES.CIRCUIT} TL SATIN AL`}
+                    </Button>
                   </CardContent>
                 </Card>
               ))}
@@ -154,9 +182,12 @@ function DocsPageContent() {
                         <CardDescription className="text-[11px] font-bold opacity-70 leading-relaxed uppercase">{doc.desc}</CardDescription>
                       </div>
                     </div>
-                    <Link href={doc.fileUrl || "/dashboard"} target={doc.fileUrl ? "_blank" : "_self"} className="p-4 bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-2xl hover:bg-blue-600 hover:text-white transition-all shadow-sm hover:shadow-blue-600/20 shrink-0">
-                      <Download className="w-5 h-5" />
-                    </Link>
+                    <button 
+                      onClick={() => handleDownload(doc, 'autocad')}
+                      className={`p-4 rounded-2xl transition-all shadow-sm shrink-0 ${hasPurchased(doc.id) ? "bg-emerald-500 text-white shadow-emerald-500/20" : "bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-blue-600 hover:text-white hover:shadow-blue-600/20"}`}
+                    >
+                      {hasPurchased(doc.id) ? <Download className="w-5 h-5" /> : <Lock className="w-5 h-5" />}
+                    </button>
                   </CardHeader>
                 </Card>
               ))}
@@ -164,6 +195,14 @@ function DocsPageContent() {
           </div>
         </Section>
       </main>
+
+      {selectedProduct && (
+        <BuyerInfoModal 
+          isOpen={!!selectedProduct}
+          onClose={() => setSelectedProduct(null)}
+          product={selectedProduct}
+        />
+      )}
 
       <Footer />
     </div>

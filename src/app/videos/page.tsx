@@ -4,12 +4,13 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Section } from "@/components/layout/Section";
 import { VideoCard } from "@/components/VideoCard";
-import { VideoAdOverlay } from "@/components/VideoAdOverlay";
+import { VideoPaymentOverlay } from "@/components/payment/VideoPaymentOverlay";
 import { VideoPlayerModal } from "@/components/VideoPlayerModal";
 import { PlayCircle, Zap } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { useState, useEffect } from "react";
-import { getDynamicContent } from "@/lib/firebase/services";
+import { getDynamicContent, getStorageVideosOnly } from "@/lib/firebase/services";
+import { Loader2 } from "lucide-react";
 
 // No mock data
 
@@ -25,12 +26,29 @@ export default function VideosPage() {
 
 function VideosPageContent() {
   const { t } = useLanguage();
-  const [activeVideo, setActiveVideo] = useState<{ id: number, title: string } | null>(null);
+  const [activeVideo, setActiveVideo] = useState<any | null>(null);
   const [videos, setVideos] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getDynamicContent("videos").then(data => {
-      setVideos(data || []);
+    setLoading(true);
+    
+    Promise.all([
+      getDynamicContent("videos"),
+      getStorageVideosOnly()
+    ]).then(([firestoreVideos, storageVideos]) => {
+      const fsVideos = firestoreVideos || [];
+      const sVideos = storageVideos || [];
+      
+      // Merge: Add storage videos only if their URLs aren't already in the Firestore list
+      const fsUrls = new Set(fsVideos.map((v: any) => v.fileUrl));
+      const uniqueStorageVideos = sVideos.filter((sv: any) => !fsUrls.has(sv.fileUrl));
+      
+      setVideos([...fsVideos, ...uniqueStorageVideos]);
+      setLoading(false);
+    }).catch(err => {
+      console.error("Error merging videos:", err);
+      setLoading(false);
     });
   }, []);
 
@@ -52,30 +70,46 @@ function VideosPageContent() {
               {t.videos_page.title_part1} <span className="text-blue-600">{t.videos_page.title_part2}</span>
             </h1>
             <p className="text-sm font-bold text-slate-600 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed opacity-70 italic shadow-sm bg-white/50 dark:bg-slate-900/50 p-4 rounded-2xl backdrop-blur-sm border border-white/20">
-              {t.videos_page.desc} <span className="text-blue-600 block mt-4 font-black">{t.videos_page.free_hint}</span>
+              {t.videos_page.desc}
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10 max-w-7xl mx-auto relative z-10 px-4">
-            {videos.map((video) => (
-                <VideoAdOverlay key={video.id} videoId={`video-${video.id}`} title={video.title}>
-                  <div className="group relative">
-                    <div className="absolute inset-0 bg-blue-600 rounded-[40px] blur-2xl opacity-0 group-hover:opacity-10 transition-opacity duration-500"></div>
-                    <VideoCard 
-                        title={video.title} 
-                        duration={video.duration} 
-                        description={video.description}
-                        onClick={() => setActiveVideo(video)} 
-                    />
-                  </div>
-                </VideoAdOverlay>
-            ))}
+          <div className="max-w-7xl mx-auto relative z-10 px-4">
+            {loading ? (
+              <div className="flex flex-col items-center justify-center py-20 animate-in fade-in duration-500">
+                <Loader2 className="w-12 h-12 text-blue-600 animate-spin mb-4" />
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Eğitim Videoları Yükleniyor...</p>
+              </div>
+            ) : videos.length > 0 ? (
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
+                {videos.map((video) => (
+                    <VideoPaymentOverlay key={video.id} videoId={video.id} title={video.title}>
+                      <div className="group relative">
+                        <div className="absolute inset-0 bg-blue-600 rounded-[40px] blur-2xl opacity-0 group-hover:opacity-10 transition-opacity duration-500"></div>
+                        <VideoCard 
+                            title={video.title} 
+                            duration={video.duration} 
+                            description={video.description}
+                            onClick={() => setActiveVideo(video)} 
+                        />
+                      </div>
+                    </VideoPaymentOverlay>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-24 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-[40px] bg-white/50 dark:bg-slate-900/50 animate-in zoom-in-95 duration-500">
+                 <PlayCircle className="w-16 h-16 text-slate-200 mx-auto mb-6" />
+                 <h3 className="text-sm font-black text-slate-400 uppercase tracking-widest mb-2">Henüz eğitim videosu eklenmemiş</h3>
+                 <p className="text-[11px] font-bold text-slate-500 uppercase italic opacity-70">En kısa sürede yeni içerikler eklenecektir.</p>
+              </div>
+            )}
           </div>
 
           <VideoPlayerModal 
             isOpen={!!activeVideo}
             onClose={() => setActiveVideo(null)}
             videoTitle={activeVideo?.title || ""}
+            videoUrl={activeVideo?.fileUrl}
           />
 
           <div className="mt-24 text-center">
