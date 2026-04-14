@@ -80,7 +80,7 @@ export class ShopierService {
     console.log('Shopier Payment Initiated:', { order_id: data.order_id, price: formattedPrice });
 
     return {
-      action: 'https://www.shopier.com/ShowProduct/api/pay4.php',
+      action: 'https://www.shopier.com/ShowProduct/api_pay4.php',
       fields: {
         ...data,
         signature

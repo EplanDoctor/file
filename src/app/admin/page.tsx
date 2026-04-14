@@ -96,13 +96,12 @@ export default function AdminDashboard() {
       
       if (success) {
         setUploadProgress(100);
-        setTimeout(() => {
-          alert("Videonuz başarıyla yüklendi.");
-          setNewVideo({title: "", description: ""});
-          setVideoFile(null);
-          setUploadProgress(0);
-          if (videoInputRef.current) videoInputRef.current.value = "";
-        }, 300);
+        // Doğrudan bildirim göster, state'leri temizle (setTimeout finally'den sonra kilitlenmemesi için kaldırıldı)
+        alert("Videonuz başarıyla yüklendi.");
+        setNewVideo({title: "", description: ""});
+        setVideoFile(null);
+        setUploadProgress(0);
+        if (videoInputRef.current) videoInputRef.current.value = "";
       } else {
         alert("Video kaydı veritabanına eklenirken bir hata oluştu.");
       }
