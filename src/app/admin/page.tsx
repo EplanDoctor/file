@@ -97,16 +97,25 @@ export default function AdminDashboard() {
       
       if (success) {
         setUploadProgress(100);
-        setUploadSuccessMsg("Videonuz başarıyla yüklendi ve yayınlandı!");
         
-        setTimeout(() => {
-          setUploadSuccessMsg("");
-        }, 5000);
+        // Step 1: Show success banner FIRST, keep uploading state briefly for visual transition
+        await new Promise(r => setTimeout(r, 500));
+        setIsUploading(false);
+        setUploadSuccessMsg("✅ Videonuz başarıyla yüklendi ve yayınlandı!");
         
+        // Step 2: Reset form after a short delay so user sees the success state
+        await new Promise(r => setTimeout(r, 500));
         setNewVideo({title: "", description: ""});
         setVideoFile(null);
         setUploadProgress(0);
         if (videoInputRef.current) videoInputRef.current.value = "";
+        
+        // Step 3: Auto-hide after 8 seconds
+        setTimeout(() => {
+          setUploadSuccessMsg("");
+        }, 8000);
+        
+        return; // Skip finally's setIsUploading since we already did it
       } else {
         alert("Video kaydı veritabanına eklenirken bir hata oluştu.");
       }
@@ -271,8 +280,14 @@ export default function AdminDashboard() {
                 </CardHeader>
                 <CardContent>
                   {uploadSuccessMsg && (
-                    <div className="mb-4 p-4 text-sm font-bold text-emerald-700 bg-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-400 rounded-xl border border-emerald-200 dark:border-emerald-800 flex items-center shadow-sm">
-                      <span className="mr-2">✅</span> {uploadSuccessMsg}
+                    <div className="mb-6 p-5 font-bold text-emerald-800 bg-gradient-to-r from-emerald-100 via-emerald-50 to-emerald-100 dark:from-emerald-900/40 dark:via-emerald-800/30 dark:to-emerald-900/40 dark:text-emerald-300 rounded-2xl border-2 border-emerald-300 dark:border-emerald-700 flex items-center gap-4 shadow-lg shadow-emerald-500/10 animate-pulse" style={{animation: 'fadeInUp 0.5s ease-out'}}>
+                      <div className="w-12 h-12 bg-emerald-500 rounded-full flex items-center justify-center shrink-0 shadow-lg shadow-emerald-500/30">
+                        <span className="text-white text-2xl">✓</span>
+                      </div>
+                      <div>
+                        <p className="text-base font-extrabold">{uploadSuccessMsg}</p>
+                        <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-1 opacity-75">Videolar sayfasında görüntülenebilir.</p>
+                      </div>
                     </div>
                   )}
                   <form onSubmit={handleAddVideo} className="space-y-4">
