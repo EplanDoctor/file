@@ -98,24 +98,21 @@ export default function AdminDashboard() {
       if (success) {
         setUploadProgress(100);
         
-        // Step 1: Show success banner FIRST, keep uploading state briefly for visual transition
-        await new Promise(r => setTimeout(r, 500));
-        setIsUploading(false);
-        setUploadSuccessMsg("✅ Videonuz başarıyla yüklendi ve yayınlandı!");
+        // Native alert is most reliable for user confirmation
+        alert("✅ Videonuz başarıyla yüklendi ve yayınlandı!");
         
-        // Step 2: Reset form after a short delay so user sees the success state
-        await new Promise(r => setTimeout(r, 500));
+        setUploadSuccessMsg("Videonuz başarıyla yüklendi ve yayınlandı!");
+        setIsUploading(false);
+        
+        // Reset form
         setNewVideo({title: "", description: ""});
         setVideoFile(null);
         setUploadProgress(0);
         if (videoInputRef.current) videoInputRef.current.value = "";
         
-        // Step 3: Auto-hide after 8 seconds
-        setTimeout(() => {
-          setUploadSuccessMsg("");
-        }, 8000);
-        
-        return; // Skip finally's setIsUploading since we already did it
+        // Clear banner after 10 seconds
+        setTimeout(() => setUploadSuccessMsg(""), 10000);
+        return;
       } else {
         alert("Video kaydı veritabanına eklenirken bir hata oluştu.");
       }
