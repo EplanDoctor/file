@@ -23,6 +23,7 @@ export default function AdminDashboard() {
   const [videoFile, setVideoFile] = useState<File | null>(null);
   const [newDoc, setNewDoc] = useState({ type: "PDF", title: "", desc: "", category: "docs" });
   const [docFile, setDocFile] = useState<File | null>(null);
+  const [uploadSuccessMsg, setUploadSuccessMsg] = useState("");
 
   // Refs for resetting file inputs
   const videoInputRef = useRef<HTMLInputElement>(null);
@@ -96,8 +97,12 @@ export default function AdminDashboard() {
       
       if (success) {
         setUploadProgress(100);
-        // Doğrudan bildirim göster, state'leri temizle (setTimeout finally'den sonra kilitlenmemesi için kaldırıldı)
-        alert("Videonuz başarıyla yüklendi.");
+        setUploadSuccessMsg("Videonuz başarıyla yüklendi ve yayınlandı!");
+        
+        setTimeout(() => {
+          setUploadSuccessMsg("");
+        }, 5000);
+        
         setNewVideo({title: "", description: ""});
         setVideoFile(null);
         setUploadProgress(0);
@@ -265,6 +270,11 @@ export default function AdminDashboard() {
                   <CardTitle className="flex items-center gap-2"><FileVideo className="w-5 h-5"/> Eğitim Videosu Ekle</CardTitle>
                 </CardHeader>
                 <CardContent>
+                  {uploadSuccessMsg && (
+                    <div className="mb-4 p-4 text-sm font-bold text-emerald-700 bg-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-400 rounded-xl border border-emerald-200 dark:border-emerald-800 flex items-center shadow-sm">
+                      <span className="mr-2">✅</span> {uploadSuccessMsg}
+                    </div>
+                  )}
                   <form onSubmit={handleAddVideo} className="space-y-4">
                      <div className="grid grid-cols-1 gap-4">
                        <div className="space-y-2">
