@@ -15,11 +15,11 @@ export default function Home() {
   const { t } = useLanguage();
   const [recentProblems, setRecentProblems] = useState<Problem[]>([]);
   const [stats, setStats] = useState({
-    visitorsCount: 145000,
-    usersCount: 14500,
-    docsCount: 2400,
-    videosCount: 350,
-    problemsSolvedCount: 8400
+    visitorsCount: 0,
+    usersCount: 0,
+    docsCount: 0,
+    videosCount: 0,
+    problemsSolvedCount: 0
   });
 
   useEffect(() => {

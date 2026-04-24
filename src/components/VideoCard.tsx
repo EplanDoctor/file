@@ -9,18 +9,25 @@ interface VideoCardProps {
   onClick?: () => void;
 }
 
-export function VideoCard({ title, duration, description, onClick }: VideoCardProps) {
+export function VideoCard({ title, duration, description, thumbnailUrl, onClick }: VideoCardProps) {
   return (
     <Card 
       onClick={onClick}
       className="overflow-hidden group cursor-pointer transition-all duration-300 hover:scale-[1.03] hover:shadow-2xl hover:shadow-blue-500/20 border-slate-200 dark:border-slate-800 rounded-[40px]"
     >
       <div className="relative aspect-video bg-slate-100 dark:bg-slate-800 flex items-center justify-center overflow-hidden">
+        {thumbnailUrl && (
+          <img 
+            src={thumbnailUrl} 
+            alt={title} 
+            className="absolute inset-0 w-full h-full object-cover z-0 opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
+          />
+        )}
         {/* Mock Placeholder for Thumbnail */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent z-10" />
         <PlayCircle className="w-16 h-16 text-white/50 group-hover:scale-110 group-hover:text-white transition-all z-20 group-hover:drop-shadow-[0_0_15px_rgba(59,130,246,0.8)]" />
         {duration && (
-          <span className="absolute bottom-4 right-4 text-[10px] font-black text-white bg-black/70 px-3 py-1.5 rounded-full z-20 uppercase tracking-widest border border-white/20">
+          <span className="absolute bottom-4 right-4 text-[10px] font-black text-white bg-black/70 px-3 py-1.5 rounded-full z-20 uppercase tracking-widest border border-white/20 backdrop-blur-md">
             {duration}
           </span>
         )}

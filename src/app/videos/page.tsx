@@ -33,21 +33,11 @@ function VideosPageContent() {
   useEffect(() => {
     setLoading(true);
     
-    Promise.all([
-      getDynamicContent("videos"),
-      getStorageVideosOnly()
-    ]).then(([firestoreVideos, storageVideos]) => {
-      const fsVideos = firestoreVideos || [];
-      const sVideos = storageVideos || [];
-      
-      // Merge: Add storage videos only if their URLs aren't already in the Firestore list
-      const fsUrls = new Set(fsVideos.map((v: any) => v.fileUrl));
-      const uniqueStorageVideos = sVideos.filter((sv: any) => !fsUrls.has(sv.fileUrl));
-      
-      setVideos([...fsVideos, ...uniqueStorageVideos]);
+    getDynamicContent("videos").then((videosData) => {
+      setVideos(videosData || []);
       setLoading(false);
     }).catch(err => {
-      console.error("Error merging videos:", err);
+      console.error("Error fetching videos:", err);
       setLoading(false);
     });
   }, []);
@@ -76,9 +66,16 @@ function VideosPageContent() {
 
           <div className="max-w-7xl mx-auto relative z-10 px-4">
             {loading ? (
-              <div className="flex flex-col items-center justify-center py-20 animate-in fade-in duration-500">
-                <Loader2 className="w-12 h-12 text-blue-600 animate-spin mb-4" />
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Eğitim Videoları Yükleniyor...</p>
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10 animate-in fade-in duration-700">
+                {[1, 2, 3, 4, 5, 6].map((i) => (
+                  <div key={i} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[40px] overflow-hidden shadow-sm">
+                    <div className="aspect-video bg-slate-100 dark:bg-slate-800 animate-pulse"></div>
+                    <div className="p-6 space-y-4">
+                      <div className="h-4 bg-slate-100 dark:bg-slate-800 rounded-full w-3/4 animate-pulse"></div>
+                      <div className="h-4 bg-slate-100 dark:bg-slate-800 rounded-full w-1/2 animate-pulse"></div>
+                    </div>
+                  </div>
+                ))}
               </div>
             ) : videos.length > 0 ? (
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
@@ -88,8 +85,9 @@ function VideosPageContent() {
                         <div className="absolute inset-0 bg-blue-600 rounded-[40px] blur-2xl opacity-0 group-hover:opacity-10 transition-opacity duration-500"></div>
                         <VideoCard 
                             title={video.title} 
-                            duration={video.duration} 
+                            duration={video.duration || "Eğitim Videosu"} 
                             description={video.description}
+                            thumbnailUrl={video.youtubeId ? `https://img.youtube.com/vi/${video.youtubeId}/maxresdefault.jpg` : undefined}
                             onClick={() => setActiveVideo(video)} 
                         />
                       </div>
@@ -109,7 +107,7 @@ function VideosPageContent() {
             isOpen={!!activeVideo}
             onClose={() => setActiveVideo(null)}
             videoTitle={activeVideo?.title || ""}
-            videoUrl={activeVideo?.fileUrl}
+            videoUrl={activeVideo?.youtubeId ? `https://www.youtube.com/embed/${activeVideo.youtubeId}?autoplay=1` : activeVideo?.fileUrl}
           />
 
           <div className="mt-24 text-center">

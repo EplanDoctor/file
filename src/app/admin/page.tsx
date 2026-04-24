@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Users, AlertCircle, FileVideo, LayoutDashboard, Database, UploadCloud } from "lucide-react";
+import { Plus, Users, AlertCircle, LayoutDashboard, Database, UploadCloud } from "lucide-react";
 
 import { useAuth } from "@/context/AuthContext";
 import { getRequestsForAdmin, addDynamicContent, uploadFileToStorage } from "@/lib/firebase/services";
@@ -19,14 +19,11 @@ export default function AdminDashboard() {
   const [isFetchingRequests, setIsFetchingRequests] = useState(false);
 
   // New Content States
-  const [newVideo, setNewVideo] = useState({ title: "", description: "" });
-  const [videoFile, setVideoFile] = useState<File | null>(null);
   const [newDoc, setNewDoc] = useState({ type: "PDF", title: "", desc: "", category: "docs" });
   const [docFile, setDocFile] = useState<File | null>(null);
   const [uploadSuccessMsg, setUploadSuccessMsg] = useState("");
 
   // Refs for resetting file inputs
-  const videoInputRef = useRef<HTMLInputElement>(null);
   const docInputRef = useRef<HTMLInputElement>(null);
 
   // Auto-categorize document based on file extension
@@ -63,66 +60,6 @@ export default function AdminDashboard() {
     setIsFetchingRequests(false);
   };
 
-  const handleAddVideo = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!videoFile) {
-      alert("Lütfen önce bir video dosyası seçin.");
-      return;
-    }
-
-    // 100MB Limit (optional but recommended for web uploads)
-    const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB
-    if (videoFile.size > MAX_FILE_SIZE) {
-      alert("Dosya çok büyük. Maksimum 100MB yükleyebilirsiniz.");
-      return;
-    }
-
-    setIsUploading(true);
-    setUploadProgress(0);
-    try {
-      const timestamp = Date.now();
-      const fileUrl = await uploadFileToStorage(
-        videoFile, 
-        `videos/${timestamp}_${videoFile.name}`,
-        (progress) => setUploadProgress(progress)
-      );
-      
-      const success = await addDynamicContent("videos", {
-        ...newVideo,
-        fileUrl,
-        fileName: videoFile.name,
-        fileSize: videoFile.size,
-        updatedAt: timestamp
-      });
-      
-      if (success) {
-        setUploadProgress(100);
-        
-        // Native alert is most reliable for user confirmation
-        alert("✅ Videonuz başarıyla yüklendi ve yayınlandı!");
-        
-        setUploadSuccessMsg("Videonuz başarıyla yüklendi ve yayınlandı!");
-        setIsUploading(false);
-        
-        // Reset form
-        setNewVideo({title: "", description: ""});
-        setVideoFile(null);
-        setUploadProgress(0);
-        if (videoInputRef.current) videoInputRef.current.value = "";
-        
-        // Clear banner after 10 seconds
-        setTimeout(() => setUploadSuccessMsg(""), 10000);
-        return;
-      } else {
-        alert("Video kaydı veritabanına eklenirken bir hata oluştu.");
-      }
-    } catch(err: any) {
-      console.error("Upload process error:", err);
-      alert(`Hata: ${err.message || 'Video yüklenemedi. Lütfen internet bağlantınızı kontrol edin.'}`);
-    } finally {
-      setIsUploading(false);
-    }
-  }
 
   const handleAddDoc = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -271,71 +208,6 @@ export default function AdminDashboard() {
           {activeTab === "content" && (
             <div className="max-w-4xl mx-auto space-y-8">
               
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2"><FileVideo className="w-5 h-5"/> Eğitim Videosu Ekle</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {uploadSuccessMsg && (
-                    <div className="mb-6 p-5 font-bold text-emerald-800 bg-gradient-to-r from-emerald-100 via-emerald-50 to-emerald-100 dark:from-emerald-900/40 dark:via-emerald-800/30 dark:to-emerald-900/40 dark:text-emerald-300 rounded-2xl border-2 border-emerald-300 dark:border-emerald-700 flex items-center gap-4 shadow-lg shadow-emerald-500/10 animate-pulse" style={{animation: 'fadeInUp 0.5s ease-out'}}>
-                      <div className="w-12 h-12 bg-emerald-500 rounded-full flex items-center justify-center shrink-0 shadow-lg shadow-emerald-500/30">
-                        <span className="text-white text-2xl">✓</span>
-                      </div>
-                      <div>
-                        <p className="text-base font-extrabold">{uploadSuccessMsg}</p>
-                        <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-1 opacity-75">Videolar sayfasında görüntülenebilir.</p>
-                      </div>
-                    </div>
-                  )}
-                  <form onSubmit={handleAddVideo} className="space-y-4">
-                     <div className="grid grid-cols-1 gap-4">
-                       <div className="space-y-2">
-                          <label className="text-sm font-medium">Video Başlığı</label>
-                          <Input required value={newVideo.title} onChange={e => setNewVideo({...newVideo, title: e.target.value})} placeholder="Örn: Klemens Planı Oluşturma" />
-                       </div>
-                       <div className="space-y-2">
-                          <label className="text-sm font-medium">Video İçeriği / Açıklaması</label>
-                          <textarea 
-                            required 
-                            value={newVideo.description} 
-                            onChange={e => setNewVideo({...newVideo, description: e.target.value})} 
-                            placeholder="Videonun içeriği hakkında kısa bilgi..."
-                            className="flex min-h-[80px] w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-500 dark:border-slate-800 dark:bg-slate-950"
-                          />
-                       </div>
-                       <div className="space-y-2">
-                          <label className="text-sm font-medium">Video Dosyası (Bilgisayardan Seç)</label>
-                          <div className="flex items-center gap-3">
-                            <Input 
-                              type="file" 
-                              accept="video/*"
-                              ref={videoInputRef}
-                              onChange={e => setVideoFile(e.target.files?.[0] || null)}
-                              className="cursor-pointer file:bg-electric-500 file:text-white file:border-none file:rounded file:px-3 file:py-1 file:mr-4 file:hover:bg-electric-600 transition-all"
-                            />
-                            {videoFile && (
-                              <span className="text-xs text-slate-500 truncate max-w-[200px]">
-                                {videoFile.name} ({(videoFile.size / (1024 * 1024)).toFixed(1)} MB)
-                              </span>
-                            )}
-                          </div>
-                          <p className="text-[10px] text-slate-500 italic mt-1">* Desteklenen tüm video formatlarını içerir.</p>
-                       </div>
-                     </div>
-                     <Button type="submit" disabled={isUploading || !videoFile} className="w-full bg-electric-600 hover:bg-electric-700 font-black">
-                        {isUploading ? (
-                          <span className="flex items-center gap-2">
-                            <span className="animate-spin">🌀</span> Yükleniyor %{uploadProgress}
-                          </span>
-                        ) : (
-                          <>
-                            <Plus className="w-4 h-4 mr-2"/> Videoyu Yükle ve Yayınla
-                          </>
-                        )}
-                     </Button>
-                  </form>
-                </CardContent>
-              </Card>
 
               <Card>
                 <CardHeader>
@@ -375,8 +247,9 @@ export default function AdminDashboard() {
                           <Input type="file" ref={docInputRef} onChange={e => setDocFile(e.target.files?.[0] || null)} className="cursor-pointer file:bg-electric-500 file:text-white file:border-none file:rounded file:px-3 file:py-1 file:mr-4 file:hover:bg-electric-600 transition-all" />
                        </div>
                      </div>
-                     <Button type="submit" disabled={isUploading}>
-                        <UploadCloud className="w-4 h-4 mr-2"/> {isUploading ? 'Yükleniyor...' : 'İçeriği Yükle ve Yayınla'}
+                     <Button type="submit" disabled={isUploading} className="w-full">
+                        <UploadCloud className="w-4 h-4 mr-2"/> 
+                        {isUploading ? `Yükleniyor %${uploadProgress}` : 'İçeriği Yükle ve Yayınla'}
                      </Button>
                   </form>
                 </CardContent>

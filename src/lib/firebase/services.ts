@@ -320,15 +320,39 @@ export async function getStorageVideosOnly(): Promise<any[]> {
     const listRef = ref(storage, 'videos');
     const res = await listAll(listRef);
     
+    const videoExtensions = ['.mp4', '.mov', '.avi', '.wmv', '.mkv', '.webm'];
+    
+    // Filter out non-video files based on extension
+    const filteredItems = res.items.filter(item => {
+      const ext = item.name.toLowerCase().slice(item.name.lastIndexOf('.'));
+      return videoExtensions.includes(ext);
+    });
+
     const videoData = await Promise.all(
-      res.items.map(async (itemRef) => {
+      filteredItems.map(async (itemRef) => {
         const url = await getDownloadURL(itemRef);
+        
+        // Clean up the filename to create a title
+        // 1. Remove extension
+        let cleanName = itemRef.name.replace(/\.[^/.]+$/, "");
+        
+        // 2. Remove potential timestamp prefix (e.g., 171234567890_)
+        if (/^\d{10,14}_/.test(cleanName)) {
+           cleanName = cleanName.split('_').slice(1).join(' ');
+        }
+        
+        // 3. Replace remaining underscores and hyphens with spaces
+        cleanName = cleanName.replace(/[_-]/g, ' ');
+        
+        // 4. Standardize capitalization (Capitalize First Letters)
+        cleanName = cleanName.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+        
         return {
-          id: itemRef.name, // Use filename as fallback ID
-          title: itemRef.name.split('_').slice(1).join('_') || itemRef.name, // Attempt to remove timestamp prefix
+          id: `storage-${itemRef.name}`,
+          title: cleanName || itemRef.name,
           fileUrl: url,
-          duration: "N/A",
-          description: "Otomatik listelenen depolama videosu.",
+          duration: "Eğitim Videosu",
+          description: "Sistem tarafından otomatik listelenen eğitim içeriği.",
           isFromStorageOnly: true
         };
       })
