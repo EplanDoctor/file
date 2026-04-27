@@ -19,7 +19,7 @@ interface BuyerInfoModalProps {
   onSuccess?: () => void;
 }
 
-export function BuyerInfoModal({ isOpen, onClose, product }: BuyerInfoModalProps) {
+export function BuyerInfoModal({ isOpen, onClose, product, onSuccess }: BuyerInfoModalProps) {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
