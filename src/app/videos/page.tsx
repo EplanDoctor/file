@@ -81,18 +81,16 @@ function VideosPageContent() {
             {/* Always show the first video (the static one) immediately if it exists */}
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
               {videos.length > 0 && (
-                <VideoPaymentOverlay key={videos[0].id} videoId={videos[0].id} title={videos[0].title}>
-                  <div className="group relative">
-                    <div className="absolute inset-0 bg-blue-600 rounded-[40px] blur-2xl opacity-0 group-hover:opacity-10 transition-opacity duration-500"></div>
-                    <VideoCard 
-                        title={videos[0].title} 
-                        duration={videos[0].duration || "Eğitim Videosu"} 
-                        description={videos[0].description}
-                        thumbnailUrl={videos[0].youtubeId ? `https://img.youtube.com/vi/${videos[0].youtubeId}/maxresdefault.jpg` : undefined}
-                        onClick={() => setActiveVideo(videos[0])} 
-                    />
-                  </div>
-                </VideoPaymentOverlay>
+                <div className="group relative">
+                  <div className="absolute inset-0 bg-blue-600 rounded-[40px] blur-2xl opacity-0 group-hover:opacity-10 transition-opacity duration-500"></div>
+                  <VideoCard 
+                      title={videos[0].title} 
+                      duration={videos[0].duration || "Eğitim Videosu"} 
+                      description={videos[0].description}
+                      thumbnailUrl={videos[0].youtubeId ? `https://img.youtube.com/vi/${videos[0].youtubeId}/maxresdefault.jpg` : undefined}
+                      onClick={() => setActiveVideo(videos[0])} 
+                  />
+                </div>
               )}
 
               {loading ? (
@@ -108,8 +106,8 @@ function VideosPageContent() {
                 ))
               ) : (
                 // Show the rest of the videos from DB
-                videos.slice(1).map((video) => (
-                  <VideoPaymentOverlay key={video.id} videoId={video.id} title={video.title}>
+                videos.slice(1).map((video) => {
+                  const cardContent = (
                     <div className="group relative">
                       <div className="absolute inset-0 bg-blue-600 rounded-[40px] blur-2xl opacity-0 group-hover:opacity-10 transition-opacity duration-500"></div>
                       <VideoCard 
@@ -120,8 +118,19 @@ function VideosPageContent() {
                           onClick={() => setActiveVideo(video)} 
                       />
                     </div>
-                  </VideoPaymentOverlay>
-                ))
+                  );
+
+                  // YouTube videos are free, others use the payment overlay
+                  if (video.youtubeId) {
+                    return <div key={video.id}>{cardContent}</div>;
+                  }
+
+                  return (
+                    <VideoPaymentOverlay key={video.id} videoId={video.id} title={video.title}>
+                      {cardContent}
+                    </VideoPaymentOverlay>
+                  );
+                })
               )}
             </div>
 
