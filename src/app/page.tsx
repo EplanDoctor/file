@@ -11,8 +11,9 @@ import { getProblems, Problem, getPlatformStats, incrementVisitorCount } from "@
 import { ArrowRight, CheckCircle2, ShieldCheck, Zap, Activity, Users, UserCheck, FileText, PlayCircle, Wrench } from "lucide-react";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { db } from "@/lib/firebase";
+import { db, storage } from "@/lib/firebase";
 import { doc, onSnapshot, collection, query, where, getDocs } from "firebase/firestore";
+import { ref, listAll } from "firebase/storage";
 
 export default function Home() {
   const { t } = useLanguage();
@@ -47,6 +48,13 @@ export default function Home() {
         const data = docSnap.data();
         
         const videosSnap = await getDocs(collection(db, "videos"));
+        
+        let storageVideosCount = 0;
+        try {
+          const res = await listAll(ref(storage, 'videos'));
+          storageVideosCount = res.items.length;
+        } catch (e) {}
+
         const docsSnap = await getDocs(collection(db, "docs"));
         const circuitsSnap = await getDocs(collection(db, "circuits"));
         const autocadSnap = await getDocs(collection(db, "autocad"));
@@ -55,7 +63,7 @@ export default function Home() {
         setStats({
           visitorsCount: data.visitors || 0,
           usersCount: data.registeredUsers || 0,
-          videosCount: videosSnap.size,
+          videosCount: videosSnap.size + storageVideosCount + 1, // +1 for static video
           docsCount: docsSnap.size + circuitsSnap.size + autocadSnap.size,
           problemsSolvedCount: ticketsSnap.size
         });

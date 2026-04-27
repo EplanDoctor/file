@@ -435,7 +435,16 @@ export async function getPlatformStats() {
 
     // 2. Count dynamic items
     const videosSnap = await getDocs(collection(db, "videos"));
-    const videosCount = videosSnap.size;
+    
+    // Count videos from storage too
+    let storageVideosCount = 0;
+    try {
+      const listRef = ref(storage, 'videos');
+      const res = await listAll(listRef);
+      storageVideosCount = res.items.length;
+    } catch (e) {
+      console.warn("Could not list storage videos for stats", e);
+    }
 
     const docsSnap = await getDocs(collection(db, "docs"));
     const circuitsSnap = await getDocs(collection(db, "circuits"));
@@ -452,7 +461,7 @@ export async function getPlatformStats() {
       visitorsCount: visitors,
       usersCount: users,
       docsCount: totalDocsCount,
-      videosCount: videosCount,
+      videosCount: videosSnap.size + storageVideosCount + 1, // +1 for the static YouTube video
       problemsSolvedCount: problemsSolved
     };
 
