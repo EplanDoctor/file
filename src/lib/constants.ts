@@ -3,7 +3,7 @@ export const PRICES = {
   DOC: 59.90,
   CIRCUIT: 59.90,
   AUTOCAD: 99.90,
-  EXPERT: 1.00
+  EXPERT: 299.00
 };
 
 export const PRODUCT_TYPES = {

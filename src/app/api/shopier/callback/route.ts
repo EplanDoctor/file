@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { shopier } from '@/lib/shopier';
 import { db } from '@/lib/firebase';
-import { doc, setDoc, Timestamp } from 'firebase/firestore';
+import { doc, setDoc, Timestamp, addDoc, collection, getDoc, deleteDoc } from 'firebase/firestore';
 
 export async function POST(request: Request) {
   try {
@@ -44,12 +44,34 @@ export async function POST(request: Request) {
         // Note: Using the potentially truncated productId from pay route.
         // If your productId's are longer than 20, you must ensure they match.
         const purchaseRef = doc(db, `users/${userId}/purchases`, productId);
-        await setDoc(purchaseRef, {
-          productId,
-          productType,
-          purchaseDate: Timestamp.now(),
-          orderId: res_order_id,
-          status: 'completed'
+          await setDoc(purchaseRef, {
+            productId,
+            productType,
+            purchaseDate: Timestamp.now(),
+            orderId: res_order_id,
+            status: 'completed'
+          });
+  
+        // 3b. Retrieve Pending Order for rich details
+        const pendingRef = doc(db, 'pending_orders', res_order_id);
+        const pendingSnap = await getDoc(pendingRef);
+        let details = "";
+        
+        if (pendingSnap.exists()) {
+          const pData = pendingSnap.data();
+          const b = pData.buyer || {};
+          details = `Alıcı: ${b.name} ${b.surname} (${b.phone})`;
+          
+          // Cleanup pending order
+          await deleteDoc(pendingRef);
+        }
+
+        // 3c. Record Activity
+        await addDoc(collection(db, "activities"), {
+          userId,
+          description: `${productType.toUpperCase()} ödemesi alındı. ${details}`,
+          createdAt: Timestamp.now(),
+          icon: productType === 'expert' ? 'zap' : 'shopping-bag'
         });
 
         console.log('Purchase recorded in Firestore for user:', userId);

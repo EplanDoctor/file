@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { shopier, ShopierOrderData } from '@/lib/shopier';
 import { PRICES } from '@/lib/constants';
+import { db } from '@/lib/firebase';
+import { doc, setDoc, Timestamp } from 'firebase/firestore';
 
 export async function POST(request: Request) {
   try {
@@ -46,6 +48,20 @@ export async function POST(request: Request) {
         postcode: buyer.postcode || '34000',
       }
     };
+    
+    // Save pending order info to Firestore so we have buyer details in callback
+    try {
+      await setDoc(doc(db, 'pending_orders', orderId), {
+        ...orderData,
+        userId,
+        productType,
+        productId,
+        createdAt: Timestamp.now()
+      });
+    } catch (dbError) {
+      console.error('Error saving pending order:', dbError);
+      // Continue anyway, as Shopier will still work
+    }
 
     const paymentForm = shopier.generatePaymentForm(orderData);
 
