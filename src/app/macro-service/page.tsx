@@ -43,7 +43,7 @@ function MacroServicePageContent() {
     const details = formData.get("details");
 
     try {
-      setStatusMessage("Kaydediliyor ve E-posta gönderiliyor...");
+      setStatusMessage("Gönderiliyor...");
       
       const firestorePromise = saveUserRequest(user.uid, "macro", {
         fullName, companyName, summary, details
@@ -71,6 +71,10 @@ function MacroServicePageContent() {
         console.warn("Firestore kaydı başarısız oldu ama e-posta gönderildi.");
       }
 
+      // Success feedback on button
+      setStatusMessage("Talebiniz Gönderildi");
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
       setIsSuccess(true);
     } catch (error: any) {
       console.error(error);
@@ -170,7 +174,7 @@ function MacroServicePageContent() {
                           ></textarea>
                         </div>
                         <Button type="submit" size="lg" className="w-full mt-2 text-base h-14" isLoading={isLoading} disabled={isLoading}>
-                          {isLoading ? statusMessage || "Gönderiliyor..." : (statusMessage.startsWith("Hata") ? statusMessage : "Talebi Gönder")}
+                          {isLoading ? statusMessage : (statusMessage.startsWith("Hata") ? statusMessage : "Talebi Gönder")}
                         </Button>
                       </form>
                     )}

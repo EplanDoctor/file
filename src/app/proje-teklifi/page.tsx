@@ -45,7 +45,7 @@ function ProjeTeklifiPageContent() {
     const details = formData.get("details");
 
     try {
-      setStatusMessage("Kaydediliyor ve E-posta gönderiliyor...");
+      setStatusMessage("Gönderiliyor...");
       
       const firestorePromise = saveUserRequest(user.uid, "project_proposal", {
         fullName, phone, email, projectType, details
@@ -72,6 +72,10 @@ function ProjeTeklifiPageContent() {
       if (!fireSuccess) {
         console.warn("Firestore kaydı başarısız oldu ama e-posta gönderildi.");
       }
+
+      // Success feedback on button
+      setStatusMessage("Talebiniz Gönderildi");
+      await new Promise(resolve => setTimeout(resolve, 2000));
 
       setIsSubmitted(true);
     } catch (error: any) {
@@ -194,7 +198,7 @@ function ProjeTeklifiPageContent() {
                         </div>
 
                         <Button type="submit" className="w-full h-12 text-base font-bold bg-amber-500 hover:bg-amber-600 text-white shadow-xl shadow-amber-500/20" isLoading={isLoading} disabled={isLoading}>
-                          {isLoading ? statusMessage || "Gönderiliyor..." : (statusMessage.startsWith("Hata") ? statusMessage : <><Send className="w-4 h-4 mr-2" /> Teklif İste</>)}
+                          {isLoading ? statusMessage : (statusMessage.startsWith("Hata") ? statusMessage : <><Send className="w-4 h-4 mr-2" /> Teklif İste</>)}
                         </Button>
                       </form>
                     </>
