@@ -27,7 +27,15 @@ export default function VideosPage() {
 function VideosPageContent() {
   const { t } = useLanguage();
   const [activeVideo, setActiveVideo] = useState<any | null>(null);
-  const [videos, setVideos] = useState<any[]>([]);
+  const [videos, setVideos] = useState<any[]>([
+    {
+      id: "yt-Bh78LHCvSGQ",
+      title: "EPLAN P8: Klemens, Röle ve Motor Sembolü Ekleme | Elektrik Proje Tasarımı",
+      description: "Bu videoda, EPLAN P8 programında elektrik projelerinin temel taşları olan klemens, röle ve motor sembollerinin projeye nasıl ekleneceğini ve teknik özelliklerini anlatıyoruz.",
+      duration: "Eğitim Videosu",
+      youtubeId: "Bh78LHCvSGQ",
+    }
+  ]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -35,17 +43,11 @@ function VideosPageContent() {
     
     getDynamicContent("videos").then((videosData) => {
       const data = videosData || [];
-      const newVideo = {
-        id: "yt-Bh78LHCvSGQ",
-        title: "EPLAN P8: Klemens, Röle ve Motor Sembolü Ekleme | Elektrik Proje Tasarımı",
-        description: "Bu videoda, EPLAN P8 programında elektrik projelerinin temel taşları olan klemens, röle ve motor sembollerinin projeye nasıl ekleneceğini ve teknik özelliklerini anlatıyoruz.",
-        duration: "Eğitim Videosu",
-        youtubeId: "Bh78LHCvSGQ",
-      };
-      if (!data.some((v: any) => v.youtubeId === "Bh78LHCvSGQ")) {
-        data.unshift(newVideo);
-      }
-      setVideos(data);
+      setVideos(prev => {
+        // Keep the static video at the top, add rest from DB
+        const dbVideos = data.filter((v: any) => v.youtubeId !== "Bh78LHCvSGQ");
+        return [prev[0], ...dbVideos];
+      });
       setLoading(false);
     }).catch(err => {
       console.error("Error fetching videos:", err);
@@ -76,36 +78,54 @@ function VideosPageContent() {
           </div>
 
           <div className="max-w-7xl mx-auto relative z-10 px-4">
-            {loading ? (
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10 animate-in fade-in duration-700">
-                {[1, 2, 3, 4, 5, 6].map((i) => (
-                  <div key={i} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[40px] overflow-hidden shadow-sm">
+            {/* Always show the first video (the static one) immediately if it exists */}
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
+              {videos.length > 0 && (
+                <VideoPaymentOverlay key={videos[0].id} videoId={videos[0].id} title={videos[0].title}>
+                  <div className="group relative">
+                    <div className="absolute inset-0 bg-blue-600 rounded-[40px] blur-2xl opacity-0 group-hover:opacity-10 transition-opacity duration-500"></div>
+                    <VideoCard 
+                        title={videos[0].title} 
+                        duration={videos[0].duration || "Eğitim Videosu"} 
+                        description={videos[0].description}
+                        thumbnailUrl={videos[0].youtubeId ? `https://img.youtube.com/vi/${videos[0].youtubeId}/maxresdefault.jpg` : undefined}
+                        onClick={() => setActiveVideo(videos[0])} 
+                    />
+                  </div>
+                </VideoPaymentOverlay>
+              )}
+
+              {loading ? (
+                // Show skeletons for the rest of the grid while loading
+                [1, 2, 3, 4, 5].map((i) => (
+                  <div key={`skeleton-${i}`} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[40px] overflow-hidden shadow-sm">
                     <div className="aspect-video bg-slate-100 dark:bg-slate-800 animate-pulse"></div>
                     <div className="p-6 space-y-4">
                       <div className="h-4 bg-slate-100 dark:bg-slate-800 rounded-full w-3/4 animate-pulse"></div>
                       <div className="h-4 bg-slate-100 dark:bg-slate-800 rounded-full w-1/2 animate-pulse"></div>
                     </div>
                   </div>
-                ))}
-              </div>
-            ) : videos.length > 0 ? (
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
-                {videos.map((video) => (
-                    <VideoPaymentOverlay key={video.id} videoId={video.id} title={video.title}>
-                      <div className="group relative">
-                        <div className="absolute inset-0 bg-blue-600 rounded-[40px] blur-2xl opacity-0 group-hover:opacity-10 transition-opacity duration-500"></div>
-                        <VideoCard 
-                            title={video.title} 
-                            duration={video.duration || "Eğitim Videosu"} 
-                            description={video.description}
-                            thumbnailUrl={video.youtubeId ? `https://img.youtube.com/vi/${video.youtubeId}/maxresdefault.jpg` : undefined}
-                            onClick={() => setActiveVideo(video)} 
-                        />
-                      </div>
-                    </VideoPaymentOverlay>
-                ))}
-              </div>
-            ) : (
+                ))
+              ) : (
+                // Show the rest of the videos from DB
+                videos.slice(1).map((video) => (
+                  <VideoPaymentOverlay key={video.id} videoId={video.id} title={video.title}>
+                    <div className="group relative">
+                      <div className="absolute inset-0 bg-blue-600 rounded-[40px] blur-2xl opacity-0 group-hover:opacity-10 transition-opacity duration-500"></div>
+                      <VideoCard 
+                          title={video.title} 
+                          duration={video.duration || "Eğitim Videosu"} 
+                          description={video.description}
+                          thumbnailUrl={video.youtubeId ? `https://img.youtube.com/vi/${video.youtubeId}/maxresdefault.jpg` : undefined}
+                          onClick={() => setActiveVideo(video)} 
+                      />
+                    </div>
+                  </VideoPaymentOverlay>
+                ))
+              )}
+            </div>
+
+            {!loading && videos.length === 0 && (
               <div className="text-center py-24 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-[40px] bg-white/50 dark:bg-slate-900/50 animate-in zoom-in-95 duration-500">
                  <PlayCircle className="w-16 h-16 text-slate-200 mx-auto mb-6" />
                  <h3 className="text-sm font-black text-slate-400 uppercase tracking-widest mb-2">Henüz eğitim videosu eklenmemiş</h3>
