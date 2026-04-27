@@ -1,43 +1,66 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Allow any authenticated user to create requests
-    match /users/{userId}/requests/{request} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+    
+    // Helper function for admin check
+    function isAdmin() {
+      return request.auth != null && request.auth.token.email == 'cnr.pano@gmail.com';
+    }
+
+    // User requests
+    match /users/{userId}/requests/{requestId} {
+      allow read, write: if (request.auth != null && request.auth.uid == userId) || isAdmin();
     }
     
-    // Allow any authenticated user to create AI analyses
-    match /users/{userId}/ai_analyses/{analysis} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+    // AI analyses
+    match /users/{userId}/ai_analyses/{analysisId} {
+      allow read, write: if (request.auth != null && request.auth.uid == userId) || isAdmin();
     }
 
-    // Platform stats (anyone can read, only admin can write - for now anyone can write for simplicity of increment)
-    match /stats/{doc} {
+    // Platform stats
+    match /stats/{docId} {
       allow read: if true;
-      allow write: if true;
+      allow write: if true; // Open for increments from any client
     }
 
-    // Tickets (any authenticated user can create/read their own)
-    match /tickets/{ticket} {
+    // Tickets
+    match /tickets/{ticketId} {
       allow create: if request.auth != null;
-      allow read: if request.auth != null && (resource.data.userId == request.auth.uid);
+      allow read: if (request.auth != null && resource.data.userId == request.auth.uid) || isAdmin();
+      allow update, delete: if isAdmin();
     }
     
     // Activities
-    match /activities/{activity} {
+    match /activities/{activityId} {
       allow create: if request.auth != null;
-      allow read: if request.auth != null && (resource.data.userId == request.auth.uid);
+      allow read: if (request.auth != null && resource.data.userId == request.auth.uid) || isAdmin();
     }
 
-    // Allow read-only access to some collections
-    match /videos/{doc} { allow read: if true; }
-    match /docs/{doc} { allow read: if true; }
-    match /circuits/{doc} { allow read: if true; }
-    match /autocad/{doc} { allow read: if true; }
+    // Global Collections
+    match /videos/{docId} { 
+      allow read: if true; 
+      allow write: if isAdmin();
+    }
+    match /docs/{docId} { 
+      allow read: if true; 
+      allow write: if isAdmin();
+    }
+    match /circuits/{docId} { 
+      allow read: if true; 
+      allow write: if isAdmin();
+    }
+    match /autocad/{docId} { 
+      allow read: if true; 
+      allow write: if isAdmin();
+    }
+    match /problems/{docId} {
+      allow read: if true;
+      allow write: if (request.auth != null) || isAdmin(); // Users can auto-publish problems
+    }
     
     // Fallback
     match /{document=**} {
-      allow read, write: if false;
+      allow read, write: if isAdmin();
     }
   }
 }

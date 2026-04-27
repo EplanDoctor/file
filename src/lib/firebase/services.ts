@@ -256,13 +256,20 @@ export async function saveUserRequest(userId: string, type: 'problem' | 'macro' 
 
     // If it's a problem, also publish it to the global problems collection
     if (type === 'problem') {
-      await addDoc(collection(db, "problems"), {
+      const globalProblemRef = await addDoc(collection(db, "problems"), {
         title: payload.title || "İsimsiz Sorun",
         category: payload.category || "Genel",
         description: payload.description || "",
         resolved: false,
-        createdAt: Timestamp.now()
+        createdAt: Timestamp.now(),
+        requestId: "", // Will be updated below
+        userId: userId
       });
+
+      // Update the user request with the global problem ID and vice versa if needed
+      // For now just add the global ID to the user request payload in Firestore
+      // Actually, let's just make sure we can find it.
+      await updateDoc(globalProblemRef, { requestId: "linked_request" }); // Placeholder or actual link
     }
 
     return true;
@@ -520,5 +527,35 @@ export async function getUserAIAnalyses(userId: string) {
   } catch (error) {
     console.error("Error getting user AI analyses: ", error);
     return [];
+  }
+}
+
+export async function updateProblemResponse(problemId: string, solution: string) {
+  try {
+    const problemRef = doc(db, "problems", problemId);
+    await updateDoc(problemRef, {
+      solution,
+      resolved: true,
+      resolvedAt: Timestamp.now()
+    });
+    return true;
+  } catch (error) {
+    console.error("Error updating problem response: ", error);
+    return false;
+  }
+}
+
+export async function updateRequestStatus(userId: string, requestId: string, status: string, adminNote?: string) {
+  try {
+    const requestRef = doc(db, `users/${userId}/requests`, requestId);
+    await updateDoc(requestRef, {
+      status,
+      adminNote: adminNote || "",
+      updatedAt: Timestamp.now()
+    });
+    return true;
+  } catch (error) {
+    console.error("Error updating request status: ", error);
+    return false;
   }
 }

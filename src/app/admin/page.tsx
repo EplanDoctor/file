@@ -129,6 +129,12 @@ export default function AdminDashboard() {
             <LayoutDashboard className="w-5 h-5 mr-3"/> Gelen Talepler
           </button>
           <button 
+            onClick={() => router.push("/admin/problems")}
+            className="w-full flex items-center px-4 py-3 rounded-xl transition-colors hover:bg-slate-800 hover:text-white"
+          >
+            <AlertCircle className="w-5 h-5 mr-3"/> Sorunları Yanıtla
+          </button>
+          <button 
             onClick={() => setActiveTab("content")}
             className={`w-full flex items-center px-4 py-3 rounded-xl transition-colors ${activeTab === "content" ? "bg-electric-600 text-white" : "hover:bg-slate-800 hover:text-white"}`}
           >
@@ -157,6 +163,16 @@ export default function AdminDashboard() {
                   </CardHeader>
                   <CardContent>
                     <div className="text-3xl font-bold">{requests.length}</div>
+                  </CardContent>
+                </Card>
+                <Card className="cursor-pointer hover:border-electric-500/50 transition-colors" onClick={() => router.push("/admin/problems")}>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm font-medium text-slate-500">Bekleyen Sorunlar</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-3xl font-bold text-amber-500">
+                      {requests.filter(r => r.type === 'problem' && r.status !== 'resolved').length}
+                    </div>
                   </CardContent>
                 </Card>
               </div>
