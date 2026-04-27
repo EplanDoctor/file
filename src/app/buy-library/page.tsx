@@ -7,7 +7,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { BookOpen, CheckCircle2, ShieldCheck, Video } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { PaymentModal } from "@/components/payment/PaymentModal";
+import { BuyerInfoModal } from "@/components/payment/BuyerInfoModal";
+import { PRICES, PRODUCT_TYPES } from "@/lib/constants";
 import Link from "next/link";
 
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
@@ -68,7 +69,7 @@ function BuyLibraryPageContent() {
                        </div>
                      </div>
                      <div className="text-left sm:text-right">
-                       <div className="text-4xl font-black text-slate-900 dark:text-white">₺99</div>
+                       <div className="text-4xl font-black text-slate-900 dark:text-white">₺{PRICES.LIBRARY}</div>
                        <div className="text-xs text-slate-400 uppercase font-bold mt-1">Ömür Boyu Erişim</div>
                      </div>
                   </div>
@@ -92,7 +93,7 @@ function BuyLibraryPageContent() {
                     className="w-full h-14 text-lg font-bold bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white shadow-xl shadow-amber-500/20 border-none"
                     onClick={() => setIsPaymentOpen(true)}
                   >
-                    ₺99 - Eğitimi Şimdi Satın Al
+                    ₺{PRICES.LIBRARY} - Eğitimi Şimdi Satın Al
                   </Button>
                   
                   <div className="mt-5 flex justify-center items-center text-xs text-slate-400 font-medium">
@@ -106,12 +107,16 @@ function BuyLibraryPageContent() {
 
       <Footer />
 
-      <PaymentModal 
+      <BuyerInfoModal 
         isOpen={isPaymentOpen} 
         onClose={() => setIsPaymentOpen(false)} 
         onSuccess={handlePaymentSuccess}
-        price="₺99"
-        planName="Eğitim ve Arşiv Kütüphanesi Erişimi"
+        product={{
+          type: PRODUCT_TYPES.LIBRARY,
+          id: 'full-library-access',
+          name: "Eğitim ve Arşiv Kütüphanesi Erişimi",
+          price: PRICES.LIBRARY
+        }}
       />
     </div>
   );

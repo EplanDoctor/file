@@ -13,7 +13,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Eksik bilgi.' }, { status: 400 });
     }
 
-    // Determine price
     let price = 0;
     switch (productType) {
       case 'video': price = PRICES.VIDEO; break;
@@ -21,6 +20,7 @@ export async function POST(request: Request) {
       case 'circuit': price = PRICES.CIRCUIT; break;
       case 'autocad': price = PRICES.AUTOCAD; break;
       case 'expert': price = PRICES.EXPERT; break;
+      case 'library': price = PRICES.LIBRARY; break;
       default: return NextResponse.json({ error: 'Geçersiz ürün tipi.' }, { status: 400 });
     }
 

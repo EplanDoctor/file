@@ -3,7 +3,8 @@ export const PRICES = {
   DOC: 1.00,
   CIRCUIT: 1.00,
   AUTOCAD: 1.00,
-  EXPERT: 1.00
+  EXPERT: 1.00,
+  LIBRARY: 1.00
 };
 
 export const PRODUCT_TYPES = {
@@ -11,5 +12,6 @@ export const PRODUCT_TYPES = {
   DOC: 'doc',
   CIRCUIT: 'circuit',
   AUTOCAD: 'autocad',
-  EXPERT: 'expert'
+  EXPERT: 'expert',
+  LIBRARY: 'library'
 };
