@@ -54,44 +54,41 @@ export type UserActivity = {
   icon: string;
 };
 
-export const MOCK_PROBLEMS: Problem[] = [
-  {
-    id: "1",
-    title: "EPLAN P8 2.9 Lisans Hatası 4021",
-    description: "Uygulama başlatılırken lisans sunucusuna bağlanılamıyor. Network üzerinden lisans alındığı halde sürekli dongle aranıyor.",
-    category: "Lisans / Dongle",
-    resolved: true,
-    solution: "1. ALM (Automation License Manager) hizmetini yeniden başlatın.\n2. Eplan'ı yönetici olarak çalıştırın.\n3. Lisans sunucusu IP adresini hosts dosyasına ekleyin.",
-    createdAt: new Date(),
-  },
-  {
-    id: "2",
-    title: "PDF Export'ta Türkçe Karakter Sorunu",
-    description: "Projeyi PDF'e dönüştürünce Türkçe karakterler (ş, ğ, ı) bozuk ya da kare olarak çıkıyor.",
-    category: "Export / Çıktı",
-    resolved: true,
-    solution: "EPLAN ayarlarından (Options > Settings > User > Graphical editing > Fonts) projedeki varsayılan fontu Arial veya Tahoma'ya çekin.",
-    createdAt: new Date(),
-  },
-  {
-    id: "3",
-    title: "Proje Veritabanı (Project Database) Bozulması",
-    description: "Eplan aniden kapandıktan sonra proje dosyası .elk açılamıyor.",
-    category: "Veritabanı",
-    resolved: false,
-    createdAt: new Date(),
-  }
-];
-
 export async function getProblems(): Promise<Problem[]> {
-  // Simulate network delay
-  await new Promise(resolve => setTimeout(resolve, 800));
-  return MOCK_PROBLEMS;
+  try {
+    const q = query(collection(db, "problems"), orderBy("createdAt", "desc"), limit(20));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        ...data,
+        createdAt: data.createdAt?.toDate() || new Date()
+      } as Problem;
+    });
+  } catch (error) {
+    console.error("Error getting problems:", error);
+    return [];
+  }
 }
 
 export async function getProblemById(id: string): Promise<Problem | undefined> {
-  await new Promise(resolve => setTimeout(resolve, 400));
-  return MOCK_PROBLEMS.find(p => p.id === id);
+  try {
+    const docRef = doc(db, "problems", id);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      return {
+        id: docSnap.id,
+        ...data,
+        createdAt: data.createdAt?.toDate() || new Date()
+      } as Problem;
+    }
+    return undefined;
+  } catch (error) {
+    console.error("Error getting problem by id:", error);
+    return undefined;
+  }
 }
 
 // REAL FIRESTORE SERVICES
@@ -161,17 +158,18 @@ export async function getUserActivities(userId: string): Promise<UserActivity[]>
   }
 }
 
-export async function createProblem(problem: Omit<Problem, "id" | "createdAt">): Promise<Problem> {
-  // For now, continue using mock for problems to avoid breaking existing logic
-  // but keep it available for the submit-problem page
-  await new Promise(resolve => setTimeout(resolve, 800));
-  const newProblem = {
-    ...problem,
-    id: Math.random().toString(36).substring(7),
-    createdAt: new Date()
-  };
-  MOCK_PROBLEMS.push(newProblem);
-  return newProblem;
+export async function createProblem(problem: Omit<Problem, "id" | "createdAt">): Promise<any> {
+  try {
+    const docRef = await addDoc(collection(db, "problems"), {
+      ...problem,
+      createdAt: Timestamp.now(),
+      resolved: false
+    });
+    return { id: docRef.id, ...problem };
+  } catch (error) {
+    console.error("Error creating problem:", error);
+    return null;
+  }
 }
 
 // ----------------------------------------------------
@@ -246,13 +244,27 @@ export async function uploadFileToStorage(
 export async function saveUserRequest(userId: string, type: 'problem' | 'macro' | 'project_proposal', payload: any) {
   try {
     const docRef = collection(db, `users/${userId}/requests`);
-    await addDoc(docRef, {
+    const requestData = {
       userId,
       type,
       ...payload,
       createdAt: Timestamp.now(),
       status: 'pending' // pending | resolved | rejected
-    });
+    };
+    
+    await addDoc(docRef, requestData);
+
+    // If it's a problem, also publish it to the global problems collection
+    if (type === 'problem') {
+      await addDoc(collection(db, "problems"), {
+        title: payload.title || "İsimsiz Sorun",
+        category: payload.category || "Genel",
+        description: payload.description || "",
+        resolved: false,
+        createdAt: Timestamp.now()
+      });
+    }
+
     return true;
   } catch (error: any) {
     console.error("Error saving user request: ", error);

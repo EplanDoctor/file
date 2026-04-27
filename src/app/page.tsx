@@ -11,6 +11,8 @@ import { getProblems, Problem, getPlatformStats, incrementVisitorCount } from "@
 import { ArrowRight, CheckCircle2, ShieldCheck, Zap, Activity, Users, UserCheck, FileText, PlayCircle, Wrench } from "lucide-react";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { db } from "@/lib/firebase";
+import { doc, onSnapshot, collection, query, where, getDocs } from "firebase/firestore";
 
 export default function Home() {
   const { t } = useLanguage();
@@ -24,22 +26,45 @@ export default function Home() {
   });
 
   useEffect(() => {
-    const fetch = async () => {
+    const fetchProblems = async () => {
       const data = await getProblems();
-      setRecentProblems(data.slice(0, 1));
+      setRecentProblems(data.slice(0, 3));
     };
-    fetch();
+    fetchProblems();
 
-    const fetchStats = async () => {
-      // Check session storage to avoid incrementing multiple times per session
+    // Visitor count increment
+    const trackVisitor = async () => {
       if (!sessionStorage.getItem("visited")) {
         await incrementVisitorCount();
         sessionStorage.setItem("visited", "true");
       }
-      const platformStats = await getPlatformStats();
-      setStats(platformStats);
     };
-    fetchStats();
+    trackVisitor();
+
+    // Real-time stats listener
+    const unsubStats = onSnapshot(doc(db, "stats", "main"), async (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        
+        const videosSnap = await getDocs(collection(db, "videos"));
+        const docsSnap = await getDocs(collection(db, "docs"));
+        const circuitsSnap = await getDocs(collection(db, "circuits"));
+        const autocadSnap = await getDocs(collection(db, "autocad"));
+        const ticketsSnap = await getDocs(query(collection(db, "tickets"), where("status", "==", "closed")));
+
+        setStats({
+          visitorsCount: data.visitors || 0,
+          usersCount: data.registeredUsers || 0,
+          videosCount: videosSnap.size,
+          docsCount: docsSnap.size + circuitsSnap.size + autocadSnap.size,
+          problemsSolvedCount: ticketsSnap.size
+        });
+      }
+    });
+
+    return () => {
+      unsubStats();
+    };
   }, []);
 
   return (
@@ -139,9 +164,17 @@ export default function Home() {
             </p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-            {recentProblems.map((problem) => (
-              <ProblemCard key={problem.id} problem={problem} />
-            ))}
+            {recentProblems.length > 0 ? (
+              recentProblems.map((problem) => (
+                <ProblemCard key={problem.id} problem={problem} />
+              ))
+            ) : (
+              <div className="col-span-full py-20 text-center bg-slate-900/50 rounded-[40px] border border-slate-800 border-dashed backdrop-blur-sm">
+                <Activity className="w-12 h-12 text-slate-700 mx-auto mb-4" />
+                <p className="font-black text-xl text-slate-400 tracking-widest uppercase">Henüz Yayında Bir Sorun Yok</p>
+                <p className="text-[10px] font-bold text-slate-600 mt-2 uppercase">İlk sorunu siz bildirin ve çözüme kavuşturalım!</p>
+              </div>
+            )}
           </div>
           <div className="text-center">
             <Link href="/problems">

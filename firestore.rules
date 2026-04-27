@@ -1,0 +1,43 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Allow any authenticated user to create requests
+    match /users/{userId}/requests/{request} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Allow any authenticated user to create AI analyses
+    match /users/{userId}/ai_analyses/{analysis} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Platform stats (anyone can read, only admin can write - for now anyone can write for simplicity of increment)
+    match /stats/{doc} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // Tickets (any authenticated user can create/read their own)
+    match /tickets/{ticket} {
+      allow create: if request.auth != null;
+      allow read: if request.auth != null && (resource.data.userId == request.auth.uid);
+    }
+    
+    // Activities
+    match /activities/{activity} {
+      allow create: if request.auth != null;
+      allow read: if request.auth != null && (resource.data.userId == request.auth.uid);
+    }
+
+    // Allow read-only access to some collections
+    match /videos/{doc} { allow read: if true; }
+    match /docs/{doc} { allow read: if true; }
+    match /circuits/{doc} { allow read: if true; }
+    match /autocad/{doc} { allow read: if true; }
+    
+    // Fallback
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
