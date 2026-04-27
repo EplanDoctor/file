@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Plus, Users, AlertCircle, LayoutDashboard, Database, UploadCloud } from "lucide-react";
 
 import { useAuth } from "@/context/AuthContext";
-import { getRequestsForAdmin, addDynamicContent, uploadFileToStorage } from "@/lib/firebase/services";
+import { getRequestsForAdmin, addDynamicContent, uploadFileToStorage, updateRequestStatus } from "@/lib/firebase/services";
 
 export default function AdminDashboard() {
   const { user, loading } = useAuth();
@@ -17,6 +17,8 @@ export default function AdminDashboard() {
   
   const [requests, setRequests] = useState<any[]>([]);
   const [isFetchingRequests, setIsFetchingRequests] = useState(false);
+  const [requestFilter, setRequestFilter] = useState("all");
+  const [updatingRequestId, setUpdatingRequestId] = useState<string | null>(null);
 
   // New Content States
   const [newDoc, setNewDoc] = useState({ type: "PDF", title: "", desc: "", category: "docs" });
@@ -60,6 +62,30 @@ export default function AdminDashboard() {
     setIsFetchingRequests(false);
   };
 
+
+  const handleStatusUpdate = async (userId: string, requestId: string, newStatus: string) => {
+    setUpdatingRequestId(requestId);
+    try {
+      const success = await updateRequestStatus(userId, requestId, newStatus);
+      if (success) {
+        // Update local state
+        setRequests(prev => prev.map(req => 
+          req.id === requestId ? { ...req, status: newStatus } : req
+        ));
+      } else {
+        alert("Durum güncellenirken bir hata oluştu.");
+      }
+    } catch (err) {
+      console.error("Status update error:", err);
+    } finally {
+      setUpdatingRequestId(null);
+    }
+  };
+
+  const filteredRequests = requests.filter(req => {
+    if (requestFilter === "all") return true;
+    return (req.status || "pending") === requestFilter;
+  });
 
   const handleAddDoc = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -165,16 +191,43 @@ export default function AdminDashboard() {
                     <div className="text-3xl font-bold">{requests.length}</div>
                   </CardContent>
                 </Card>
-                <Card className="cursor-pointer hover:border-electric-500/50 transition-colors" onClick={() => router.push("/admin/problems")}>
+                <Card className="cursor-pointer hover:border-electric-500/50 transition-colors" onClick={() => {
+                  setActiveTab("overview");
+                  setRequestFilter("pending");
+                }}>
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-medium text-slate-500">Bekleyen Sorunlar</CardTitle>
+                    <CardTitle className="text-sm font-medium text-slate-500">Bekleyen Talepler</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="text-3xl font-bold text-amber-500">
-                      {requests.filter(r => r.type === 'problem' && r.status !== 'resolved').length}
+                      {requests.filter(r => r.status === 'pending' || !r.status).length}
                     </div>
                   </CardContent>
                 </Card>
+                <Card className="cursor-pointer hover:border-electric-500/50 transition-colors" onClick={() => router.push("/admin/problems")}>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm font-medium text-slate-500">Global Sorunlar</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-3xl font-bold text-electric-600">
+                      Gözat
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <div className="flex gap-2 mb-2">
+                {["all", "pending", "processing", "resolved"].map((f) => (
+                  <Button 
+                    key={f}
+                    variant={requestFilter === f ? "default" : "outline"}
+                    size="sm"
+                    className="capitalize rounded-full text-[10px] font-bold h-8 px-4"
+                    onClick={() => setRequestFilter(f)}
+                  >
+                    {f === 'all' ? 'Tümü' : f === 'pending' ? 'Bekliyor' : f === 'processing' ? 'İnceleniyor' : 'Tamamlandı'}
+                  </Button>
+                ))}
               </div>
 
               <Card>
@@ -184,34 +237,51 @@ export default function AdminDashboard() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {requests.length === 0 && !isFetchingRequests && (
-                      <div className="text-center py-10 text-slate-500">Henüz hiç talep yok.</div>
+                    {filteredRequests.length === 0 && !isFetchingRequests && (
+                      <div className="text-center py-10 text-slate-500">Filtreye uygun talep bulunamadı.</div>
                     )}
-                    {requests.map((req, i) => (
-                      <div key={i} className="flex flex-col md:flex-row md:items-center justify-between p-4 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 gap-4">
+                    {filteredRequests.map((req, i) => (
+                      <div key={i} className="flex flex-col md:flex-row md:items-center justify-between p-5 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 gap-4 transition-all hover:shadow-md">
                         <div className="flex items-start gap-4">
-                          <AlertCircle className="w-5 h-5 text-electric-500 mt-1 shrink-0" />
+                          <div className={`p-2 rounded-lg ${req.status === 'resolved' ? 'bg-emerald-100 text-emerald-600' : 'bg-electric-100 text-electric-600'}`}>
+                            <AlertCircle className="w-5 h-5 shrink-0" />
+                          </div>
                           <div>
                             <div className="flex items-center gap-2 mb-1">
-                              <span className="text-[10px] font-bold bg-slate-200 dark:bg-slate-800 px-2 py-0.5 rounded uppercase tracking-wider text-slate-600 dark:text-slate-400">
+                              <span className="text-[9px] font-black bg-slate-200 dark:bg-slate-800 px-2 py-0.5 rounded-full uppercase tracking-widest text-slate-600 dark:text-slate-400">
                                 {req.type}
                               </span>
-                              <span className="text-xs text-slate-500">{new Date(req.createdAt?.seconds * 1000).toLocaleString('tr-TR')}</span>
+                              <span className="text-[10px] font-bold text-slate-400">
+                                {req.createdAt?.seconds ? new Date(req.createdAt.seconds * 1000).toLocaleString('tr-TR') : 'Tarih Belirsiz'}
+                              </span>
                             </div>
-                            <p className="font-medium">{req.title || req.fullName || "İsimsiz Talep"}</p>
-                            <p className="text-sm text-slate-600 dark:text-slate-400 mt-1 line-clamp-2">{req.description || req.details || req.summary}</p>
-                            {req.fileUrl && (
-                              <a href={req.fileUrl} target="_blank" rel="noreferrer" className="text-xs text-electric-600 mt-2 inline-block">Ekli Dosyayı Görüntüle</a>
-                            )}
+                            <p className="font-bold text-slate-900 dark:text-white">{req.title || req.fullName || "İsimsiz Talep"}</p>
+                            <p className="text-xs text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">{req.description || req.details || req.summary || "Açıklama yok."}</p>
+                            
+                            <div className="flex flex-wrap items-center gap-3 mt-3">
+                              {req.fileUrl && (
+                                <a href={req.fileUrl} target="_blank" rel="noreferrer" className="text-[10px] font-bold text-electric-600 bg-electric-50 dark:bg-electric-900/20 px-3 py-1 rounded-md hover:underline decoration-2 underline-offset-4">Dosyayı Gör</a>
+                              )}
+                              {req.email && (
+                                <span className="text-[10px] font-bold text-slate-500 bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-md">{req.email}</span>
+                              )}
+                            </div>
                           </div>
                         </div>
-                        <div className="text-right shrink-0">
-                          <div className="text-xs text-slate-500 mb-2">UID: {req.userId.substring(0,8)}...</div>
-                          <select className="text-xs bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded p-1">
-                            <option>Bekliyor</option>
-                            <option>İnceleniyor</option>
-                            <option>Çözüldü</option>
+                        <div className="text-right shrink-0 min-w-[140px]">
+                          <div className="text-[10px] font-bold text-slate-400 mb-2 uppercase tracking-widest">Durumu Güncelle</div>
+                          <select 
+                            disabled={updatingRequestId === req.id}
+                            value={req.status || 'pending'}
+                            onChange={(e) => handleStatusUpdate(req.userId, req.id, e.target.value)}
+                            className="w-full text-xs font-bold bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-2.5 shadow-sm focus:ring-2 focus:ring-electric-500 outline-none cursor-pointer"
+                          >
+                            <option value="pending">⏳ Bekliyor</option>
+                            <option value="processing">🔍 İnceleniyor</option>
+                            <option value="resolved">✅ Tamamlandı</option>
+                            <option value="rejected">❌ Reddedildi</option>
                           </select>
+                          {updatingRequestId === req.id && <div className="text-[9px] text-electric-500 mt-1 font-bold animate-pulse">Güncelleniyor...</div>}
                         </div>
                       </div>
                     ))}
