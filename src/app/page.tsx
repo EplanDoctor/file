@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Section } from "@/components/layout/Section";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import { HeroCarousel } from "@/components/layout/HeroCarousel";
 import { ProblemCard } from "@/components/ProblemCard";
 import { getProblems, Problem, getPlatformStats, incrementVisitorCount } from "@/lib/firebase/services";
 import { ArrowRight, CheckCircle2, ShieldCheck, Zap, Activity, Users, UserCheck, FileText, PlayCircle, Wrench } from "lucide-react";
@@ -87,23 +88,7 @@ export default function Home() {
               </div>
             </div>
             <div className="relative">
-              {/* Product UI Mockup Simulation */}
-              <div className="relative rounded-3xl border border-slate-800 bg-slate-900/80 backdrop-blur-xl soft-shadow p-6 overflow-hidden">
-                <div className="flex items-center gap-2 mb-6 border-b border-slate-800 pb-4">
-                  <div className="w-3 h-3 rounded-full bg-red-400"></div>
-                  <div className="w-3 h-3 rounded-full bg-amber-400"></div>
-                  <div className="w-3 h-3 rounded-full bg-emerald-400"></div>
-                </div>
-                <div className="space-y-4">
-                  <div className="h-8 w-3/4 rounded-lg bg-slate-100 dark:bg-slate-800"></div>
-                  <div className="h-4 w-full rounded bg-slate-50 dark:bg-slate-800/50"></div>
-                  <div className="h-4 w-5/6 rounded bg-slate-50 dark:bg-slate-800/50"></div>
-                  <div className="grid grid-cols-2 gap-4 mt-6">
-                    <div className="h-24 rounded-xl bg-electric-50 dark:bg-electric-900/20 border border-electric-100 dark:border-electric-800/50"></div>
-                    <div className="h-24 rounded-xl bg-slate-50 dark:bg-slate-800"></div>
-                  </div>
-                </div>
-              </div>
+              <HeroCarousel />
             </div>
           </div>
         </Section>
