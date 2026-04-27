@@ -33,9 +33,9 @@ function InstantSolvePageContent() {
 
   const expertProductId = "instant-expert-connect";
 
-  const handleWhatsAppConnect = async () => {
-    if (!hasPurchased(expertProductId)) {
-      window.open("https://www.shopier.com/eplandoktor/46152898", "_blank");
+  const handleWhatsAppConnect = async (bypassCheck = false) => {
+    if (!bypassCheck && !hasPurchased(expertProductId)) {
+      setIsPaymentModalOpen(true);
       return;
     }
 
@@ -111,7 +111,7 @@ function InstantSolvePageContent() {
                   <Button 
                     size="lg" 
                     className="w-full h-20 text-[11px] font-black tracking-widest bg-emerald-600 hover:bg-emerald-500 text-white shadow-2xl shadow-emerald-600/30 rounded-[30px] transition-all hover:scale-[1.02] active:scale-[0.98] uppercase"
-                    onClick={handleWhatsAppConnect}
+                    onClick={() => handleWhatsAppConnect(false)}
                   >
                     {hasPurchased(expertProductId) ? (
                       <><MessageCircle className="w-6 h-6 mr-3" /> {t.instant_solve_page.btn}</>
@@ -129,7 +129,19 @@ function InstantSolvePageContent() {
         </Section>
       </main>
 
-      {/* Payment handled via direct link */}
+      <BuyerInfoModal 
+        isOpen={isPaymentModalOpen}
+        onClose={() => setIsPaymentModalOpen(false)}
+        product={{
+          type: 'expert',
+          id: expertProductId,
+          name: t.instant_solve_page.card_title || "Uzmana Bağlan",
+          price: PRICES.EXPERT
+        }}
+        onSuccess={() => {
+          handleWhatsAppConnect(true);
+        }}
+      />
 
       <Footer />
     </div>

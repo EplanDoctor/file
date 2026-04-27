@@ -12,14 +12,15 @@ function StatusContent() {
 
   useEffect(() => {
     // Send message to parent window
-    if (typeof window !== "undefined" && window.parent !== window) {
+    if (typeof window !== "undefined" && window.opener) {
       setTimeout(() => {
-        window.parent.postMessage({ 
+        window.opener.postMessage({ 
           type: 'SHOPIER_PAYMENT_STATUS', 
           status: status || 'error',
           reason: reason
         }, '*');
-      }, 1500); // Add a small delay so the user can read the message before the modal closes
+        window.close(); // Close the popup after sending the message
+      }, 1500);
     }
   }, [status, reason]);
 

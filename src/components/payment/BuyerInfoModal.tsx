@@ -16,6 +16,7 @@ interface BuyerInfoModalProps {
     name: string;
     price: number;
   };
+  onSuccess?: () => void;
 }
 
 export function BuyerInfoModal({ isOpen, onClose, product }: BuyerInfoModalProps) {
@@ -36,9 +37,12 @@ export function BuyerInfoModal({ isOpen, onClose, product }: BuyerInfoModalProps
     const handleMessage = (event: MessageEvent) => {
       if (event.data?.type === 'SHOPIER_PAYMENT_STATUS') {
         if (event.data.status === 'success') {
-          // Success! Close modal and refresh to show product
           onClose();
-          window.location.reload(); 
+          if (onSuccess) {
+            onSuccess();
+          } else {
+            window.location.reload(); 
+          }
         } else {
           // Error
           alert(`Ödeme başarısız: ${event.data.reason || 'Bilinmeyen hata'}`);
@@ -91,13 +95,19 @@ export function BuyerInfoModal({ isOpen, onClose, product }: BuyerInfoModalProps
       const data = await response.json();
 
       if (data.action && data.fields) {
-        setShowIframe(true);
+        setShowIframe(true); // Shows the processing message
+        
+        const width = 600;
+        const height = 800;
+        const left = window.screen.width / 2 - width / 2;
+        const top = window.screen.height / 2 - height / 2;
+        window.open('', 'ShopierPayment', `width=${width},height=${height},left=${left},top=${top}`);
         
         setTimeout(() => {
           const form = document.createElement('form');
           form.method = 'POST';
           form.action = data.action;
-          form.target = 'shopier-iframe';
+          form.target = 'ShopierPayment';
 
           Object.entries(data.fields).forEach(([key, value]) => {
             const input = document.createElement('input');
@@ -138,13 +148,10 @@ export function BuyerInfoModal({ isOpen, onClose, product }: BuyerInfoModalProps
         </div>
 
         {showIframe ? (
-          <div className="w-full h-[500px] relative rounded-xl overflow-hidden bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center border border-slate-200 dark:border-slate-800">
-            <Loader2 className="w-8 h-8 animate-spin text-electric-600 absolute" />
-            <iframe 
-              name="shopier-iframe" 
-              className="w-full h-full relative z-10 border-0 bg-transparent"
-              title="Shopier Secure Payment"
-            />
+          <div className="w-full h-[300px] flex flex-col items-center justify-center text-center p-6 border border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50 dark:bg-slate-900/50">
+            <Loader2 className="w-12 h-12 animate-spin text-electric-600 mb-6" />
+            <h3 className="text-xl font-black text-slate-900 dark:text-white uppercase mb-2">Ödeme Bekleniyor</h3>
+            <p className="text-sm font-bold text-slate-500">Lütfen açılan pencerede ödeme işleminizi tamamlayın. Pencereyi kapattıktan sonra işlem otomatik devam edecektir.</p>
           </div>
         ) : (
           <form onSubmit={handlePay} className="space-y-4">
