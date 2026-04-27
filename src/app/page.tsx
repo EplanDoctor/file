@@ -44,29 +44,46 @@ export default function Home() {
 
     // Real-time stats listener
     const unsubStats = onSnapshot(doc(db, "stats", "main"), async (docSnap) => {
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        
-        const videosSnap = await getDocs(collection(db, "videos"));
-        
-        let storageVideosCount = 0;
-        try {
-          const res = await listAll(ref(storage, 'videos'));
-          storageVideosCount = res.items.length;
-        } catch (e) {}
+      try {
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          
+          let videosCount = 0;
+          let docsCount = 0;
+          let problemsSolvedCount = 0;
 
-        const docsSnap = await getDocs(collection(db, "docs"));
-        const circuitsSnap = await getDocs(collection(db, "circuits"));
-        const autocadSnap = await getDocs(collection(db, "autocad"));
-        const ticketsSnap = await getDocs(query(collection(db, "tickets"), where("status", "==", "closed")));
+          try {
+            const videosSnap = await getDocs(collection(db, "videos"));
+            videosCount += videosSnap.size;
+          } catch(e) {}
 
-        setStats({
-          visitorsCount: data.visitors || 0,
-          usersCount: data.registeredUsers || 0,
-          videosCount: videosSnap.size + storageVideosCount + 1, // +1 for static video
-          docsCount: docsSnap.size + circuitsSnap.size + autocadSnap.size,
-          problemsSolvedCount: ticketsSnap.size
-        });
+          try {
+            const res = await listAll(ref(storage, 'videos'));
+            videosCount += res.items.length;
+          } catch (e) {}
+
+          try {
+            const docsSnap = await getDocs(collection(db, "docs"));
+            const circuitsSnap = await getDocs(collection(db, "circuits"));
+            const autocadSnap = await getDocs(collection(db, "autocad"));
+            docsCount += docsSnap.size + circuitsSnap.size + autocadSnap.size;
+          } catch(e) {}
+
+          try {
+            const ticketsSnap = await getDocs(query(collection(db, "tickets"), where("status", "==", "closed")));
+            problemsSolvedCount += ticketsSnap.size;
+          } catch(e) {}
+
+          setStats({
+            visitorsCount: data.visitors || 0,
+            usersCount: data.registeredUsers || 0,
+            videosCount: videosCount + 1, // +1 for static video
+            docsCount: docsCount,
+            problemsSolvedCount: problemsSolvedCount
+          });
+        }
+      } catch (err) {
+        console.error("Stats fetching error:", err);
       }
     });
 
