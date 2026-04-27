@@ -35,7 +35,7 @@ function InstantSolvePageContent() {
 
   const handleWhatsAppConnect = async () => {
     if (!hasPurchased(expertProductId)) {
-      setIsPaymentModalOpen(true);
+      window.open("https://www.shopier.com/eplandoktor/46152898", "_blank");
       return;
     }
 
@@ -129,16 +129,7 @@ function InstantSolvePageContent() {
         </Section>
       </main>
 
-      <BuyerInfoModal 
-        isOpen={isPaymentModalOpen}
-        onClose={() => setIsPaymentModalOpen(false)}
-        product={{
-          type: 'expert',
-          id: expertProductId,
-          name: t.instant_solve_page.card_title,
-          price: PRICES.EXPERT
-        }}
-      />
+      {/* Payment handled via direct link */}
 
       <Footer />
     </div>
