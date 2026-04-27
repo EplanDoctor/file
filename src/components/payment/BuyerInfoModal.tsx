@@ -23,8 +23,8 @@ export function BuyerInfoModal({ isOpen, onClose, product, onSuccess }: BuyerInf
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    name: user?.displayName?.split(' ')[0] || "",
-    surname: user?.displayName?.split(' ').slice(1).join(' ') || "",
+    name: user?.displayName ? user.displayName.split(' ')[0] : "",
+    surname: user?.displayName ? user.displayName.split(' ').slice(1).join(' ') : "",
     email: user?.email || "",
     phone: "",
     address: "",

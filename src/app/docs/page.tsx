@@ -90,9 +90,9 @@ function DocsPageContent() {
                       <FileText className="w-7 h-7" />
                     </div>
                     <div>
-                      <div className="text-[10px] font-black text-slate-400 mb-2 tracking-widest">{doc.type}</div>
-                      <CardTitle className="text-xl font-black mb-3 group-hover:text-electric-600 transition-colors tracking-tight">{doc.title}</CardTitle>
-                      <CardDescription className="text-[11px] font-bold opacity-70 leading-relaxed uppercase">{doc.desc}</CardDescription>
+                      <div className="text-[10px] font-black text-slate-400 mb-2 tracking-widest">{doc.type || "Doküman"}</div>
+                      <CardTitle className="text-xl font-black mb-3 group-hover:text-electric-600 transition-colors tracking-tight">{doc.title || "İsimsiz"}</CardTitle>
+                      <CardDescription className="text-[11px] font-bold opacity-70 leading-relaxed uppercase">{doc.desc || ""}</CardDescription>
                     </div>
                   </div>
                   <button 
@@ -126,14 +126,14 @@ function DocsPageContent() {
                     <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent dark:from-slate-950/20"></div>
                     <Search className="w-12 h-12 text-slate-400 opacity-0 group-hover:opacity-100 transition-all scale-75 group-hover:scale-100 duration-500 z-10" />
                     <span className="absolute bottom-4 left-4 text-[9px] text-slate-400 font-black tracking-widest px-3 py-1.5 bg-white/90 dark:bg-slate-900/90 rounded-full z-10 shadow-sm">
-                      #{circuit.category.toUpperCase()}
+                      #{(circuit.category || "GENEL").toUpperCase()}
                     </span>
                     <div className="absolute inset-6 border-2 border-slate-200 dark:border-slate-700 border-dashed rounded-[30px] opacity-40"></div>
                   </div>
                   <CardHeader className="p-8">
-                    <div className="text-[10px] font-black text-emerald-600 dark:text-emerald-400 mb-3 tracking-widest">TYPE: {circuit.category}</div>
+                    <div className="text-[10px] font-black text-emerald-600 dark:text-emerald-400 mb-3 tracking-widest">TYPE: {circuit.category || "Genel"}</div>
                     <CardTitle className="text-lg font-black leading-tight group-hover:text-emerald-600 transition-colors tracking-tight h-14 overflow-hidden">
-                      {circuit.title}
+                      {circuit.title || "İsimsiz Çizim"}
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="p-8 pt-0">
@@ -177,9 +177,9 @@ function DocsPageContent() {
                         <PenTool className="w-7 h-7" />
                       </div>
                       <div>
-                        <div className="text-[10px] font-black text-blue-600 dark:text-blue-400 mb-2 tracking-widest">{doc.type}</div>
-                        <CardTitle className="text-xl font-black mb-3 group-hover:text-blue-600 transition-colors tracking-tight">{doc.title}</CardTitle>
-                        <CardDescription className="text-[11px] font-bold opacity-70 leading-relaxed uppercase">{doc.desc}</CardDescription>
+                        <div className="text-[10px] font-black text-blue-600 dark:text-blue-400 mb-2 tracking-widest">{doc.type || "CAD"}</div>
+                        <CardTitle className="text-xl font-black mb-3 group-hover:text-blue-600 transition-colors tracking-tight">{doc.title || "İsimsiz Proje"}</CardTitle>
+                        <CardDescription className="text-[11px] font-bold opacity-70 leading-relaxed uppercase">{doc.desc || ""}</CardDescription>
                       </div>
                     </div>
                     <button 
