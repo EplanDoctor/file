@@ -34,7 +34,18 @@ function VideosPageContent() {
     setLoading(true);
     
     getDynamicContent("videos").then((videosData) => {
-      setVideos(videosData || []);
+      const data = videosData || [];
+      const newVideo = {
+        id: "yt-Bh78LHCvSGQ",
+        title: "EPLAN P8: Klemens, Röle ve Motor Sembolü Ekleme | Elektrik Proje Tasarımı",
+        description: "Bu videoda, EPLAN P8 programında elektrik projelerinin temel taşları olan klemens, röle ve motor sembollerinin projeye nasıl ekleneceğini ve teknik özelliklerini anlatıyoruz.",
+        duration: "Eğitim Videosu",
+        youtubeId: "Bh78LHCvSGQ",
+      };
+      if (!data.some((v: any) => v.youtubeId === "Bh78LHCvSGQ")) {
+        data.unshift(newVideo);
+      }
+      setVideos(data);
       setLoading(false);
     }).catch(err => {
       console.error("Error fetching videos:", err);
