@@ -46,11 +46,11 @@ function SubmitProblemPageContent() {
     try {
       let fileUrl = "";
       if (selectedFile) {
-        setStatusMessage("Dosya yükleniyor (Firebase Storage)...");
+        setStatusMessage("Dosya yükleniyor...");
         fileUrl = await uploadFileToStorage(selectedFile, `users/${user.uid}/uploads/${Date.now()}_${selectedFile.name}`);
       }
 
-      setStatusMessage("Kaydediliyor ve E-posta gönderiliyor...");
+      setStatusMessage("Gönderiliyor...");
       
       const firestorePromise = saveUserRequest(user.uid, "problem", {
         title, category, description, fileUrl
@@ -65,12 +65,15 @@ function SubmitProblemPageContent() {
         })
       });
 
-      // Run in parallel
-      const [fireSuccess, emailResp] = await Promise.all([firestorePromise, emailPromise]);
+      // Show "Gönderiliyor..." for at least 2 seconds
+      const delayPromise = new Promise(resolve => setTimeout(resolve, 2000));
 
-      const result = await emailResp.json();
+      // Wait for everything
+      const [fireSuccess, emailResp] = await Promise.all([firestorePromise, emailPromise, delayPromise]);
 
-      if (!emailResp.ok) {
+      const result = await (emailResp as Response).json();
+
+      if (!(emailResp as Response).ok) {
         throw new Error(result.message || "E-posta gönderilemedi.");
       }
 
@@ -78,16 +81,17 @@ function SubmitProblemPageContent() {
         console.warn("Firestore kaydı başarısız oldu ama e-posta gönderildi.");
       }
 
+      // Show "Talebiniz Gönderildi" for 1 second then show success UI
+      setStatusMessage("Talebiniz Gönderildi");
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
       setIsSuccess(true);
       setSelectedFile(null);
     } catch (error: any) {
       console.error(error);
       setStatusMessage("Hata: " + (error.message || "Bilinmeyen bir sorun."));
-      // Optional: keep isLoading true for a bit to show the error on the button, 
-      // but usually we set it to false so they can retry.
     } finally {
       setIsLoading(false);
-      // Don't clear statusMessage immediately if there was an error
     }
   };
 
@@ -179,7 +183,7 @@ function SubmitProblemPageContent() {
                     </div>
 
                     <Button type="submit" size="lg" className="w-full" isLoading={isLoading} disabled={isLoading}>
-                      {isLoading ? statusMessage || "Gönderiliyor..." : (statusMessage.startsWith("Hata") ? statusMessage : "Sorunu Gönder")}
+                      {isLoading ? statusMessage : (statusMessage.startsWith("Hata") ? statusMessage : "Sorunu Gönder")}
                     </Button>
                   </form>
                 </CardContent>

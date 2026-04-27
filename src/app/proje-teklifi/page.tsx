@@ -76,9 +76,9 @@ function ProjeTeklifiPageContent() {
         console.warn("Firestore kaydı başarısız oldu ama e-posta gönderildi.");
       }
 
-      // Now show "Talebiniz Gönderildi" for another 2 seconds
+      // Now show "Talebiniz Gönderildi" for 1 second
       setStatusMessage("Talebiniz Gönderildi");
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
       setIsSubmitted(true);
     } catch (error: any) {
