@@ -60,12 +60,15 @@ function ProjeTeklifiPageContent() {
         })
       });
 
-      // Run in parallel
-      const [fireSuccess, emailResp] = await Promise.all([firestorePromise, emailPromise]);
+      // Show "Gönderiliyor..." for at least 2 seconds
+      const delayPromise = new Promise(resolve => setTimeout(resolve, 2000));
 
-      const result = await emailResp.json();
+      // Wait for both the operations and the minimum delay
+      const [fireSuccess, emailResp] = await Promise.all([firestorePromise, emailPromise, delayPromise]);
 
-      if (!emailResp.ok) {
+      const result = await (emailResp as Response).json();
+
+      if (!(emailResp as Response).ok) {
         throw new Error(result.message || "E-posta gönderilemedi.");
       }
 
@@ -73,7 +76,7 @@ function ProjeTeklifiPageContent() {
         console.warn("Firestore kaydı başarısız oldu ama e-posta gönderildi.");
       }
 
-      // Success feedback on button
+      // Now show "Talebiniz Gönderildi" for another 2 seconds
       setStatusMessage("Talebiniz Gönderildi");
       await new Promise(resolve => setTimeout(resolve, 2000));
 
