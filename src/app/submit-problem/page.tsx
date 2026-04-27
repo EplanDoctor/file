@@ -65,11 +65,11 @@ function SubmitProblemPageContent() {
         })
       });
 
-      // Show "Gönderiliyor..." for at least 2 seconds
-      const delayPromise = new Promise(resolve => setTimeout(resolve, 2000));
+      // User specifically requested 2s delay for "Gönderiliyor..."
+      await new Promise(resolve => setTimeout(resolve, 2000));
 
-      // Wait for everything
-      const [fireSuccess, emailResp] = await Promise.all([firestorePromise, emailPromise, delayPromise]);
+      // Ensure requests are finished
+      const [fireSuccess, emailResp] = await Promise.all([firestorePromise, emailPromise]);
 
       const result = await (emailResp as Response).json();
 
@@ -81,12 +81,13 @@ function SubmitProblemPageContent() {
         console.warn("Firestore kaydı başarısız oldu ama e-posta gönderildi.");
       }
 
-      // Show "Talebiniz Gönderildi" for 1 second then show success UI
+      // Show "Talebiniz Gönderildi" on button for 1s
       setStatusMessage("Talebiniz Gönderildi");
       await new Promise(resolve => setTimeout(resolve, 1000));
 
       setIsSuccess(true);
       setSelectedFile(null);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (error: any) {
       console.error(error);
       setStatusMessage("Hata: " + (error.message || "Bilinmeyen bir sorun."));
