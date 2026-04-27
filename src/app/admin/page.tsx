@@ -16,6 +16,7 @@ export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("overview");
   
   const [requests, setRequests] = useState<any[]>([]);
+  const [globalProblemsCount, setGlobalProblemsCount] = useState(0);
   const [isFetchingRequests, setIsFetchingRequests] = useState(false);
   const [requestFilter, setRequestFilter] = useState("all");
   const [updatingRequestId, setUpdatingRequestId] = useState<string | null>(null);
@@ -57,8 +58,12 @@ export default function AdminDashboard() {
 
   const fetchRequests = async () => {
     setIsFetchingRequests(true);
-    const data = await getRequestsForAdmin();
-    setRequests(data);
+    const [reqData, probData] = await Promise.all([
+      getRequestsForAdmin(),
+      getProblems()
+    ]);
+    setRequests(reqData);
+    setGlobalProblemsCount(probData.filter(p => !p.resolved).length);
     setIsFetchingRequests(false);
   };
 
@@ -200,17 +205,17 @@ export default function AdminDashboard() {
                   </CardHeader>
                   <CardContent>
                     <div className="text-3xl font-bold text-amber-500">
-                      {requests.filter(r => r.status === 'pending' || !r.status).length}
+                      {requests.filter(r => r.status !== 'resolved' && r.status !== 'rejected').length}
                     </div>
                   </CardContent>
                 </Card>
                 <Card className="cursor-pointer hover:border-electric-500/50 transition-colors" onClick={() => router.push("/admin/problems")}>
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-medium text-slate-500">Global Sorunlar</CardTitle>
+                    <CardTitle className="text-sm font-medium text-slate-500">Çözülmemiş Sorunlar</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="text-3xl font-bold text-electric-600">
-                      Gözat
+                      {globalProblemsCount}
                     </div>
                   </CardContent>
                 </Card>
