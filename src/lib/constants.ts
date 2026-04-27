@@ -1,9 +1,9 @@
 export const PRICES = {
-  VIDEO: 29.90,
-  DOC: 59.90,
-  CIRCUIT: 59.90,
-  AUTOCAD: 99.90,
-  EXPERT: 299.00
+  VIDEO: 1.00,
+  DOC: 1.00,
+  CIRCUIT: 1.00,
+  AUTOCAD: 1.00,
+  EXPERT: 1.00
 };
 
 export const PRODUCT_TYPES = {

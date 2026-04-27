@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Plus, Users, AlertCircle, LayoutDashboard, Database, UploadCloud } from "lucide-react";
 
 import { useAuth } from "@/context/AuthContext";
-import { getRequestsForAdmin, addDynamicContent, uploadFileToStorage, updateRequestStatus } from "@/lib/firebase/services";
+import { getRequestsForAdmin, addDynamicContent, uploadFileToStorage, updateRequestStatus, getProblems } from "@/lib/firebase/services";
 
 export default function AdminDashboard() {
   const { user, loading } = useAuth();

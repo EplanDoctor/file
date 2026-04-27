@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,6 +30,27 @@ export function BuyerInfoModal({ isOpen, onClose, product }: BuyerInfoModalProps
     city: "",
     postcode: ""
   });
+  const [showIframe, setShowIframe] = useState(false);
+
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data?.type === 'SHOPIER_PAYMENT_STATUS') {
+        if (event.data.status === 'success') {
+          // Success! Close modal and refresh to show product
+          onClose();
+          window.location.reload(); 
+        } else {
+          // Error
+          alert(`Ödeme başarısız: ${event.data.reason || 'Bilinmeyen hata'}`);
+          setShowIframe(false);
+          setLoading(false);
+        }
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, [onClose]);
 
   const handlePay = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -70,20 +91,26 @@ export function BuyerInfoModal({ isOpen, onClose, product }: BuyerInfoModalProps
       const data = await response.json();
 
       if (data.action && data.fields) {
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = data.action;
+        setShowIframe(true);
+        
+        setTimeout(() => {
+          const form = document.createElement('form');
+          form.method = 'POST';
+          form.action = data.action;
+          form.target = 'shopier-iframe';
 
-        Object.entries(data.fields).forEach(([key, value]) => {
-          const input = document.createElement('input');
-          input.type = 'hidden';
-          input.name = key;
-          input.value = String(value);
-          form.appendChild(input);
-        });
+          Object.entries(data.fields).forEach(([key, value]) => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = key;
+            input.value = String(value);
+            form.appendChild(input);
+          });
 
-        document.body.appendChild(form);
-        form.submit();
+          document.body.appendChild(form);
+          form.submit();
+          document.body.removeChild(form);
+        }, 100);
       } else {
         alert(data.error || 'Ödeme başlatılamadı.');
         setLoading(false);
@@ -110,60 +137,71 @@ export function BuyerInfoModal({ isOpen, onClose, product }: BuyerInfoModalProps
           </p>
         </div>
 
-        <form onSubmit={handlePay} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <label className="text-[10px] font-black tracking-widest text-slate-400 uppercase">AD</label>
-              <Input required value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="rounded-xl border-slate-100 dark:border-slate-800" />
-            </div>
-            <div className="space-y-2">
-              <label className="text-[10px] font-black tracking-widest text-slate-400 uppercase">SOYAD</label>
-              <Input required value={formData.surname} onChange={e => setFormData({...formData, surname: e.target.value})} className="rounded-xl border-slate-100 dark:border-slate-800" />
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-[10px] font-black tracking-widest text-slate-400 uppercase">TELEFON</label>
-            <Input required type="tel" placeholder="05XX XXX XX XX" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} className="rounded-xl border-slate-100 dark:border-slate-800" />
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-[10px] font-black tracking-widest text-slate-400 uppercase">TAM ADRES</label>
-            <textarea 
-              required 
-              value={formData.address} 
-              onChange={e => setFormData({...formData, address: e.target.value})}
-              placeholder="Ödeme onayı için gereklidir..."
-              className="flex min-h-[80px] w-full rounded-xl border border-slate-100 bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-500 dark:border-slate-800 dark:bg-slate-950 text-slate-900 dark:text-white" 
+        {showIframe ? (
+          <div className="w-full h-[500px] relative rounded-xl overflow-hidden bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center border border-slate-200 dark:border-slate-800">
+            <Loader2 className="w-8 h-8 animate-spin text-electric-600 absolute" />
+            <iframe 
+              name="shopier-iframe" 
+              className="w-full h-full relative z-10 border-0 bg-transparent"
+              title="Shopier Secure Payment"
             />
           </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <label className="text-[10px] font-black tracking-widest text-slate-400 uppercase">ŞEHİR</label>
-              <Input required value={formData.city} onChange={e => setFormData({...formData, city: e.target.value})} className="rounded-xl border-slate-100 dark:border-slate-800" />
+        ) : (
+          <form onSubmit={handlePay} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-[10px] font-black tracking-widest text-slate-400 uppercase">AD</label>
+                <Input required value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="rounded-xl border-slate-100 dark:border-slate-800" />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-black tracking-widest text-slate-400 uppercase">SOYAD</label>
+                <Input required value={formData.surname} onChange={e => setFormData({...formData, surname: e.target.value})} className="rounded-xl border-slate-100 dark:border-slate-800" />
+              </div>
             </div>
+
             <div className="space-y-2">
-              <label className="text-[10px] font-black tracking-widest text-slate-400 uppercase">POSTA KODU</label>
-              <Input required value={formData.postcode} onChange={e => setFormData({...formData, postcode: e.target.value})} className="rounded-xl border-slate-100 dark:border-slate-800" />
+              <label className="text-[10px] font-black tracking-widest text-slate-400 uppercase">TELEFON</label>
+              <Input required type="tel" placeholder="05XX XXX XX XX" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} className="rounded-xl border-slate-100 dark:border-slate-800" />
             </div>
-          </div>
 
-          <div className="pt-4">
-            <Button 
-              type="submit" 
-              disabled={loading}
-              className="w-full h-16 bg-gradient-to-r from-electric-600 to-indigo-600 hover:from-electric-500 hover:to-indigo-500 text-white font-black tracking-widest rounded-2xl shadow-xl shadow-electric-500/20 active:scale-[0.98] transition-all"
-            >
-              {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : "ÖDEMEYE GEÇ (SHOPIER)"}
-            </Button>
-          </div>
+            <div className="space-y-2">
+              <label className="text-[10px] font-black tracking-widest text-slate-400 uppercase">TAM ADRES</label>
+              <textarea 
+                required 
+                value={formData.address} 
+                onChange={e => setFormData({...formData, address: e.target.value})}
+                placeholder="Ödeme onayı için gereklidir..."
+                className="flex min-h-[80px] w-full rounded-xl border border-slate-100 bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-500 dark:border-slate-800 dark:bg-slate-950 text-slate-900 dark:text-white" 
+              />
+            </div>
 
-          <div className="flex justify-center items-center gap-2 text-[10px] font-black text-slate-400 tracking-widest uppercase opacity-60">
-             <ShieldCheck className="w-4 h-4 text-emerald-500" />
-             SSL GÜVENLİ ÖDEME ALTYAPISI
-          </div>
-        </form>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-[10px] font-black tracking-widest text-slate-400 uppercase">ŞEHİR</label>
+                <Input required value={formData.city} onChange={e => setFormData({...formData, city: e.target.value})} className="rounded-xl border-slate-100 dark:border-slate-800" />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-black tracking-widest text-slate-400 uppercase">POSTA KODU</label>
+                <Input required value={formData.postcode} onChange={e => setFormData({...formData, postcode: e.target.value})} className="rounded-xl border-slate-100 dark:border-slate-800" />
+              </div>
+            </div>
+
+            <div className="pt-4">
+              <Button 
+                type="submit" 
+                disabled={loading}
+                className="w-full h-16 bg-gradient-to-r from-electric-600 to-indigo-600 hover:from-electric-500 hover:to-indigo-500 text-white font-black tracking-widest rounded-2xl shadow-xl shadow-electric-500/20 active:scale-[0.98] transition-all"
+              >
+                {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : "ÖDEMEYE GEÇ (SHOPIER)"}
+              </Button>
+            </div>
+
+            <div className="flex justify-center items-center gap-2 text-[10px] font-black text-slate-400 tracking-widest uppercase opacity-60">
+               <ShieldCheck className="w-4 h-4 text-emerald-500" />
+               SSL GÜVENLİ ÖDEME ALTYAPISI
+            </div>
+          </form>
+        )}
       </div>
     </Modal>
   );

@@ -17,7 +17,7 @@ export async function POST(request: Request) {
     const isValid = shopier.verifyWebhook(data);
     if (!isValid) {
       console.error('Shopier Invalid Webhook Attempt:', data);
-      return NextResponse.redirect(`${process.env.NEXT_PUBLIC_SITE_URL}/payment/error?reason=invalid_token`);
+      return NextResponse.redirect(`${process.env.NEXT_PUBLIC_SITE_URL}/payment/status?status=error&reason=invalid_token`);
     }
 
     // 2. Extract Data
@@ -30,7 +30,7 @@ export async function POST(request: Request) {
       
       if (parts.length < 3) {
         console.error('Invalid order ID format from Shopier:', res_order_id);
-        return NextResponse.redirect(`${process.env.NEXT_PUBLIC_SITE_URL}/payment/error?reason=invalid_order_id`);
+        return NextResponse.redirect(`${process.env.NEXT_PUBLIC_SITE_URL}/payment/status?status=error&reason=invalid_order_id`);
       }
 
       const userId = parts[0];
@@ -76,27 +76,17 @@ export async function POST(request: Request) {
 
         console.log('Purchase recorded in Firestore for user:', userId);
 
-        // 4. Redirect based on type
-        let redirectPath = '/';
-        const typePrefix = productType.toLowerCase();
-        
-        if (typePrefix.startsWith('video')) redirectPath = '/videos';
-        else if (typePrefix.startsWith('doc')) redirectPath = '/docs';
-        else if (typePrefix.startsWith('circu')) redirectPath = '/docs';
-        else if (typePrefix.startsWith('autoc')) redirectPath = '/docs';
-        else if (typePrefix.startsWith('exper')) redirectPath = '/instant-solve';
-
-        const finalUrl = `${process.env.NEXT_PUBLIC_SITE_URL}${redirectPath}?status=success&item=${productId}`;
+        const finalUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/payment/status?status=success&item=${productId}`;
         console.log('Redirecting user to:', finalUrl);
         return NextResponse.redirect(finalUrl);
       }
     }
 
     console.warn('Payment failed or incomplete data:', data);
-    return NextResponse.redirect(`${process.env.NEXT_PUBLIC_SITE_URL}/payment/error?status=${res_status}`);
+    return NextResponse.redirect(`${process.env.NEXT_PUBLIC_SITE_URL}/payment/status?status=error&reason=${res_status}`);
 
   } catch (error) {
     console.error('Shopier callback exception:', error);
-    return NextResponse.redirect(`${process.env.NEXT_PUBLIC_SITE_URL}/payment/error?reason=server_error`);
+    return NextResponse.redirect(`${process.env.NEXT_PUBLIC_SITE_URL}/payment/status?status=error&reason=server_error`);
   }
 }
