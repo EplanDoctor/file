@@ -43,7 +43,8 @@ function MacroServicePageContent() {
     const details = formData.get("details");
 
     try {
-      setStatusMessage("Gönderiliyor...");
+      setStatusMessage("Gönderiliyor (Lütfen Bekleyin)...");
+      console.log("Form gönderimi başladı...");
       
       const firestorePromise = saveUserRequest(user.uid, "macro", {
         fullName, companyName, summary, details
@@ -58,30 +59,38 @@ function MacroServicePageContent() {
         })
       });
 
-      // User specifically requested 2s delay for "Gönderiliyor..."
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // User specifically requested 2s delay
+      const delayPromise = new Promise(resolve => setTimeout(resolve, 2000));
 
-      // Ensure requests are finished
-      const [fireSuccess, emailResp] = await Promise.all([firestorePromise, emailPromise]);
+      // Network timeout of 15 seconds
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error("İşlem zaman aşımına uğradı. Lütfen internetinizi kontrol edin.")), 15000)
+      );
 
-      const result = await (emailResp as Response).json();
+      // Wait for work and the 2s delay, but with a total timeout
+      console.log("İstekler gönderildi, yanıt bekleniyor...");
+      const [fireSuccess, emailResp] = await Promise.race([
+        Promise.all([firestorePromise, emailPromise, delayPromise]),
+        timeoutPromise
+      ]) as [boolean, Response, unknown];
 
-      if (!(emailResp as Response).ok) {
+      console.log("İstekler tamamlandı.");
+
+      const result = await emailResp.json();
+
+      if (!emailResp.ok) {
         throw new Error(result.message || "E-posta gönderilemedi.");
       }
 
-      if (!fireSuccess) {
-        console.warn("Firestore kaydı başarısız oldu ama e-posta gönderildi.");
-      }
-
-      // Show "Talebiniz Gönderildi" on button for 1s
+      // Show "Talebiniz Gönderildi" for 1s
       setStatusMessage("Talebiniz Gönderildi");
       await new Promise(resolve => setTimeout(resolve, 1000));
       
+      console.log("Başarı ekranına geçiliyor.");
       setIsSuccess(true);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (error: any) {
-      console.error(error);
+      console.error("Form Hatası:", error);
       setStatusMessage("Hata: " + (error.message || "Bilinmeyen bir sorun."));
     } finally {
       setIsLoading(false);
