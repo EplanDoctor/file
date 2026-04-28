@@ -15,3 +15,11 @@ export const PRODUCT_TYPES = {
   EXPERT: 'expert',
   LIBRARY: 'library'
 };
+
+export const SHOPIER_LINKS = {
+  DOC: "https://www.shopier.com/EplanDoctor", // Placeholder
+  CIRCUIT: "https://www.shopier.com/EplanDoctor", // Placeholder
+  AUTOCAD: "https://www.shopier.com/EplanDoctor", // Placeholder
+  EXPERT: "https://www.shopier.com/EplanDoctor", // Placeholder
+  LIBRARY: "https://www.shopier.com/EplanDoctor", // Placeholder
+};

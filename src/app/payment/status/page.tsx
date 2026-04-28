@@ -30,16 +30,46 @@ function StatusContent() {
         <>
           <CheckCircle2 className="w-16 h-16 text-emerald-500 mb-4" />
           <h1 className="text-2xl font-black text-slate-900 dark:text-white uppercase">ÖDEME BAŞARILI</h1>
-          <p className="text-slate-600 dark:text-slate-400 mt-2 font-medium">Pencere otomatik olarak kapatılıyor...</p>
+          <p className="text-slate-600 dark:text-slate-400 mt-2 font-medium">
+            {typeof window !== "undefined" && window.opener ? "Pencere otomatik olarak kapatılıyor..." : "Ödemeniz başarıyla alındı. İçeriğe erişebilirsiniz."}
+          </p>
+          {typeof window !== "undefined" && !window.opener && (
+            <div className="mt-8 flex flex-col gap-3 w-full max-w-xs">
+              <button 
+                onClick={() => window.location.href = "/dashboard"}
+                className="w-full h-14 bg-electric-600 text-white font-black rounded-2xl shadow-lg shadow-electric-500/20 uppercase tracking-widest text-[11px]"
+              >
+                Panele Git
+              </button>
+              <button 
+                onClick={() => window.location.href = "/"}
+                className="w-full h-12 text-slate-500 font-bold hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl uppercase text-[10px] tracking-widest"
+              >
+                Ana Sayfa
+              </button>
+            </div>
+          )}
         </>
       ) : (
         <>
           <XCircle className="w-16 h-16 text-red-500 mb-4" />
           <h1 className="text-2xl font-black text-slate-900 dark:text-white uppercase">ÖDEME BAŞARISIZ</h1>
-          <p className="text-slate-600 dark:text-slate-400 mt-2 font-medium">Bir hata oluştu. Pencere kapatılıyor...</p>
+          <p className="text-slate-600 dark:text-slate-400 mt-2 font-medium">
+             {typeof window !== "undefined" && window.opener ? "Bir hata oluştu. Pencere kapatılıyor..." : "Ödeme işlemi sırasında bir sorun oluştu."}
+          </p>
+          {typeof window !== "undefined" && !window.opener && (
+            <div className="mt-8 flex flex-col gap-3 w-full max-w-xs">
+              <button 
+                onClick={() => window.location.href = "/"}
+                className="w-full h-14 bg-slate-900 text-white font-black rounded-2xl uppercase tracking-widest text-[11px]"
+              >
+                Ana Sayfaya Dön
+              </button>
+            </div>
+          )}
         </>
       )}
-      <Loader2 className="w-6 h-6 animate-spin text-electric-600 mt-6" />
+      {typeof window !== "undefined" && window.opener && <Loader2 className="w-6 h-6 animate-spin text-electric-600 mt-6" />}
     </div>
   );
 }

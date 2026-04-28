@@ -11,8 +11,8 @@ import { useLanguage } from "@/context/LanguageContext";
 import { useAuth } from "@/context/AuthContext";
 import { createSupportTicket } from "@/lib/firebase/services";
 import { usePurchases } from "@/hooks/usePurchases";
-import { BuyerInfoModal } from "@/components/payment/BuyerInfoModal";
-import { PRICES } from "@/lib/constants";
+import { ShopierRedirectModal } from "@/components/payment/ShopierRedirectModal";
+import { PRICES, SHOPIER_LINKS } from "@/lib/constants";
 import { Lock } from "lucide-react";
 
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
@@ -129,18 +129,12 @@ function InstantSolvePageContent() {
         </Section>
       </main>
 
-      <BuyerInfoModal 
+      <ShopierRedirectModal 
         isOpen={isPaymentModalOpen}
         onClose={() => setIsPaymentModalOpen(false)}
-        product={{
-          type: 'expert',
-          id: expertProductId,
-          name: t.instant_solve_page.card_title || "Uzmana Bağlan",
-          price: PRICES.EXPERT
-        }}
-        onSuccess={() => {
-          handleWhatsAppConnect(true);
-        }}
+        productName={t.instant_solve_page.card_title || "Uzmana Bağlan"}
+        price={PRICES.EXPERT}
+        shopierUrl={SHOPIER_LINKS.EXPERT}
       />
 
       <Footer />

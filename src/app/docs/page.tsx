@@ -11,8 +11,8 @@ import { useLanguage } from "@/context/LanguageContext";
 import { useState, useEffect } from "react";
 import { getDynamicContent } from "@/lib/firebase/services";
 import { usePurchases } from "@/hooks/usePurchases";
-import { BuyerInfoModal } from "@/components/payment/BuyerInfoModal";
-import { PRICES } from "@/lib/constants";
+import { PRICES, SHOPIER_LINKS } from "@/lib/constants";
+import { ShopierRedirectModal } from "@/components/payment/ShopierRedirectModal";
 
 
 
@@ -50,14 +50,23 @@ function DocsPageContent() {
       window.open(item.fileUrl, "_blank");
     } else {
       let price = PRICES.DOC;
-      if (type === 'autocad') price = PRICES.AUTOCAD;
-      if (type === 'circuit') price = PRICES.CIRCUIT;
+      let shopierUrl = SHOPIER_LINKS.DOC;
+
+      if (type === 'autocad') {
+        price = PRICES.AUTOCAD;
+        shopierUrl = SHOPIER_LINKS.AUTOCAD;
+      }
+      if (type === 'circuit') {
+        price = PRICES.CIRCUIT;
+        shopierUrl = SHOPIER_LINKS.CIRCUIT;
+      }
 
       setSelectedProduct({
         id: item.id,
         type: type,
         name: item.title,
-        price: price
+        price: price,
+        shopierUrl: shopierUrl
       });
     }
   };
@@ -197,10 +206,12 @@ function DocsPageContent() {
       </main>
 
       {selectedProduct && (
-        <BuyerInfoModal 
+        <ShopierRedirectModal 
           isOpen={!!selectedProduct}
           onClose={() => setSelectedProduct(null)}
-          product={selectedProduct}
+          productName={selectedProduct.name}
+          price={selectedProduct.price}
+          shopierUrl={selectedProduct.shopierUrl}
         />
       )}
 

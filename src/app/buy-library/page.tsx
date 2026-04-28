@@ -7,8 +7,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { BookOpen, CheckCircle2, ShieldCheck, Video } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { BuyerInfoModal } from "@/components/payment/BuyerInfoModal";
-import { PRICES, PRODUCT_TYPES } from "@/lib/constants";
+import { ShopierRedirectModal } from "@/components/payment/ShopierRedirectModal";
+import { PRICES, PRODUCT_TYPES, SHOPIER_LINKS } from "@/lib/constants";
 import Link from "next/link";
 
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
@@ -107,16 +107,12 @@ function BuyLibraryPageContent() {
 
       <Footer />
 
-      <BuyerInfoModal 
+      <ShopierRedirectModal 
         isOpen={isPaymentOpen} 
         onClose={() => setIsPaymentOpen(false)} 
-        onSuccess={handlePaymentSuccess}
-        product={{
-          type: PRODUCT_TYPES.LIBRARY,
-          id: 'full-library-access',
-          name: "Eğitim ve Arşiv Kütüphanesi Erişimi",
-          price: PRICES.LIBRARY
-        }}
+        productName="Eğitim ve Arşiv Kütüphanesi Erişimi"
+        price={PRICES.LIBRARY}
+        shopierUrl={SHOPIER_LINKS.LIBRARY}
       />
     </div>
   );
