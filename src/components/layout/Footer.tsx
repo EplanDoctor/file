@@ -55,8 +55,8 @@ export function Footer() {
             </div>
             
             <div className="flex gap-4 text-xs font-bold text-slate-400">
-              <Link href="#" className="hover:text-slate-600">{t.footer.privacy}</Link>
-              <Link href="#" className="hover:text-slate-600">{t.footer.terms}</Link>
+              <Link href="/privacy" className="hover:text-slate-600">{t.footer.privacy}</Link>
+              <Link href="/terms" className="hover:text-slate-600">{t.footer.terms}</Link>
             </div>
           </div>
         </div>
